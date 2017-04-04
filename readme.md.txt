@@ -1,2 +1,0 @@
-# marketplex
-Online marketing portal
