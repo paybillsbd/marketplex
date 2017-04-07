@@ -1,0 +1,80 @@
+.padTB{
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+.boxPadTop{
+    padding-top: 3px;
+}
+.padT5{
+    padding-top: 5px;
+}
+.padtT10{
+    padding-top: 10px;
+}
+.marT10{
+    margin-top: 10px;
+}
+#parent {display: table}
+
+#child {
+  display: table-cell;
+  vertical-align: middle;
+ }
+.imgborder {
+  border: 1px solid rgba(13, 151, 157, 0.38);
+}
+.padT10 {
+  padding-top: 25px;
+}
+
+
+.boxed-header {
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.noPadMar{
+    margin: 0;
+    padding: 0;
+}
+.C-header{
+    margin-top: 4px !important;
+}
+.box-comments .box-comment{
+    padding: 0 !important;
+}
+.display-in{
+    display: inline-block;
+}
+.box-down{
+    border-radius: 3px;
+  background: #ffffff;
+  border-bottom: 3px solid #d2d6de;
+  border-bottom-color: #00c0ef;
+}
+.pagination>li.active>a:hover {
+  background: #00a7d0;
+  color: #fff;
+  border-color: #00a7d0;
+}
+.pagination>li.active>a {
+  background: #00c0ef;
+  color: #fff;
+  border-color: #00c0ef;
+}
+.box .box-noborder {
+    border-top-color: rgba(60, 141, 188, 0);
+
+}
+
+
+@media screen and (min-width: 750px) {
+  
+.modal-dialog  {width:60%;}
+
+}
+
+
+
+

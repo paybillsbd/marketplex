@@ -12,7 +12,19 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Laravel',
+    'name' => env('APP_NAME', 'MarketPlex'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Vendor's Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the vendor of your application. This value is used when the
+    | app developer needs to place the application vendor's name in a notification or
+    | any other location as required by the application or its packages.
+    */
+
+    'vendor' => env('APP_VENDOR', 'MarketPlex'),
 
     /*
     |--------------------------------------------------------------------------

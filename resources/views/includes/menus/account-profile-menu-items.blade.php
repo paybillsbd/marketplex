@@ -1,0 +1,1 @@
+<li class="mdl-menu__item"><a class="mdl-navigation__link" href="{{ $activity->route }}"><i class="material-icons" role="presentation">{{ $activity->icon_label }}</i>{{ $activity->title }}</a></li>
