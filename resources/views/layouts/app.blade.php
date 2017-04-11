@@ -79,9 +79,23 @@
         </nav>
 
         @yield('content')
+
     </div>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <script src="{{ asset('/vendor/inzaana/browser-events/browser-event-navigation.js') }}" type="text/javascript"></script>
+    <script type="text/javascript">
+          
+      // $(auth).ready(function () {
+
+      //     auth.logout = function() {
+      //       window.location.href = '/logout';
+      //     }
+
+      // });
+    </script>
+
 </body>
 </html>

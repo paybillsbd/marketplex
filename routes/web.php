@@ -12,7 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('store-comingsoon');
+	if(env('STORE_CLOSE', true) === false)
+		return view('store-front-1');
+	else if(MarketPlex\Product::count() == 0)
+		return view('store-comingsoon');
+	return view('store-front-1');
 });
 
 Auth::routes();
@@ -20,6 +24,8 @@ Auth::routes();
 Route::group([ 'as' => 'user::' ], function() {
 
 	Route::get('/home', [ 'uses' => 'HomeController@index', 'as' => 'home' ]);
+
+    Route::get('/who-am-i', [ 'uses' => 'HomeController@user', 'as' => 'info' ]);
 
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {

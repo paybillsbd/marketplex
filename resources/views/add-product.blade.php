@@ -3,9 +3,9 @@
 @section('title-module-name', 'Products')
 
 @section('header-style')
-    <link href="{{ URL::asset('vendor/css/select2.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('vendor/css/dragdrop.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('vendor/css/newStyle.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/css/select2.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/css/dragdrop.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/css/newStyle.css') }}" rel="stylesheet" type="text/css">
 
     <!--for date picker only-->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
@@ -108,7 +108,6 @@
                             <ul class="nav nav-tabs">
                                 <li class="{{ ($tab == 'single_product_entry_tab') ? 'active' : '' }}"><a href="#tab-edit" data-toggle="tab">Add Product Details</a></li>
                                 <li class="{{ ($tab == 'bulk_product_entry_tab') ? 'active' : '' }}"><a href="#tab-messages" data-toggle="tab">Upload Products</a></li>
-                                <!-- <li class=""><a href="#tab-logistic" data-toggle="tab">Logistics & Others</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -117,7 +116,7 @@
                     <div id="generalTabContent" class="tab-content">
 
                         @include('errors')
-                        <div id="tab-edit" class="tab-pane fade in{{ ($tab == 'single_product_entry_tab') ? ' active' : '' }} hidden">
+                        <div id="tab-edit" class="tab-pane fade in{{ ($tab == 'single_product_entry_tab') ? ' active' : '' }}"> <!-- hidden is intensional feature here -->
 
                             <!-- form start -->
                             <!-- route('user::products.create') -->
@@ -605,11 +604,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-
-
-
+                                </div> 
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary btn-flat">Save</button>
@@ -674,7 +669,7 @@
                             </div>
                         </div>
                         
-                        <div id="tab-logistic" class="tab-pane fade in">
+                        <div id="tab-logistic" class="tab-pane fade in hidden">
                             <div class=" form-horizontal">
 
                                 <form action="" method="POST" id="js-upload-form">
@@ -717,8 +712,7 @@
                                     <div class="form-group">
                                             <label for="final_price" class="col-sm-3 control-label">Final Price:</label>
                                             <div class="col-sm-2">
-                                                <label for="final_price" class="col-sm-3 control-label"><h4 style="padding: 0 !important;
-    margin: 0 !important;">00₹</h4></label>
+                                                <label for="final_price" class="col-sm-3 control-label"><h4 style="padding: 0 !important; margin: 0 !important;">00₹</h4></label>
                                                
                                             </div>
                                     </div>
@@ -950,9 +944,6 @@
 
         @section('footer-scripts')
 
-            <script src="{{ asset('/vendor/inzaana/data-requests/element-data-manager-1.1.js') }}" type="text/javascript"></script>
-            <script src="{{ asset('/vendor/inzaana/form-validation/add-product-validation.js') }}" type="text/javascript"></script>
-
             <script src="{{ asset('/vendor/inzaana/js/select2.full.min.js') }}" type="text/javascript"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
             <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -1160,7 +1151,7 @@
                     });
                 }
 
-
+                // Ready
                 $('#generalTabContent').ready(function() {
                     var showModal = ($('div.has-error').length > 0 || $('div.is-edit').length > 0);
                     $('#addProduct').modal({ 'show' : showModal });
