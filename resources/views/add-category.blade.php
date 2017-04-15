@@ -1,16 +1,6 @@
-@extends('layouts.admin-master')
-@section('title', 'Add Category')
-
-@section('breadcumb')
-<h1>Category
-<small>Add Category</small>
-</h1>
-<ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-cubes"></i> Home</a></li>
-    <li>Category</li>
-    <li class="active">Add Category</li>
-</ol>
-@endsection
+@extends('layouts.app-dashboard-admin')
+@section('title', 'Category')
+@section('title-module-name', 'Category')
 
 @section('content')
 <div class="box box-info">
