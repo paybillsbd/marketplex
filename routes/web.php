@@ -13,7 +13,14 @@
 
 Route::get('/', function () {
 	if(env('STORE_CLOSE', true) === false)
-		return view('store-front-1');
+		
+		return view('store-front-1', 
+			[
+			'categories' => ['Man', 'Woman', 'Shoes', 'Shirts', 'Pants'],
+			'carousels' => ['Slogan0','Slogan1','Slogan2'],
+			'products' => ['title1', 'title2', 'title3']	
+			]
+		);
 	else if(MarketPlex\Product::count() == 0)
 		return view('store-comingsoon');
 	return view('store-front-1');

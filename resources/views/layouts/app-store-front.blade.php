@@ -67,25 +67,25 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <a class="navbar-brand" href="#">
-                    <strong>Navbar</strong>
+                    <strong>{{ config('app.vendor') }} | @yield('title')</strong>
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNav1">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active">
                             <a class="nav-link">Home <span class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link">Features</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link">Pricing</a>
-                        </li>
+                        </li> -->
                         <li class="nav-item dropdown btn-group">
-                            <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                            <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenu1">
-                                <a class="dropdown-item">Action</a>
-                                <a class="dropdown-item">Another action</a>
-                                <a class="dropdown-item">Something else here</a>
+                                <a class="dropdown-item">Login</a>
+                                <a class="dropdown-item">Logout</a>
+                                <!-- <a class="dropdown-item">Something else here</a> -->
                             </div>
                         </li>
                     </ul>
@@ -143,7 +143,7 @@
     <script>
     new WOW().init();
     </script>
-
+    
 </body>
 
 </html>
