@@ -69,6 +69,7 @@
         'modules' => MarketPlex\Helpers\ModuleManager::getModules()
       ])
       <main class="mdl-layout__content mdl-color--grey-100">
+        @include('flash')
         @yield('content')
       </main>
     </div>

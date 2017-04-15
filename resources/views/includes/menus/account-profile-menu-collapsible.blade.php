@@ -8,5 +8,6 @@
 	</button>
 	<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
 		@each('includes.menus.account-profile-menu-items', $activities, 'activity')
+		@include('includes.menus.menu-item-logout')
 	</ul>
 </div>

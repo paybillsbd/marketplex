@@ -5,6 +5,7 @@ namespace MarketPlex\Http\Controllers;
 use Auth;
 use Illuminate\Http\Request;
 use MarketPlex\User;
+use MarketPlex\Product;
 
 class HomeController extends Controller
 {
@@ -26,6 +27,25 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function showStoreFront()
+    {
+        if(env('STORE_CLOSE', true) === true)
+            return view('store-comingsoon');
+        // else if(Product::count() == 0)
+        //     return view('store-comingsoon');
+
+        $user = User::whereEmail(config('mail.admin.address'))->first();
+        $paginatedProducts = $user->products()->paginate(4);
+        // $paginatedProducts->setPath('showcase');
+        return view('store-front-1',  
+                [
+                    'categories' => ['Man', 'Woman', 'Shoes', 'Shirts', 'Pants'],
+                    'carousels' => ['Slogan0','Slogan1','Slogan2'],
+                    'products' => json_decode(collect([ [ 'title' => 'title1', 'mrp' => 10 ], [ 'title' => 'title2', 'mrp' => 30 ], [ 'title' => 'title3', 'mrp' => 50 ]])->toJson())
+
+                ])->withPaginatedProducts($paginatedProducts);
     }
 
     // Find who is authenticated currently

@@ -32,7 +32,7 @@ class CreateProducts extends Migration
             $table->timestamps();  
             $table->index(['id', 'user_id', 'store_id', 'market_product_id', 'created_at'], 'products_index');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  
-            // $table->softDeletes();
+            $table->softDeletes();
         });
     }
 

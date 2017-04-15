@@ -3,4 +3,5 @@
 </button>
 <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
 	@each('includes.menus.account-profile-menu-items', $activities, 'activity')
+	@include('includes.menus.menu-item-logout')
 </ul>

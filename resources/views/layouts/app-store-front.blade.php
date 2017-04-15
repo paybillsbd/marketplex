@@ -103,6 +103,7 @@
 
         <!--Main layout-->
         <div class="container">
+            @include('flash')
             @yield('content')
         </div>
         <!--/.Main layout-->

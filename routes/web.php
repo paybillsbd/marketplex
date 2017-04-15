@@ -11,13 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-	if(env('STORE_CLOSE', true) === false)
-		return view('store-front-1');
-	else if(MarketPlex\Product::count() == 0)
-		return view('store-comingsoon');
-	return view('store-front-1');
-});
+Route::get('/', [ 'uses' => 'HomeController@showStoreFront', 'as' => 'store-front' ]);
 
 Auth::routes();
 
