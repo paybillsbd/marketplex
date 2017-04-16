@@ -17,7 +17,7 @@ class CreateCategories extends Migration
             $table->bigInteger('parent_category_id')->default(0);
             $table->string('name', 50);
             $table->string('category_slug',100);
-            $table->mediumText('description', 255);
+            $table->mediumText('description', 255)->nullable();
             $table->enum('status', [
                 'ON_APPROVAL', 'APPROVED', 'REJECTED', 'REMOVED'
             ])->default('ON_APPROVAL');

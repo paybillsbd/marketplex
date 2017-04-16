@@ -188,7 +188,18 @@ return [
         // MarketPlex\Providers\BroadcastServiceProvider::class,
         MarketPlex\Providers\EventServiceProvider::class,
         MarketPlex\Providers\RouteServiceProvider::class,
+        /*
+         * Extended Service Providers
+         */
+        /*
+         * Session based flash notification of message service
+         */
+        Laracasts\Flash\FlashServiceProvider::class,
 
+        /*
+         * Driver based image processing service
+         */
+        Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*

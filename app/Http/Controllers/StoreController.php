@@ -41,8 +41,6 @@ class StoreController extends Controller
 
         $this->_rules = collect([
             'name' => 'required|unique:stores|max:30',
-            // 'sub_domain' => 'required',
-            // 'domain' => 'required',
             'description' => 'max:1000'
         ]);
         $this->_vendor_name = config('app.vendor');
@@ -52,9 +50,6 @@ class StoreController extends Controller
     {
         return view('add-store', $data)->withUser(Auth::user()->id)
                                 ->withStores(Auth::user()->stores)
-                                ->withTypes(collect(Store::types()))
-                                // ->withStates(Auth::user()->getStatesPaginated(10))
-                                // ->withPostCodes(Auth::user()->getPostCodesPaginated(10))
                                 ->withAreaCodes(collect(ContactProfileManager::areaCodes()));
     }
 
@@ -66,7 +61,7 @@ class StoreController extends Controller
 
     public function redirectUrl($site)
     {
-        return StoreRedirect::to('http://' . $site . '/showcase');
+        return StoreRedirect::to('http://' . $site);
     }
 
     private function validator(array $data, array $rules)
@@ -76,7 +71,7 @@ class StoreController extends Controller
 
     public function delete(Store $store)
     {
-        if($store->user->stores()->count() == 1)
+        if(!$store->isAllowedMasterDelete() && $store->isBelowStoreCountPolicy())
         {
             flash()->error('Sorry! You must have at least one shop to continue. Please contact your ' . $this->_vendor_name . ' administrator for any query.');
             return redirect()->back();
@@ -90,7 +85,7 @@ class StoreController extends Controller
     public function update(Store $store)
     {
         $user = User::find($store->user_id);
-        $phone_number = User::decodePhoneNumber($store->phone_number ? $store->phone_number : $user->phone_number);
+        $phone_number = ContactProfileManager   ::decodePhoneNumber($store->phone_number ? $store->phone_number : $user->phone_number);
         $address = ContactProfileManager::decodeAddress($store->address ? $store->address : $user->address);
         return $this->viewUserStore(compact('store', 'phone_number', 'address'));
     }
@@ -105,12 +100,9 @@ class StoreController extends Controller
 
         $data = collect([
             'name' => $storeName,
-            // 'sub_domain' => 'inzaana',
-            // 'domain' => 'com',//str_replace('.', '', '.net'),
             'description' => $request->input('description'),
             'address' => $address,
             'phone_number' => $request->input('code') . $this->delimiter_phone_number . $request->input('phone_number'),
-            'store_type' => $request->input('business')
         ]);
 
         $rules = $this->_rules;
@@ -132,7 +124,6 @@ class StoreController extends Controller
         }
         $store->description = $data['description'];
         $store->address = $data['address'];
-        $store->store_type = $data['store_type'];
         $store->phone_number = $data['phone_number'];
 
         if(!$store->save())
@@ -154,7 +145,6 @@ class StoreController extends Controller
             'description' => $request->input('description'),
             'address' => $address,
             'phone_number' => $request->input('code') . $this->delimiter_phone_number . $request->input('phone_number'),
-            'store_type' => $request->input('business')
         ];
         $validator = $this->validator($data, $this->_rules->toArray());
         if ($validator->fails())
@@ -168,7 +158,6 @@ class StoreController extends Controller
             'description' => $data['description'],
             'address' => $data['address'],
             'phone_number' => $data['phone_number'],
-            'store_type' => $data['store_type'],
             'status' => 'ON_APPROVAL',
         ]);
         if(!$store)

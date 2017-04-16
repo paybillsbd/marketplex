@@ -42,7 +42,7 @@ class MarketProduct extends Model
 
     public function product()
     {
-        return $this->hasOne('MarketPlex\Product');
+        return $this->hasOne(Product::class);
     }
 
     /**

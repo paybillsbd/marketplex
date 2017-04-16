@@ -38,9 +38,8 @@
         <hr class="extra-margins">
 
         <!--Second row-->
-        <div class="row">
-            @include('includes.frontend.product', [ 'products' => $products ])            
-            {{-- @include('includes.frontend.product', [ 'products' => $paginated_products ]) --}}           
+        <div class="row">        
+            @include('includes.frontend.product', [ 'products' => $paginated_products ])         
         </div>
         <!--/.Second row-->
 

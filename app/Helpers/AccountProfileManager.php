@@ -8,7 +8,7 @@ class AccountProfileManager
 		'user' => '/vendor/images/user.jpg'
 	];
 	const ACTIVITIES = [
-		// [ 'route' => 'logout', 'icon_label' => 'exit_to_app', 'title' => 'Logout' ]
+		[ 'route' => 'store-front', 'icon_label' => 'store', 'title' => 'Store Front' ]
 	];
 
 	public static function getActivities()

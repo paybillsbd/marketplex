@@ -122,7 +122,7 @@
                 </div><!-- /.box-body -->
 
                 <div class="box-footer text-right">
-                  <button type="submit" class="btn btn-info btn-flat">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
+                  <button type="submit" class="btn btn-info btn-flat{{ MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
                 </div>
               </form>
               <!--end of form-->
@@ -154,9 +154,6 @@
                       <th class="text-center">Store Name</th>
 
                       <th class="text-center">Address</th>
-                      <th class="text-center">Store URL</th>
-                      <th class="text-center">Store Type</th>
-                      <th class="text-center">Store Description</th>
                       <th class="text-center">Status</th>
                       <th class="text-center">Action</th>
                     </tr>
@@ -164,22 +161,10 @@
                       @foreach($stores as $store)
                       <tr>
                         <td class="text-center" id="child">
-                          <a target="_blank" href="{{ route('user::stores.redirect', [ 'site' => $store->getSiteAddress() ] ) }}">{{ $store->name }}</a>
+                          @include('includes.store-redirect-link', [ 'url' => 'localhost', 'title' => $store->name ])
                         </td>
 
                         <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
-
-                        <td class="text-center" id="child">
-                          <a target="_blank" href="{{ route('user::stores.redirect', [ 'site' => $store->getSiteAddress() ] ) }}">{{ str_replace('.', '', $store->name_as_url) . '.' . $store->sub_domain . '.' . str_replace('.', '', $store->domain) }}</a>
-                        </td>
-
-                        <td class="text-center" id="child">
-                          @foreach($types as $store_type)
-                            {{ $store_type['id'] == $store->store_type ? $store_type['title'] : '' }}
-                          @endforeach
-                        </td>
-
-                        <td class="text-center" id="child">{{ $store->description or 'This is a store named ' . $store->name }}</td>
 
                         <td class="text-center" id="child">@include('includes.approval-label', [ 'status' => $store->status, 'labelText' => $store->getStatus() ])</td>
 

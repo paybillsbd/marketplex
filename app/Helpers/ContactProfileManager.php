@@ -9,7 +9,7 @@ class ContactProfileManager
 
     public static function areaCodes()
     {
-        return [ '+562', '+522', '+141', '+135', '+91', '+11', '+22', '+33', '+44', '+20', '+40', '+79', '+80' ];
+        return [ '+88' ];
     }
 
     public static function decodePhoneNumber($phone_number)

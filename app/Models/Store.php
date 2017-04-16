@@ -127,4 +127,29 @@ class Store extends Model
     {
         return str_replace('.', '', $this->name_as_url) . '.' . $this->sub_domain . '.' . $this->domain;
     }
+
+    public function getUrl()
+    {
+        return config('app.url');
+    }
+
+    public function getTidyUrl()
+    {
+        return str_replace('http://', '', $this->getUrl());
+    }
+
+    public static function storeCreated()
+    {
+        return self::count() == 1;    
+    }
+
+    public function isBelowStoreCountPolicy()
+    {
+        return $this->user->stores()->count() == env('STORE_LIMIT_PER_VENDOR', 1);
+    }
+
+    public function isAllowedMasterDelete()
+    {
+        return env('STORE_DELETE_MIN_POLICY_BREAK', false) === true;
+    }
 }

@@ -174,11 +174,15 @@ class ProductController extends Controller
 
         // dd($data);       
 
-        try {
-            if (!self::createProduct($data)) {
+        try
+        {
+            if (!self::createProduct($data))
+            {
                 return redirect()->back()->withErrors([ProductImporter::BULK_UPLOAD_ERRORS['unknown']]);
             }
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e)
+        {
             $vendor = config('app.vendor');
             Log::error('[' . $vendor . '][Product saving error: ' . $e->getMessage() . ' ]');
             return redirect()->back()->withErrors(['Something went wrong during saving your product! We have already know the reason. Try again or please contact ' . $vendor . ' admnistrator.']);
@@ -339,7 +343,6 @@ class ProductController extends Controller
         ];
 
         // dd($data);
-        // dd($request->input('is_public'));
 
         // save product
 
@@ -355,7 +358,7 @@ class ProductController extends Controller
 
         $product->title = $data['title'];
         $product->is_public = $data['is_public'];
-        $product->special_specs = collect($data['spec'])->toJson();
+        // $product->special_specs = collect($data['spec'])->toJson();
         $product->available_quantity = $data['available_quantity'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
         $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
@@ -581,7 +584,7 @@ class ProductController extends Controller
         $product->title = $marketProduct->title;
         $product->discount = $data['discount'];
         $product->mrp = $product->discountedPrice();
-        $product->special_specs = collect($data['spec'])->toJson();
+        // $product->special_specs = collect($data['spec'])->toJson();
         $product->available_quantity = $data['available_quantity'];
         $product->return_time_limit = $data['return_time_limit'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';

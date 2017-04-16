@@ -3,9 +3,9 @@
 @section('title-module-name', 'Products')
 
 @section('header-style')
-    <link href="{{ URL::asset('/vendor/css/select2.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('/vendor/css/dragdrop.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('/vendor/css/newStyle.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/inzaana/css/select2.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/inzaana/css/dragdrop.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ URL::asset('/vendor/inzaana/css/newStyle.css') }}" rel="stylesheet" type="text/css">
 
     <!--for date picker only-->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />

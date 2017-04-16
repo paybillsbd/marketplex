@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Http\Request;
 use MarketPlex\User;
 use MarketPlex\Product;
+use MarketPlex\Category;
 
 class HomeController extends Controller
 {
@@ -41,9 +42,9 @@ class HomeController extends Controller
         // $paginatedProducts->setPath('showcase');
         return view('store-front-1',  
                 [
-                    'categories' => ['Man', 'Woman', 'Shoes', 'Shirts', 'Pants'],
+                    'categories' => Category::all(),
                     'carousels' => ['Slogan0','Slogan1','Slogan2'],
-                    'products' => json_decode(collect([ [ 'title' => 'title1', 'mrp' => 10 ], [ 'title' => 'title2', 'mrp' => 30 ], [ 'title' => 'title3', 'mrp' => 50 ]])->toJson())
+                    // 'products' => json_decode(collect([ [ 'title' => 'title1', 'mrp' => 10 ], [ 'title' => 'title2', 'mrp' => 30 ], [ 'title' => 'title3', 'mrp' => 50 ]])->toJson())
 
                 ])->withPaginatedProducts($paginatedProducts);
     }
