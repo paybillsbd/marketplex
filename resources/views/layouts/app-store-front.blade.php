@@ -83,8 +83,8 @@
                         <li class="nav-item dropdown btn-group">
                             <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenu1">
-                                <a class="dropdown-item">Login</a>
-                                <a class="dropdown-item">Logout</a>
+                                <a href="/login" class="dropdown-item">Login</a>
+                                <a href="/register" class="dropdown-item">Register</a>
                                 <!-- <a class="dropdown-item">Something else here</a> -->
                             </div>
                         </li>

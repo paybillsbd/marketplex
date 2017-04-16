@@ -2,6 +2,11 @@
 @section('title', 'Products')
 @section('title-module-name', 'Products')
 
+@section('modals')
+    @include('includes.modals.modal-product-add')
+@endsection
+
+
 @section('content')
     <div class="box box-info">
         <div class="box-body">
