@@ -1,1 +1,0 @@
-<li class="mdl-menu__item"><a class="mdl-navigation__link" href="<?php echo e(route($activity->route)); ?>"><i class="material-icons" role="presentation"><?php echo e($activity->icon_label); ?></i><?php echo e($activity->title); ?></a></li>

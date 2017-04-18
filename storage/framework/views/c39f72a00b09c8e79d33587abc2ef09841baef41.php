@@ -1,3 +1,0 @@
-
-<input formaction="<?php echo e(route('user::products.edit', [$product])); ?>" id="product-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit">
-<input class="btn btn-info btn-flat btn-xs" type="button" data-toggle="modal" data-target="#confirm_remove_<?php echo e($product->id); ?>_disabled" data-product_id="<?php echo e($product->id); ?>" data-url="<?php echo e(route('user::products.delete', [$product])); ?>" id="product_del_btn" value="Delete">
