@@ -4,9 +4,9 @@
 
 @section('header-style')
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <link rel="stylesheet" href="/http500res/vendor.css">
-    <link rel="stylesheet" href="/http500res/css" type="text/css">
-    <link rel="stylesheet" href="/http500res/main.css">
+    <link rel="stylesheet" href="/vendor/inzaana/http500res/vendor.css">
+    <link rel="stylesheet" href="/vendor/inzaana/http500res/css" type="text/css">
+    <link rel="stylesheet" href="/vendor/inzaana/http500res/main.css">
 @endsection
 
 @section('content')
@@ -28,11 +28,11 @@
                       <p>Go back</p>
                     </div>
                     <div class="scene-3">
-                      <img src="/http500res/scene-500.png" alt="">
+                      <img src="/vendor/inzaana/http500res/scene-500.png" alt="">
                       <div class="charecter-4">
-                        <img src="/http500res/charecter-4.png" alt="">
-                        <div class="hand-part1"><img src="/http500res/charecter-4-hand-part.png" alt=""></div>
-                        <div class="eye"><img src="/http500res/charecter-4-eye.gif" alt=""></div>
+                        <img src="/vendor/inzaana/http500res/charecter-4.png" alt="">
+                        <div class="hand-part1"><img src="/vendor/inzaana/http500res/charecter-4-hand-part.png" alt=""></div>
+                        <div class="eye"><img src="/vendor/inzaana/http500res/charecter-4-eye.gif" alt=""></div>
                       </div>
                     </div>
                   </div>
@@ -44,8 +44,8 @@
 
 @section('footer-scripts')
 
-  <script src="/http500res/vendor.js.download"></script>
-  <script src="/http500res/plugins.js.download"></script>
-  <script src="/http500res/main.js.download"></script>
+  <script src="/vendor/inzaana/http500res/vendor.js.download"></script>
+  <script src="/vendor/inzaana/http500res/plugins.js.download"></script>
+  <script src="/vendor/inzaana/http500res/main.js.download"></script>
 
 @endsection
