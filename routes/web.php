@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', [ 'uses' => 'HomeController@showStoreFront', 'as' => 'store-front' ]);
+Route::get('/', [ 'uses' => 'Auth\LoginController@showStoreFront', 'as' => 'store-front' ]);
 
 Auth::routes();
 

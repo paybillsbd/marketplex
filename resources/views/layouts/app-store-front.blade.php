@@ -4,8 +4,8 @@
 <head>
 
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <title>{{ config('app.vendor') }} | @yield('title')</title>
 
@@ -16,10 +16,11 @@
     <link href="/vendor/mdb/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Material Design Bootstrap -->
-    <link href="/vendor/mdb/css/mdb.min.css" rel="stylesheet">
-    
+    <link href="/vendor/mdb/css/mdb.min.css" rel="stylesheet">    
     <link href="/vendor/mdb/css/style.css" rel="stylesheet">
- 
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <!-- Template styles -->
     <style rel="stylesheet">
         /* TEMPLATE STYLES */
@@ -74,16 +75,14 @@
                         <li class="nav-item active">
                             <a class="nav-link">Home <span class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a href="/home" class="nav-link">Dashboard</a>
-                        </li>
                         <li class="nav-item dropdown btn-group">
                             <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenu1">
                              @if (Auth::guest())
-                                <a class="dropdown-item" href="{{ route('login') }}">Login</a>
+                                <a class="dropdown-item" href="{{ route('login') }}"><i class="material-icons" role="presentation">lock_outline</i>Login</a>
                              @else
-                                <a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
+                                <a class="dropdown-item" href="/home"><i class="material-icons" role="presentation">dashboard</i>Dashboard</a>
+                                @include('includes.menus.logout-item-form', [ 'css_class' => 'dropdown-item' ])
                              @endif
                             </div>
                         </li>
