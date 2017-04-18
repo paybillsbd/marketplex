@@ -52,6 +52,11 @@
 
 @section('modals')
     @include('includes.modals.modal-product-add')
+
+    @each('includes.product-delete-confirm-modal', $products, 'product')
+
+    <div id="modal_container">{{--Modal load here--}}</div>
+    <div id="alert_modal_container">{{--Alert Modal load here--}}</div>
 @endsection
 
 
@@ -59,45 +64,22 @@
     <div class="box box-info">
         <div class="box-body">
             <div class="row padTB">
-                <!--form-->
-                <form action="{{ route('user::products.search') }}" method="GET">
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div class="box box-widget">
-                            <div class="box-header with-border">
-                                <h4 class="boxed-header">Find it on {{ config('app.vendor') }}</h4>
+                {{--@include('includes.frontend.search-panel')--}}
+
+                <div class="box box-widget">
+                    <div class="box-footer box-comments{{ $productsCount == 0 ? '' : ' hidden' }}">
+                        <div class="box-comment">
+                            <div class="col-lg-6">
+                                <h4 class="C-header">If it is not in {{ config('app.vendor') }}'s catalog:</h4>
                             </div>
-                            <div class="box-body">
-                                <div class="input-group">
-                                    <input id="search-box" name="search_box" type="text" class="form-control search_box">
-                                    <span class="input-group-btn">
-                                      <button id="product-search-btn" class="btn btn-info btn-flat" type="submit"><i class="fa fa-lg fa-search"><!-- Search --></i></button>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="box-footer box-comments{{ $productsCount == 0 ? '' : ' hidden' }}">
-                                <div class="box-comment">
-                                    <div class="col-lg-6">
-                                        <h4 class="C-header">If it is not in {{ config('app.vendor') }}'s catalog:</h4>
-                                    </div>
-                                    <div class="col-lg-6 text-right">
-                                        <button id="product-form-open-button" class="btn btn-info btn-flat laravel-bootstrap-modal-form-open" data-toggle="modal" data-target="#addProduct" type="button"><i class="fa fa-lg fa-plus-square"></i>&ensp; Add Product</button>
-                                    </div>
-                                </div>
+                            <div class="col-lg-6 text-right">
+                                <button id="product-form-open-button" class="btn btn-info btn-flat laravel-bootstrap-modal-form-open" data-toggle="modal" data-target="#addProduct" type="button"><i class="fa fa-lg fa-plus-square"></i>&ensp; Add Product</button>
                             </div>
                         </div>
                     </div>
-                </form>
-                <!--end of form-->
-
-                <div class="col-lg-6 col-lg-offset-3 boxPadTop">
-                    <div id="sell_yours_search" class="box box-down box-info{{--{{ $productsCount == 0 ? ' hidden' : '' }}--}}">
-                        {{--@include('includes.product-search-table')--}}
-                    </div>
                 </div>
             </div>
-        </div>
-
-       
+        </div>       
 
         <!--recently added product-->
         <div class="row">
@@ -127,7 +109,6 @@
                                     <th data-sort="category" data-order="ASC" id="sort_by_click">
                                         <a href="#">Category</a>
                                     </th>
-                                    <th>Sub Category</th>
                                     <th>MRP</th>
                                     <th>Discount</th>
                                     <th data-sort="price" data-order="ASC" id="sort_by_click">
@@ -135,7 +116,6 @@
                                     </th>
                                     <th>Image</th>
                                     <th>Available Quantity</th>
-                                    <th>Time Limit For Return (in days)</th>
                                     <th data-sort="status" data-order="ASC" id="sort_by_click">
                                         <a href="#">Status</a>
                                     </th>
@@ -152,7 +132,6 @@
                                                 <td style="vertical-align: middle"><input type="checkbox" name="check_box" value="{{ $product->id }}" id=""></td>
                                                 <td id="child"><a href="">{{ $product->title }}</a></td>
                                                 <td id="child"><a href="">{{ $product->categoryName() }}</a></td>
-                                                <td id="child"><a href=""></a></td> <!-- sub category-->
                                                 <td id="child"><a href="">{{ $product->mrp }}</a></td>
                                                 <td id="child"><a href="">{{ $product->discount }} %</a></td>
                                                 <td id="child"><a href="">₹ {{ $product->marketProduct()->price }}</a></td>
@@ -162,7 +141,6 @@
                                                     </a>
                                                 </td>
                                                 <td id="child"><a href="">{{ $product->available_quantity }}</a></td> <!-- Available quantity-->
-                                                <td id="child"><a href="">{{ $product->return_time_limit }}</a></td> <!-- Time limit for return-->
                                                 <td id="child">@include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])</td>
                                                 <td class="text-center" id="child">
                                                     <form id="product-modification-form" class="form-horizontal" method="POST" >
@@ -188,14 +166,10 @@
 
         <!--end of recently added product-->
 
-        @each('includes.product-delete-confirm-modal', $products, 'product')
-
-        <div id="modal_container">{{--Modal load here--}}</div>
-        <div id="alert_modal_container">{{--Alert Modal load here--}}</div>
-
         @endsection
 
         @section('footer-scripts')
+            <script src="{{ asset('/vendor/inzaana/form-validation/add-product-validation.js') }}" type="text/javascript"></script>
 
             <script src="{{ asset('/vendor/inzaana/js/select2.full.min.js') }}" type="text/javascript"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
@@ -536,7 +510,8 @@
                     var imageIndexToLoad = totalMediaLoaded;
                     while(imageIndexToLoad++)
                     {
-                        if(imgHTML.attr("src").indexOf('default_product.jpg') > -1)
+                        var default_image_filename = {{ MarketPlex\ProductMedia::DEFAUL_IMAGE }};
+                        if(imgHTML.attr("src").indexOf(default_image_filename) > -1)
                         {
                             setBackgroundImage( imgHTML , reader.result);
                             break;

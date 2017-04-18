@@ -45,7 +45,7 @@
 
                                         <select name="store_name" id="store_name" class="form-control select2" data-placeholder="Select Store" style="width: 100%;">
                                             @foreach($stores as $name_as_url => $name)
-                                                <option value="{{ $name_as_url }}"{{ (isset($product) && $product->store) && ($product->store->name_as_url == $name_as_url || old('store_name') == $name_as_url) ? ' selected' : '' }}> {{ $name_as_url }}.inzaana.com ( {{ $name }} ) </option>
+                                                <option value="{{ $name_as_url }}"{{ (isset($product) && $product->store) && ($product->store->name_as_url == $name_as_url || old('store_name') == $name_as_url) ? ' selected' : '' }}> {{ $name }} </option>
                                             @endforeach
                                         </select>
                                         @if ($errors->has('store_name'))

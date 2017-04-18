@@ -79,12 +79,10 @@
                       <td class="text-center" id="child"><a href="">{{ $category->description or 'This is a description'}}</a></td>
                       <td class="text-center" id="child"><a href=""> @include('includes.approval-label', [ 'status' => $category->status, 'labelText' => $category->getStatus() ]) </a></td>
                       <td class="text-center" id="child">
-                        <form id="category-modification-form" class="form-horizontal" method="GET" >
-                          <input formaction="{{ route('user::categories.edit', [$category->id]) }}" id="category-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                        </form>
-                        <form id="category-modification-form" class="form-horizontal" method="POST" >
+                        <form id="category-modification-form" class="form-horizontal">
+                          <input formmethod="GET" formaction="{{ route('user::categories.edit', [$category->id]) }}" id="category-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                           {!! csrf_field() !!}
-                          <input formaction="{{ route('user::categories.delete', [$category->id]) }}" id="category-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                          <input formmethod="POST" formaction="{{ route('user::categories.delete', [$category->id]) }}" id="category-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
                         </form>
                       </td>
                     </tr>

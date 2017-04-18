@@ -34,8 +34,8 @@ class HomeController extends Controller
     {
         if(env('STORE_CLOSE', true) === true)
             return view('store-comingsoon');
-        // else if(Product::count() == 0)
-        //     return view('store-comingsoon');
+        else if(Product::count() == 0)
+            return view('store-comingsoon');
 
         $user = User::whereEmail(config('mail.admin.address'))->first();
         $paginatedProducts = $user->products()->paginate(4);
@@ -43,8 +43,7 @@ class HomeController extends Controller
         return view('store-front-1',  
                 [
                     'categories' => Category::all(),
-                    'carousels' => ['Slogan0','Slogan1','Slogan2'],
-                    // 'products' => json_decode(collect([ [ 'title' => 'title1', 'mrp' => 10 ], [ 'title' => 'title2', 'mrp' => 30 ], [ 'title' => 'title3', 'mrp' => 50 ]])->toJson())
+                    'carousels' => [ 'Slogan0', 'Slogan1', 'Slogan2' ]
 
                 ])->withPaginatedProducts($paginatedProducts);
     }

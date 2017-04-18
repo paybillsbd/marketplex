@@ -173,12 +173,10 @@
                         <td class="text-center" id="child">@include('includes.approval-label', [ 'status' => $store->status, 'labelText' => $store->getStatus() ])</td>
 
                         <td class="text-center" id="child">
-                          <form id="store-modification-form-edit" class="form-horizontal" method="GET" >
-                            <input formaction="{{ route('user::stores.edit', [$store]) }}" id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                          </form>
-                          <form id="store-modification-form-delete" class="form-horizontal" method="POST" >
+                          <form id="store-modification-form" class="form-horizontal">
+                            <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                             {!! csrf_field() !!}
-                            <input formaction="{{ route('user::stores.delete', [$store]) }}" id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                            <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
                           </form>
                         </td>
 
