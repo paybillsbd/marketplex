@@ -24,7 +24,7 @@ class ProductMedia extends Model
     ];
     const MAX_ALLOWED_IMAGE = 4;
     const MEDIA_CONTEXT = "products";
-    const DEFAUL_IMAGE = 'default_product.jpg';
+    const DEFAUL_IMAGE = 'default_product.png';
     const IMAGES_PATH_PUBLIC = '/images/products/';
 
     protected $table = 'product_medias';

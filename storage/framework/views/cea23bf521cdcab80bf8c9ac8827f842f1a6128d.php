@@ -1,8 +1,8 @@
 <!--add product modal-->
 <div id="addProduct" class="modal fade laravel-bootstrap-modal-form" role="dialog">
 
-    <div id="has_error" class="hidden{{ count($errors) > 0 ? ' has-error' : '' }}"></div>
-    <div id="is_edit" class="hidden{{ isset($product) ? ' is-edit' : '' }}"></div>
+    <div id="has_error" class="hidden<?php echo e(count($errors) > 0 ? ' has-error' : ''); ?>"></div>
+    <div id="is_edit" class="hidden<?php echo e(isset($product) ? ' is-edit' : ''); ?>"></div>
 
     <div class="modal-dialog">
         <!-- Modal content-->
@@ -12,8 +12,8 @@
                 <h4 class="modal-title"></h4>
                 <div class="custom_tab">
                     <ul class="nav nav-tabs">
-                        <li class="{{ ($tab == 'single_product_entry_tab') ? 'active' : '' }}"><a href="#tab-edit" data-toggle="tab">Add Product Details</a></li>
-                        <li class="{{ ($tab == 'bulk_product_entry_tab') ? 'active' : '' }}"><!-- <a href="#tab-messages" data-toggle="tab">Upload Products</a></li> -->
+                        <li class="<?php echo e(($tab == 'single_product_entry_tab') ? 'active' : ''); ?>"><a href="#tab-edit" data-toggle="tab">Add Product Details</a></li>
+                        <li class="<?php echo e(($tab == 'bulk_product_entry_tab') ? 'active' : ''); ?>"><!-- <a href="#tab-messages" data-toggle="tab">Upload Products</a></li> -->
                     </ul>
                 </div>
             </div>
@@ -21,18 +21,19 @@
             <!--Custom tab content start from here-->
             <div id="generalTabContent" class="tab-content">
 
-                @include('errors')
-                <div id="tab-edit" class="tab-pane fade in{{ ($tab == 'single_product_entry_tab') ? ' active' : '' }}"> <!-- hidden is intensional feature here -->
+                <?php echo $__env->make('errors', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <div id="tab-edit" class="tab-pane fade in<?php echo e(($tab == 'single_product_entry_tab') ? ' active' : ''); ?>"> <!-- hidden is intensional feature here -->
 
                     <!-- form start -->
                     <!-- route('user::products.create') -->
                     <!-- enctype="multipart/form-data" -->
                     <form id="product-create-form" class="form-horizontal"
-                          action="{{ isset($product) ? route('user::products.update', [$product]) : route('user::products.create') }}"
+                          action="<?php echo e(isset($product) ? route('user::products.update', [$product]) : route('user::products.create')); ?>"
                           enctype="multipart/form-data"
                           method="POST">
 
-                        {!! csrf_field() !!}
+                        <?php echo csrf_field(); ?>
+
 
                         <h4 class="block-title">Product Summary</h4>
                         <div class="block-of-block">
@@ -44,38 +45,38 @@
                                     <div class="col-sm-7">
 
                                         <select name="store_name" id="store_name" class="form-control select2" data-placeholder="Select Store" style="width: 100%;">
-                                            @foreach($stores as $name_as_url => $name)
-                                                <option value="{{ $name_as_url }}"{{ (isset($product) && $product->store) && ($product->store->name_as_url == $name_as_url || old('store_name') == $name_as_url) ? ' selected' : '' }}> {{ $name_as_url }}.inzaana.com ( {{ $name }} ) </option>
-                                            @endforeach
+                                            <?php $__currentLoopData = $stores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $name_as_url => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($name_as_url); ?>"<?php echo e((isset($product) && $product->store) && ($product->store->name_as_url == $name_as_url || old('store_name') == $name_as_url) ? ' selected' : ''); ?>> <?php echo e($name_as_url); ?>.inzaana.com ( <?php echo e($name); ?> ) </option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </select>
-                                        @if ($errors->has('store_name'))
+                                        <?php if($errors->has('store_name')): ?>
                                             <span class="help-block">
-                                                <strong>{{ $errors->first('store_name') }}</strong>
+                                                <strong><?php echo e($errors->first('store_name')); ?></strong>
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
+                                <div class="form-group<?php echo e($errors->has('category') ? ' has-error' : ''); ?>">
                                     <label  class="col-sm-3 control-label">Product Category:</label>
                                     <div class="col-sm-2">
                                         <select name="category" id="category" class="form-control select2" data-placeholder="Select a Category" style="width: 100%;">
 
-                                            @if(isset($categories))
-                                                @foreach( $categories as $category )
-                                                    <option value="{{ $category->id }}"{{ (isset($product) && $product->category) && ($product->category->id == $category->id || old('category') == $category->id) ? ' selected' : '' }}>{{ $category->name or 'Uncategorized' }}</option>
-                                                @endforeach
-                                            @else
-                                                <option>{{ 'Uncategorized' }}</option>
-                                            @endif
+                                            <?php if(isset($categories)): ?>
+                                                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($category->id); ?>"<?php echo e((isset($product) && $product->category) && ($product->category->id == $category->id || old('category') == $category->id) ? ' selected' : ''); ?>><?php echo e(isset($category->name) ? $category->name : 'Uncategorized'); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            <?php else: ?>
+                                                <option><?php echo e('Uncategorized'); ?></option>
+                                            <?php endif; ?>
                                         </select>
-                                        @if ($errors->has('category'))
+                                        <?php if($errors->has('category')): ?>
                                             <span class="help-block">
-                                              <strong>{{ $errors->first('category') }}</strong>
+                                              <strong><?php echo e($errors->first('category')); ?></strong>
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <div class="col-sm-2">
-                                        <button formmethod="GET" formaction="{{ route('user::categories') }}" class="btn btn-default btn-flat"><i class="fa fa-plus"></i> </button>
+                                        <button formmethod="GET" formaction="<?php echo e(route('user::categories')); ?>" class="btn btn-default btn-flat"><i class="fa fa-plus"></i> </button>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group">
@@ -83,100 +84,100 @@
                     <div class="col-sm-7">
                         <select name="subcategory" class="form-control select2" multiple="multiple" data-placeholder="Select a sub Category" style="width: 100%;">
 
-                            {{--@if(isset($categories))--}}
-                                {{--@foreach( $categories as $category )--}}
-                                {{--<option>{{ $category->category_name or 'Uncategorized' }}</option>--}}
-                                {{--@endforeach--}}
-                                {{--@endif--}}
+                            
+                                
+                                
+                                
+                                
                                         </select>
                                     </div>
-                                    {{--<div class="col-sm-2">--}}
-                                {{--<button formmethod="GET" formaction="{{ route('user::categories') }}" class="btn btn-info btn-flat"><i class="fa fa-plus"></i> </button>--}}
-                                {{--</div>--}}
+                                    
+                                
+                                
                                         </div>-->
-                                <div class="form-group{{ $errors->has('title') ? ' has-error' : '' }}">
+                                <div class="form-group<?php echo e($errors->has('title') ? ' has-error' : ''); ?>">
                                     <label for="title" class="col-sm-3 control-label">Product Title:</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="title" name="title" placeholder="ex: kitkat 5RS" value="{{ isset($product) ? $product->title : old('title') }}">
-                                        @if ($errors->has('title'))
+                                        <input type="text" class="form-control" id="title" name="title" placeholder="ex: kitkat 5RS" value="<?php echo e(isset($product) ? $product->title : old('title')); ?>">
+                                        <?php if($errors->has('title')): ?>
                                             <span class="help-block">
-                              <strong>{{ $errors->first('title') }}</strong>
+                              <strong><?php echo e($errors->first('title')); ?></strong>
                           </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                                <div class="form-group{{ $errors->has('manufacturer_name') ? ' has-error' : '' }}">
+                                <div class="form-group<?php echo e($errors->has('manufacturer_name') ? ' has-error' : ''); ?>">
                                     <label for="Manufacturer" class="col-sm-3 control-label">Manufacturer</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="manufacturer_name" name="manufacturer_name" placeholder="ex: dairy milk" value="{{ isset($product) ? $product->marketManufacturer() : old('manufacturer_name') }}">
-                                        @if ($errors->has('manufacturer_name'))
+                                        <input type="text" class="form-control" id="manufacturer_name" name="manufacturer_name" placeholder="ex: dairy milk" value="<?php echo e(isset($product) ? $product->marketManufacturer() : old('manufacturer_name')); ?>">
+                                        <?php if($errors->has('manufacturer_name')): ?>
                                             <span class="help-block">
-                              <strong>{{ $errors->first('manufacturer_name') }}</strong>
+                              <strong><?php echo e($errors->first('manufacturer_name')); ?></strong>
                           </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="form-group" style="display:none;">
                                     <label  class="col-sm-3 control-label">Product Type:</label>
                                     <div class="col-sm-3">
                                         <select name="product_type" class="form-control select2" multiple="multiple" data-placeholder="Select a Category" style="width: 100%;">
-                                            @foreach(MarketPlex\Product::EXISTANCE_TYPE as $key => $type)
-                                                <option value="{{ $key }}" {{ (isset($product) && $key == $product->type) ? ' selected' : '' }}> {{ $type }} </option>
-                                            @endforeach
+                                            <?php $__currentLoopData = MarketPlex\Product::EXISTANCE_TYPE; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($key); ?>" <?php echo e((isset($product) && $key == $product->type) ? ' selected' : ''); ?>> <?php echo e($type); ?> </option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </select>
                                     </div>
                                 </div>
-                                <!--<div class="form-group{{ $errors->has('mrp') ? ' has-error' : '' }}">
+                                <!--<div class="form-group<?php echo e($errors->has('mrp') ? ' has-error' : ''); ?>">
                   <label for="mrp" class="col-sm-3 control-label">MRP:</label>
                   <div class="col-sm-2">
                     <input type="text" class="form-control" id="mrp" name="mrp" placeholder="ex: 3₹">
-                    @if ($errors->has('mrp'))
+                    <?php if($errors->has('mrp')): ?>
                                         <span class="help-block">
-                                            <strong>{{ $errors->first('mrp') }}</strong>
+                                            <strong><?php echo e($errors->first('mrp')); ?></strong>
                           </span>
-                    @endif
+                    <?php endif; ?>
                                         </div>
-                                          {{--<div class="col-sm-7 padT5"><b>$</b></div>--}}
+                                          
                                         </div>-->
-                                <!--<div class="form-group{{ $errors->has('discount') ? ' has-error' : '' }}">
+                                <!--<div class="form-group<?php echo e($errors->has('discount') ? ' has-error' : ''); ?>">
                   <label for="discount" class="col-sm-3 control-label">Discount:</label>
                   <div class="col-sm-2">
-                    <input type="text" class="form-control" id="discount" name="discount" value="{{ isset($product) ? $product->discount : '' }}" placeholder="ex: 30%">
-                    @if ($errors->has('discount'))
+                    <input type="text" class="form-control" id="discount" name="discount" value="<?php echo e(isset($product) ? $product->discount : ''); ?>" placeholder="ex: 30%">
+                    <?php if($errors->has('discount')): ?>
                                         <span class="help-block">
-                                            <strong>{{ $errors->first('discount') }}</strong>
+                                            <strong><?php echo e($errors->first('discount')); ?></strong>
                           </span>
-                    @endif
+                    <?php endif; ?>
                                         </div>
-                                          {{--<div class="col-sm-7 padT5"><b>%</b></div>--}}
+                                          
                                         </div>-->
 
-                                <div class="form-group{{ $errors->has('price') ? ' has-error' : '' }}">
+                                <div class="form-group<?php echo e($errors->has('price') ? ' has-error' : ''); ?>">
                                     <label for="price" class="col-sm-3 control-label">Price:</label>
                                     <div class="col-sm-2">
-                                        <input type="text" class="form-control" id="price" name="price" placeholder="ex: 3₹" value="{{ isset($product) ? $product->marketPrice() : old('price') }}">
-                                        @if ($errors->has('price'))
+                                        <input type="text" class="form-control" id="price" name="price" placeholder="ex: 3₹" value="<?php echo e(isset($product) ? $product->marketPrice() : old('price')); ?>">
+                                        <?php if($errors->has('price')): ?>
                                             <span class="help-block">
-                              <strong>{{ $errors->first('price') }}</strong>
+                              <strong><?php echo e($errors->first('price')); ?></strong>
                           </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                                @if(isset($product))
+                                <?php if(isset($product)): ?>
                                     <div class="form-group">
                                         <label for="status" class="col-sm-3 control-label">Status:</label>
                                         <div class="col-sm-2">
-                                            <select name="status" id="status" class="form-control select2" style="width: 100%;"{{ isset($product) ? '' : ' hidden' }}>
-                                                @if(isset($product))
-                                                    @foreach(MarketPlex\Product::STATUS_FLOWS as $status)
-                                                        <option {{ $status == $product->status ? ' selected' : '' }}> {{ $status }} </option>
-                                                    @endforeach
-                                                @endif
+                                            <select name="status" id="status" class="form-control select2" style="width: 100%;"<?php echo e(isset($product) ? '' : ' hidden'); ?>>
+                                                <?php if(isset($product)): ?>
+                                                    <?php $__currentLoopData = MarketPlex\Product::STATUS_FLOWS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option <?php echo e($status == $product->status ? ' selected' : ''); ?>> <?php echo e($status); ?> </option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                <?php endif; ?>
                                             </select>
                                         </div>
                                     </div>
-                                    @endif
+                                    <?php endif; ?>
                                             <!--<div class="form-group">
                     <label class="col-xs-3 control-label">Created Date:</label>
                     <div class="col-sm-2 date">
@@ -187,52 +188,52 @@
                     </div>
                 </div>-->
 
-                                    <!-- <div class="form-group{{ $errors->has('upload-image') ? ' has-error' : '' }}">
+                                    <!-- <div class="form-group<?php echo e($errors->has('upload-image') ? ' has-error' : ''); ?>">
                   <label for="upload-image" class="col-sm-3 control-label">Upload Image:</label>
                   <div class="col-sm-9">
                     <input type="file" class="form-control" id="upload-image" name="upload-image">
-                    @if ($errors->has('upload-image'))
+                    <?php if($errors->has('upload-image')): ?>
                                             <span class="help-block">
-                                                <strong>{{ $errors->first('upload-image') }}</strong>
+                                                <strong><?php echo e($errors->first('upload-image')); ?></strong>
                           </span>
-                    @endif
+                    <?php endif; ?>
                                             </div>
                                           </div>-->
 
-                                    <div class="form-group{{ $errors->has('available_quantity') ? ' has-error' : '' }}">
+                                    <div class="form-group<?php echo e($errors->has('available_quantity') ? ' has-error' : ''); ?>">
                                         <label for="available_quantity" class="col-sm-3 control-label">Available Quantity:</label>
                                         <div class="col-sm-2">
                                             <div class="input-group spinner">
                                                 <input type="text" name="available_quantity" class="form-control"
-                                                       value="{{ isset($product) ? $product->available_quantity : MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                       min="{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                       max="{{ MarketPlex\Product::MAX_AVAILABLE_QUANTITY }}">
+                                                       value="<?php echo e(isset($product) ? $product->available_quantity : MarketPlex\Product::MIN_AVAILABLE_QUANTITY); ?>"
+                                                       min="<?php echo e(MarketPlex\Product::MIN_AVAILABLE_QUANTITY); ?>"
+                                                       max="<?php echo e(MarketPlex\Product::MAX_AVAILABLE_QUANTITY); ?>">
 
                                                 <div class="input-group-btn-vertical">
                                                     <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
                                                     <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
                                                 </div>
                                             </div>
-                                            @if ($errors->has('available_quantity'))
+                                            <?php if($errors->has('available_quantity')): ?>
                                                 <span class="help-block">
-                                                <strong>{{ $errors->first('available_quantity') }}</strong>
+                                                <strong><?php echo e($errors->first('available_quantity')); ?></strong>
                                                 </span>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
 
 
-                                    <!--<div class="form-group{{ $errors->has('return_time_limit') ? ' has-error' : '' }}">
+                                    <!--<div class="form-group<?php echo e($errors->has('return_time_limit') ? ' has-error' : ''); ?>">
                     <label for="return_time_limit" class="col-sm-3 control-label">Time limit For Return (in days)</label>
                     <div class="col-sm-2">
                         <input type="text" class="form-control" id="return_time_limit" name="return_time_limit" placeholder="2 days">
-                        @if ($errors->has('return_time_limit'))
+                        <?php if($errors->has('return_time_limit')): ?>
                                             <span class="help-block">
-                                              <strong>{{ $errors->first('return_time_limit') }}</strong>
+                                              <strong><?php echo e($errors->first('return_time_limit')); ?></strong>
                           </span>
-                        @endif
+                        <?php endif; ?>
                                             </div>
-                                            {{--<div class="col-sm-7 padT5"><b>$</b></div>--}}
+                                            
                                             </div>-->
 
                             </div>
@@ -243,28 +244,21 @@
                         <div class="block-of-block">
                             <div id="product-create-upload-image" class="form-horizontal">
 
-                                @for($i = 1; $i <= 4; ++$i)
-                                    <div class="form-group{{ ($errors->has('upload_image_' . $i)) ? ' has-error' : '' }}">
+                                <?php for($i = 1; $i <= 4; ++$i): ?>
+                                    <div class="form-group<?php echo e(($errors->has('upload_image_' . $i)) ? ' has-error' : ''); ?>">
 
-                                       {{-- <label for="upload_image" class="col-sm-3 control-label"> {{ $i == 1 ? 'Upload Image:' : '' }} </label>--}}
+                                       
 
-                                        {{--<div class="col-sm-3">
-                                            <input id="upload_image_{{ $i }}" name="upload_image_{{ $i }}" type="file" style="margin-top: 7px" placeholder="Include some file">
-                                            @if ($errors->has('upload_image_' . $i))
-                                                <span class="help-block">
-                                <strong>{{ $errors->first('upload_image_' . $i) }}</strong>
-                            </span>
-                                            @endif
-                                        </div>--}}
+                                        
                                     </div>
-                                @endfor
+                                <?php endfor; ?>
 
                                 <div class="from-group">
                                     <div class="row">
                                         <label for="" class="col-sm-3 control-label"></label>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
-                                                <img id="blah-1" src="{{ isset($product) ? $product->previewImage(0) : MarketPlex\Product::defaultImage() }}">
+                                                <img id="blah-1" src="<?php echo e(isset($product) ? $product->previewImage(0) : MarketPlex\Product::defaultImage()); ?>">
                                                 <span class="btn btn-default btn-file">
 
                                                     Browse <input id="imgInp-1" name="upload_image_1" data-image_id="1" type="file" style="margin-top: 7px" >
@@ -272,12 +266,12 @@
 
                                             </div>
                                             <div class="col-md-6 col-md-offset-3">
-                                                <span><a href="#" data-image_src="blah-1" data-file_input="imgInp-1" {{ (isset($product) && $product->getImageURL(0)) ? 'data-image_url='.$product->getImageURL(0)['url'].'' : "" }} {{ (isset($product) && $product->getImageURL(0)) ? 'data-image_title='.$product->getImageURL(0)['title'].'' : "" }} {{ (isset($product) && $product->getImageURL(0)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)' }}><i class="fa fa-times"></i></a></span>
+                                                <span><a href="#" data-image_src="blah-1" data-file_input="imgInp-1" <?php echo e((isset($product) && $product->getImageURL(0)) ? 'data-image_url='.$product->getImageURL(0)['url'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(0)) ? 'data-image_title='.$product->getImageURL(0)['title'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(0)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)'); ?>><i class="fa fa-times"></i></a></span>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
-                                                <img id="blah-2" src="{{ isset($product) ? $product->previewImage(1) : MarketPlex\Product::defaultImage() }}">
+                                                <img id="blah-2" src="<?php echo e(isset($product) ? $product->previewImage(1) : MarketPlex\Product::defaultImage()); ?>">
                                                 <span class="btn btn-default btn-file">
 
                                                     Browse <input id="imgInp-2" name="upload_image_2" data-image_id="2" type="file" style="margin-top: 7px" >
@@ -285,13 +279,13 @@
 
                                             </div>
                                             <div class="col-md-6 col-md-offset-3">
-                                                {{--<span><a href="#" id="remove_image_2"><i class="fa fa-times"></i></a></span>--}}
-                                                <span><a href="#" data-image_src="blah-2" data-file_input="imgInp-2"  {{ (isset($product) && $product->getImageURL(1)) ? 'data-image_url='.$product->getImageURL(1)['url'].'' : "" }} {{ (isset($product) && $product->getImageURL(1)) ? 'data-image_title='.$product->getImageURL(1)['title'].'' : "" }} {{ (isset($product) && $product->getImageURL(1)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)' }}><i class="fa fa-times"></i></a></span>
+                                                
+                                                <span><a href="#" data-image_src="blah-2" data-file_input="imgInp-2"  <?php echo e((isset($product) && $product->getImageURL(1)) ? 'data-image_url='.$product->getImageURL(1)['url'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(1)) ? 'data-image_title='.$product->getImageURL(1)['title'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(1)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)'); ?>><i class="fa fa-times"></i></a></span>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
-                                                <img id="blah-3" src="{{ isset($product) ? $product->previewImage(2) : MarketPlex\Product::defaultImage() }}">
+                                                <img id="blah-3" src="<?php echo e(isset($product) ? $product->previewImage(2) : MarketPlex\Product::defaultImage()); ?>">
                                                 <span class="btn btn-default btn-file">
 
                                                     Browse <input id="imgInp-3" name="upload_image_3" data-image_id="3" type="file" style="margin-top: 7px" >
@@ -299,71 +293,72 @@
 
                                             </div>
                                             <div class="col-md-6 col-md-offset-3">
-                                                {{--<span><a href="#" id="remove_image_3"><i class="fa fa-times"></i></a></span>--}}
-                                                <span><a href="#" data-image_src="blah-3" data-file_input="imgInp-3"  {{ (isset($product) && $product->getImageURL(2)) ? 'data-image_url='.$product->getImageURL(2)['url'].'' : "" }} {{ (isset($product) && $product->getImageURL(2)) ? 'data-image_title='.$product->getImageURL(2)['title'].'' : "" }} {{ (isset($product) && $product->getImageURL(2)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)' }}><i class="fa fa-times"></i></a></span>
+                                                
+                                                <span><a href="#" data-image_src="blah-3" data-file_input="imgInp-3"  <?php echo e((isset($product) && $product->getImageURL(2)) ? 'data-image_url='.$product->getImageURL(2)['url'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(2)) ? 'data-image_title='.$product->getImageURL(2)['title'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(2)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)'); ?>><i class="fa fa-times"></i></a></span>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
-                                                <img id="blah-4" src="{{ isset($product) ? $product->previewImage(3) : MarketPlex\Product::defaultImage() }}">
+                                                <img id="blah-4" src="<?php echo e(isset($product) ? $product->previewImage(3) : MarketPlex\Product::defaultImage()); ?>">
                                                 <span class="btn btn-default btn-file">
 
                                                     Browse <input id="imgInp-4" name="upload_image_4" data-image_id="4" type="file" style="margin-top: 7px" >
                                                 </span>
                                             </div>
                                             <div class="col-md-6 col-md-offset-3">
-                                                {{--<span><a href="#" id="remove_image_4"><i class="fa fa-times"></i></a></span>--}}
-                                                <span><a href="#" data-image_src="blah-4" data-file_input="imgInp-4" {{--{{ (isset($product)) ? 'data-product_id='.$product->id.' : "" }}--}}  {{ (isset($product) && $product->getImageURL(3)) ? 'data-image_url='.$product->getImageURL(3)['url'].'' : "" }} {{ (isset($product) && $product->getImageURL(3)) ? 'data-image_title='.$product->getImageURL(3)['title'].'' : "" }} {{ (isset($product) && $product->getImageURL(3)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)' }}><i class="fa fa-times"></i></a></span>
+                                                
+                                                <span><a href="#" data-image_src="blah-4" data-file_input="imgInp-4"   <?php echo e((isset($product) && $product->getImageURL(3)) ? 'data-image_url='.$product->getImageURL(3)['url'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(3)) ? 'data-image_title='.$product->getImageURL(3)['title'].'' : ""); ?> <?php echo e((isset($product) && $product->getImageURL(3)) ? "onClick=removeServerImage(this)" : 'onClick=removeLocalImage(this)'); ?>><i class="fa fa-times"></i></a></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group{{ $errors->has('upload_video') ? ' has-error' : '' }}">
+                                <div class="form-group<?php echo e($errors->has('upload_video') ? ' has-error' : ''); ?>">
                                     <label for="upload_video" class="col-sm-3 control-label">Upload Video:</label>
                                     <div class="col-sm-3">
                                         <input id="upload_video" name="upload_video" type="file" style="margin-top: 7px" placeholder="Include some file">
 
-                                        @if ($errors->has('upload_video'))
+                                        <?php if($errors->has('upload_video')): ?>
                                             <span class="help-block">
-                                  <strong>{{ $errors->first('upload_video') }}</strong>
+                                  <strong><?php echo e($errors->first('upload_video')); ?></strong>
                               </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 control-label"></label>
                                     <div class="checkbox col-sm-8">
-                                        <label><input id="has_embed_video" name="has_embed_video" type="checkbox" value="{{ isset($product) && !$product->hasEmbedVideo() ? 'checked' : '' }}"{{ isset($product) && !$product->hasEmbedVideo() ? ' checked' : '' }}>Or Embed a Video.</label>
+                                        <label><input id="has_embed_video" name="has_embed_video" type="checkbox" value="<?php echo e(isset($product) && !$product->hasEmbedVideo() ? 'checked' : ''); ?>"<?php echo e(isset($product) && !$product->hasEmbedVideo() ? ' checked' : ''); ?>>Or Embed a Video.</label>
                                     </div>
                                 </div>
 
-                                <div class="form-group{{ (isset($product) && $product->hasEmbedVideo()) ? '' : ' hidden' }} embed_video_form_group">
+                                <div class="form-group<?php echo e((isset($product) && $product->hasEmbedVideo()) ? '' : ' hidden'); ?> embed_video_form_group">
                                     <label for="" class="col-sm-3 control-label"></label>
                                     <div class="col-sm-8">
                                         <div class="embed-responsive embed-responsive-4by3">
                                             <div id="embed_iframe">
 
-                                                @if(isset($product) && $product->hasEmbedVideo())
+                                                <?php if(isset($product) && $product->hasEmbedVideo()): ?>
 
-                                                    {!! $product->videoEmbedUrl()['url'] !!}
+                                                    <?php echo $product->videoEmbedUrl()['url']; ?>
 
-                                                @endif
+
+                                                <?php endif; ?>
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group embed_video{{ $errors->has('embed_video_url') ? ' has-error' : '' }}">
+                                <div class="form-group embed_video<?php echo e($errors->has('embed_video_url') ? ' has-error' : ''); ?>">
                                     <label for="embed_video" class="col-sm-3 control-label">Embed Video:</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control"
                                                id="embed_video_url" name="embed_video_url" placeholder="<iframe> url </iframe>"
-                                               value="{{ isset($product) ? $product->videoEmbedUrl()['url'] : '' }}">
+                                               value="<?php echo e(isset($product) ? $product->videoEmbedUrl()['url'] : ''); ?>">
 
-                        <span class="help-block{{ $errors->has('embed_video_url') ? '' : ' hidden' }}">
-                            <strong>{{ $errors->first('embed_video_url') }}</strong>
+                        <span class="help-block<?php echo e($errors->has('embed_video_url') ? '' : ' hidden'); ?>">
+                            <strong><?php echo e($errors->first('embed_video_url')); ?></strong>
                         </span>
                                     </div>
                                 </div>
@@ -376,12 +371,12 @@
                                 <div>
                     <textarea name="description" class="textarea" placeholder="Product Description"
                               style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
-                    >{{ isset($product) ? $product->description : old('description') }}</textarea>
+                    ><?php echo e(isset($product) ? $product->description : old('description')); ?></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        {{--@include('includes.product-modal-spec')--}}
+                        
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
@@ -395,7 +390,7 @@
                 </div>
 
 
-                @include('includes.product-modal-upload')
+                <?php echo $__env->make('includes.product-modal-upload', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
                 
                 <div id="tab-logistic" class="tab-pane fade in hidden">
                     <div class=" form-horizontal">

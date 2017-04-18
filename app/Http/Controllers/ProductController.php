@@ -361,7 +361,7 @@ class ProductController extends Controller
         // $product->special_specs = collect($data['spec'])->toJson();
         $product->available_quantity = $data['available_quantity'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
-        $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
+        // $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
 
         $vendor = config('app.vendor');
         try
@@ -588,7 +588,7 @@ class ProductController extends Controller
         $product->available_quantity = $data['available_quantity'];
         $product->return_time_limit = $data['return_time_limit'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
-        $product->type = collect($data)->has('product_type') ? $data['product_type'] : 'DOWNLOADABLE';
+        // $product->type = collect($data)->has('product_type') ? $data['product_type'] : 'DOWNLOADABLE';
 
         if(!$product->save())
         {

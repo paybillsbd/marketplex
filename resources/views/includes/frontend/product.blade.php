@@ -7,7 +7,7 @@
      
         <!--Card image-->
         <div class="view overlay hm-white-slight">
-            <img src="http://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/img%20(32).jpg" class="img-fluid" alt="">
+            <img src="{{ $product->thumbnail() }}" class="img-fluid" alt="">
             <a href="#">
                 <div class="mask"></div>
             </a>
@@ -18,19 +18,21 @@
         <div class="card-block">
             <!--Title-->
 
-            <h4 class="card-title">{{ $product->title }}</h4>
-            <!--Text-->
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+            <h4 class="card-title"> {{ $product->title }}</h4>
+            <!--Text--> 
+            <p class="card-text"> {{$product->status}} </p>
             <a href="#" class="btn btn-default">Buy now for <strong>{{ $product->mrp }}$</strong></a>
         </div>
         <!--/.Card content-->
 
     </div>
+    <br/>
     <!--/.Card-->
 </div>
 @endforeach
+
 <div class="container text-center">
-  {{-- {{ $products->links() }} --}}
+  {{ $products->links('includes.frontend.pagination') }}
 </div>
 
 <!--end column -->

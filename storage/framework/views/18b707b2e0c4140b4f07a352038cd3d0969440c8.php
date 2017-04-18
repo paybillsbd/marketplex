@@ -1,0 +1,1 @@
+<a class="mdl-navigation__link" href="<?php echo e(route($module->route)); ?>"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation"><?php echo e($module->icon_label); ?></i><?php echo e($module->name); ?></a>

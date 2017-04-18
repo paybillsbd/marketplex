@@ -12,14 +12,14 @@ abstract class MediaUploader
 	protected $__uploadedFile;
 
 	const STORAGE_PATH = 'app/media-archive';
-	const LOG_PREFIX = '[' . config('app.vendor') . ']';
+	const LOG_PREFIX = '[marketplex]';
 	const MEDIA_UPLOAD_ERRORS = [ 
 		'corrupted_media_file' => 'Uploaded media file is corrupted.',
 		'size_limit_exits' => 'Please keep your media to the recommended file size',
 		'ext_not_supported' => 'Uploaded media file is not supported!',
 		'directory_create_error' => 'Uploaded file destination directory not created!',
 		'file_move_error' => 'Uploaded file did not move!',
-		'unknown' => 'Something went wrong during upload. We have already logged the problems. Please contact ' . config('app.vendor') . ' help line for further assistance.'
+		'unknown' => 'Something went wrong during upload. We have already logged the problems. Please contact marketplex help line for further assistance.'
 	];
 
 	abstract protected function validate(UploadedFile $uploadedFile);

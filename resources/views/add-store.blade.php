@@ -12,6 +12,10 @@
     display: inline;
   }
 
+  .hide{
+    display: none;
+  }
+
   </style>
 @endsection
 
@@ -59,7 +63,7 @@
                     @endif            					
                     
                     <!--Store name suggestion. Just change the visibility to show/hide it : visible/hide-->
-                    <div class="input-group input-group-lg">
+                    <!-- <div class="input-group input-group-lg">
                     <p>
                     <label>
                       <span class="glyphicon glyphicon-random"></span>
@@ -67,7 +71,7 @@
                     </label>
                     </p>
                     </div> 
-
+ -->
                   </div>
 
                     <div>
@@ -94,7 +98,7 @@
                                   </span>
                                 @endif
                             </div>
-                            <div class="col-sm-1 col-md-1 col-lg-1"><button type="button" class="btn btn-primary">verify</button></div>
+                            <div class="col-sm-1 col-md-1 col-lg-1"><button type="button" class=" hide btn btn-primary">verify</button></div>
                         </div>
                     </div>
 

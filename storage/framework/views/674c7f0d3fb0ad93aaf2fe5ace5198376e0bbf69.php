@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>{{ config('app.vendor') }} | @yield('title')</title>
+    <title><?php echo e(config('app.vendor')); ?> | <?php echo $__env->yieldContent('title'); ?></title>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
@@ -67,7 +67,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <a class="navbar-brand" href="#">
-                    <strong>{{ config('app.vendor') }}</strong>
+                    <strong><?php echo e(config('app.vendor')); ?></strong>
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNav1">
                     <ul class="navbar-nav mr-auto">
@@ -80,11 +80,11 @@
                         <li class="nav-item dropdown btn-group">
                             <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenu1">
-                             @if (Auth::guest())
-                                <a class="dropdown-item" href="{{ route('login') }}">Login</a>
-                             @else
-                                <a class="dropdown-item" href="{{ route('logout') }}">Logout</a>
-                             @endif
+                             <?php if(Auth::guest()): ?>
+                                <a class="dropdown-item" href="<?php echo e(route('login')); ?>">Login</a>
+                             <?php else: ?>
+                                <a class="dropdown-item" href="<?php echo e(route('logout')); ?>">Logout</a>
+                             <?php endif; ?>
                             </div>
                         </li>
                     </ul>
@@ -102,8 +102,8 @@
 
         <!--Main layout-->
         <div class="container">
-            @include('flash')
-            @yield('content')
+            <?php echo $__env->make('flash', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
         <!--/.Main layout-->
 
@@ -112,7 +112,7 @@
     <!--Footer-->
     <footer class="page-footer center-on-small-only">
 
-        {{-- @include('includes.store-front-footer-detail') --}}
+        
 
         <!--Copyright-->
         <div class="footer-copyright">
