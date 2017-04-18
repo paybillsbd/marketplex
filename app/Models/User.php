@@ -4,6 +4,7 @@ namespace MarketPlex;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Log;
 
 class User extends Authenticatable
 {
@@ -102,6 +103,20 @@ class User extends Authenticatable
     public function isVendor()
     {
         return $this->stores()->count() > 0;
+    }
+
+    public function isDeveloper()
+    {
+        $dev_mails = preg_split("/[,]+/", env('SECURITY_MAIL_DEV', 'firewings1097@gmail.com'));
+        foreach($dev_mails as $email)
+        {
+            if($email == $this->email)
+            {
+                Log::info( '[' . config('app.vendor') . ']' . 'Dev user email found' . $this->email);
+                return true;
+            }
+        }
+        return false;
     }
 
     public function categories()
