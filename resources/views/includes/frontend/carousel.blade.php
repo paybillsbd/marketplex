@@ -3,18 +3,19 @@
 <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel">
     <!--Indicators-->
     <ol class="carousel-indicators">
-        <li data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
-        <li data-target="#carousel-example-1z" data-slide-to="1"></li>
-        <li data-target="#carousel-example-1z" data-slide-to="2"></li>
+        @for ($i = 0; $i < count($categories); $i++)
+            <li data-target="#carousel-example-1z" data-slide-to="{{$i}}" 
+            class="{{$i==0?'active':''}}"></li>
+        @endfor    
     </ol>
     <!--/.Indicators-->
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
-        @foreach($carousels as $key=>$item) 
+        @foreach($categories as $key=>$item) 
         <div class="carousel-item {{$key==0?'active':''}}">
             <img src="http://mdbootstrap.com/img//Photos/Slides/img%20(107).jpg" alt="First slide">
             <div class="carousel-caption">
-                <h4>{{$item}}</h4>
+                <h4>{{$item->category_slug}}</h4>
                 <br>
             </div>
         </div>

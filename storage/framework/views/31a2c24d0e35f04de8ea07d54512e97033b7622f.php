@@ -3,18 +3,19 @@
 <div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel">
     <!--Indicators-->
     <ol class="carousel-indicators">
-        <li data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
-        <li data-target="#carousel-example-1z" data-slide-to="1"></li>
-        <li data-target="#carousel-example-1z" data-slide-to="2"></li>
+        <?php for($i = 0; $i < count($categories); $i++): ?>
+            <li data-target="#carousel-example-1z" data-slide-to="<?php echo e($i); ?>" 
+            class="<?php echo e($i==0?'active':''); ?>"></li>
+        <?php endfor; ?>    
     </ol>
     <!--/.Indicators-->
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
-        <?php $__currentLoopData = $carousels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?> 
+        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?> 
         <div class="carousel-item <?php echo e($key==0?'active':''); ?>">
             <img src="http://mdbootstrap.com/img//Photos/Slides/img%20(107).jpg" alt="First slide">
             <div class="carousel-caption">
-                <h4><?php echo e($item); ?></h4>
+                <h4><?php echo e($item->category_slug); ?></h4>
                 <br>
             </div>
         </div>
