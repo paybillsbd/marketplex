@@ -1,9 +1,3 @@
-/**
- * Created by sk on 2/4/2017.
- */
-
-/* Sk Asadur Rahman Script*/
-
 var myProduct = {
     baseURI:window.location.pathname,
     URI: null,
@@ -119,7 +113,7 @@ for(i=1;i<5;i++){
 function removeLocalImage(e){
     var imageSource = '#'+$(e).data('image_src');
     var fileInput = '#'+$(e).data('file_input');
-    $(imageSource).attr('src','/images/products/default_product.jpg');
+    $(imageSource).attr('src','/images/products/default_product.png');
     $(fileInput).val("");
 
 }
@@ -179,7 +173,8 @@ $( "#search_box" ).autocomplete({
         var dataArea = {
             getResult: function (data) {
                 if(isEmpty(data)){
-                    response(["No results found"]);
+                    // response(["No results found"]);
+                    alert("No results found");
                 }else{
                     response(data);
                 }
