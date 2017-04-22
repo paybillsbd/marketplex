@@ -134,7 +134,7 @@
                                                 <td id="child"><a href="">{{ $product->categoryName() }}</a></td>
                                                 <td id="child"><a href="">{{ $product->mrp }}</a></td>
                                                 <td id="child"><a href="">{{ $product->discount }} %</a></td>
-                                                <td id="child"><a href="">₹ {{ $product->marketProduct()->price }}</a></td>
+                                                <td id="child"><a href="">&#2547 {{ $product->marketProduct()->price }}</a></td>
                                                 <td id="child">
                                                     <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [$product]) }}">
                                                         <img src="{{ $product->thumbnail() }}" height="60px" width="90px"/>

@@ -1,0 +1,1 @@
+<a target="_blank" href="<?php echo e(route('user::stores.redirect', [ 'site' => $url ] )); ?>"><?php echo e($title); ?></a>
