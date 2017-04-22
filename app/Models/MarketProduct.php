@@ -60,4 +60,9 @@ class MarketProduct extends Model
     {
         return $this->morphMany(ProductMedia::class, 'mediable');
     }
+
+    public function thumbnail()
+    {
+        return $this->product->thumbnail();
+    }
 }

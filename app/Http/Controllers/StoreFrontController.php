@@ -18,7 +18,7 @@ class StoreFrontController extends Controller
             return view('store-comingsoon');
 
         $user = User::whereEmail(config('mail.admin.address'))->first();
-        if(!$user || $user->products->count() == 0)
+        if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
 
         $paginatedProducts = $user->products()->paginate(4);

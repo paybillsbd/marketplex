@@ -5,15 +5,15 @@
     <ol class="carousel-indicators">
         @for ($i = 0; $i < count($categories); $i++)
             <li data-target="#carousel-example-1z" data-slide-to="{{$i}}" 
-            class="{{$i==0?'active':''}}"></li>
+            class="{{ $i==0 ? 'active': '' }}"></li>
         @endfor    
     </ol>
     <!--/.Indicators-->
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
         @foreach($categories as $key=>$item) 
-        <div class="carousel-item {{$key==0?'active':''}}">
-            <img src="http://mdbootstrap.com/img//Photos/Slides/img%20(107).jpg" alt="First slide">
+        <div class="carousel-item {{ $key==0 ? 'active' : '' }}">
+            <img src="{{ $item->imageWhatsNew() }}" alt="slide {{ $key }}">
             <div class="carousel-caption">
                 <h4>{{$item->category_slug}}</h4>
                 <br>

@@ -63,20 +63,20 @@ class Handler extends ExceptionHandler
             flash()->error(config('app.name') . ' says: "Database credentials are denied. Please contact your database administrator"');
             return redirect('/login');
         }
-        if ($e instanceof QueryException) {
+        if ($exception instanceof QueryException) {
             $errorMessage = 'Something went wrong while running database query. Please contact your database server administrator.';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] db query problem or remote database access denied.");
             flash()->error($errorMessage);
             return redirect('/login');
         }
 
-        if ($e instanceof TokenMismatchException) {
+        if ($exception instanceof TokenMismatchException) {
             $errorMessage = 'Something went wrong during your request! Please try again';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] validation error.");
             flash()->error($errorMessage);
             return redirect('/login');
         }
-        if($e instanceof ErrorException)
+        if($exception instanceof ErrorException)
         {
             $errorMessage = 'Error Occurred.';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] " . $errorMessage . ".");

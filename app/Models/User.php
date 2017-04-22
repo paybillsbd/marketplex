@@ -119,6 +119,11 @@ class User extends Authenticatable
         return false;
     }
 
+    public function hasNoProduct()
+    {
+        return $this->products->count() == 0;
+    }
+
     public function categories()
     {
         return $this->hasMany(Category::class);

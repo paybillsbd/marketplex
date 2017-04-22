@@ -70,6 +70,16 @@ class Category extends Model
             return $this->parent()->approvable();
         return $this->approved();
     }
+
+    public function latestMarketProduct()
+    {
+        return $this->marketproducts()->latest();
+    }
+
+    public function imageWhatsNew()
+    {
+        return $this->latestMarketProduct()->first() ? $this->latestMarketProduct()->first()->thumbnail() : ProductMedia::defaultImageWhatsNew();
+    }
     
     public function getStatus()
     {

@@ -25,6 +25,7 @@ class ProductMedia extends Model
     const MAX_ALLOWED_IMAGE = 4;
     const MEDIA_CONTEXT = "products";
     const DEFAUL_IMAGE = 'default_product.png';
+    const DEFAULT_IMAGE_WHATS_NEW = 'default_whats_new.jpg';
     const IMAGES_PATH_PUBLIC = '/images/products/';
 
     protected $table = 'product_medias';
@@ -145,5 +146,10 @@ class ProductMedia extends Model
     public static function getStoragePath($mediaType)
     {
         return storage_path(MediaUploader::STORAGE_PATH . ($mediaType == 'IMAGE' ? ImageUploader::IMAGE_STORAGE_PATH : VideoUploader::IMAGE_STORAGE_PATH) . '/' . self::MEDIA_CONTEXT . '/');
+    }
+
+    public static function defaultImageWhatsNew()
+    {
+        return self::IMAGES_PATH_PUBLIC . self::DEFAULT_IMAGE_WHATS_NEW;
     }
 }
