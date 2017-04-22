@@ -8,6 +8,7 @@ var myProduct = {
     baseURI:window.location.pathname,
     URI: null,
     sendGetAjax: function(flushData){
+
         $.ajax({
             async: true,
             type: 'GET',
@@ -39,6 +40,7 @@ var myProduct = {
         });
     }
 };
+
 
 $(document).on('click','.view_detail', function (e) {
     e.preventDefault();
@@ -175,6 +177,7 @@ $( "#search_box" ).autocomplete( "instance" );
 $( "#search_box" ).autocomplete({
     source: function( request, response ) {
         var search_item = request.term;
+        
         myProduct.URI = myProduct.baseURI+'/'+search_item+'/search-product';
         var dataArea = {
             getResult: function (data) {

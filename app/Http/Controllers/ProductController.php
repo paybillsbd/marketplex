@@ -202,6 +202,7 @@ class ProductController extends Controller
 
             // NOTE: ilike -> seaches case insensitive
             $productsBySearch = Product::where('title', $search_terms)->orWhere('title', 'ilike', '%' . $search_terms . '%')->get();
+            
             $productsBySearchPaginated = Product::where('title', $search_terms)->orWhere('title', 'ilike', '%' . $search_terms . '%')->paginate(2);
             $productsBySearch = $productsBySearch->reject(function ($product) {
                 return $product->trashed() || $product->is_public === false;

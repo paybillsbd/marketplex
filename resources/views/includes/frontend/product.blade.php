@@ -20,8 +20,8 @@
 
             <h4 class="card-title"> {{ $product->title }}</h4>
             <!--Text--> 
-            <p class="card-text"> {{$product->status}} </p>
-            <a href="#" class="btn btn-default">Buy now for <strong>{{ $product->mrp }}$</strong></a>
+            <p class="card-text"> {!!$product->description!!} </p>
+            <a href="#" class="btn btn-default">Buy now for <strong>{{ $product->mrp }} &#2547</strong></a>
         </div>
         <!--/.Card content-->
 

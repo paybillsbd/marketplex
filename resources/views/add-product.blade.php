@@ -155,7 +155,7 @@
                                                 <td id="child"><a href=""></a></td> <!-- sub category-->
                                                 <td id="child"><a href="">{{ $product->mrp }}</a></td>
                                                 <td id="child"><a href="">{{ $product->discount }} %</a></td>
-                                                <td id="child"><a href="">₹ {{ $product->marketProduct()->price }}</a></td>
+                                                <td id="child"><a href="">&#2547 {{ $product->marketProduct()->price }}</a></td>
                                                 <td id="child">
                                                     <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [$product]) }}">
                                                         <img src="{{ $product->thumbnail() }}" height="60px" width="90px"/>
@@ -251,8 +251,10 @@
                         timeout: 5000
                     });
                 }
-                $( ".search_boxs" ).autocomplete({
+                $( "#search-box" ).autocomplete({
+
                     source: function( request, response ) {
+                        
                         requestProductsAutoCompleted(request.term, true, response, 'search-product');
                     },
                     minLength: 2,
@@ -270,7 +272,7 @@
                         console.log('Changed action to:' + $('#product-create-form').attr("action"));
                     });
 
-                    $('#embed_video_url').focusout(onUrlPaste);
+                    // $('#embed_video_url').focusout(onUrlPaste);
                 }
 
                 function specControlEvents()

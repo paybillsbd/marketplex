@@ -20,8 +20,8 @@
 
             <h4 class="card-title"> <?php echo e($product->title); ?></h4>
             <!--Text--> 
-            <p class="card-text"> <?php echo e($product->status); ?> </p>
-            <a href="#" class="btn btn-default">Buy now for <strong><?php echo e($product->mrp); ?>$</strong></a>
+            <p class="card-text"> <?php echo $product->description; ?> </p>
+            <a href="#" class="btn btn-default">Buy now for <strong><?php echo e($product->mrp); ?> &#2547</strong></a>
         </div>
         <!--/.Card content-->
 
