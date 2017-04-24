@@ -39,10 +39,10 @@
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 2rem;
         }
-        .card-img{
+        .view .card-img{
             width: auto;
-            height: 10em;
-            max-height: 10em;
+            display: block;
+            max-height: 15em;
         }
         .extra-margins {
             margin-top: 1rem;
