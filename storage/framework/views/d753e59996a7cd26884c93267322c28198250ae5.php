@@ -173,13 +173,11 @@
                         <td class="text-center" id="child"><?php echo $__env->make('includes.approval-label', [ 'status' => $store->status, 'labelText' => $store->getStatus() ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></td>
 
                         <td class="text-center" id="child">
-                          <form id="store-modification-form-edit" class="form-horizontal" method="GET" >
-                            <input formaction="<?php echo e(route('user::stores.edit', [$store])); ?>" id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                          </form>
-                          <form id="store-modification-form-delete" class="form-horizontal" method="POST" >
+                          <form id="store-modification-form" class="form-horizontal">
+                            <input formmethod="GET" formaction="<?php echo e(route('user::stores.edit', [$store])); ?>" id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                             <?php echo csrf_field(); ?>
 
-                            <input formaction="<?php echo e(route('user::stores.delete', [$store])); ?>" id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                            <input formmethod="POST" formaction="<?php echo e(route('user::stores.delete', [$store])); ?>" id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
                           </form>
                         </td>
 

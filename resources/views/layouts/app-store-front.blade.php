@@ -29,13 +29,21 @@
             padding-top: 3rem;
             padding-bottom: 2rem;
         }
-        
+        .carousel .carousel-inner img {
+          width: auto;
+          height: 39.4em;
+          max-height: 39.4em;
+        }
         .widget-wrapper {
             padding-bottom: 2rem;
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 2rem;
         }
-        
+        .card-img{
+            width: auto;
+            height: 10em;
+            max-height: 10em;
+        }
         .extra-margins {
             margin-top: 1rem;
             margin-bottom: 2.5rem;
