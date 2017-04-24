@@ -9,7 +9,7 @@ use MarketPlex\MediaUploader\MediaUploader;
 use MarketPlex\MediaUploader\ImageUploader;
 use MarketPlex\MediaUploader\VideoUploader;
 
-class ProductMediaTableSeeder extends Seeder
+class ProductMediasTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

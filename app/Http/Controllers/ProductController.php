@@ -685,6 +685,7 @@ class ProductController extends Controller
         $manager = new ImageManager();
         return $manager->make(ProductMedia::getStoragePath('IMAGE') . $file_name)->response();
     }
+    
     public function quickView($product_id)
     {
         $view_data = [

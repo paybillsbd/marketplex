@@ -140,7 +140,7 @@ class Store extends Model
 
     public static function storeCreated()
     {
-        return self::count() == 1;    
+        return self::count() > 0;    
     }
 
     public function isBelowStoreCountPolicy()

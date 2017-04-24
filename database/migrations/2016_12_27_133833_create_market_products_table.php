@@ -20,7 +20,7 @@ class CreateMarketProductsTable extends Migration
             $table->bigInteger('category_id');
             $table->string('title', 200)->comment('Market product title');
             $table->string('manufacturer_name', 200);
-            $table->float('price')->default(0.0);
+            $table->float('price', 10, 2)->default(0.0);
             // $table->json('category_specs')->nullable()->comment('JSON serialization of product specifications defined by category specifications.');
             $table->enum('status', Product::STATUS_FLOWS)->default('ON_APPROVAL');
             $table->timestamps();

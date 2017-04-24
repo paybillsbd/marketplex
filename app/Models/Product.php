@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\Auth;
 
+use MarketPlex\Helpers\ImageManager;
+
 class Product extends Model
 {
     // use SoftDeletes;
@@ -148,7 +150,7 @@ class Product extends Model
     {
         $title = $this->thumbnailMediaUrl()['title'];
         $isDefaulImage = $this->thumbnailMediaUrl()['is_default'];
-        return $isDefaulImage ? $title : route('user::products.medias.image', [ 'file_name' => $title ] );
+        return $isDefaulImage ? $title : route('user::products.medias.image', [ 'file_name' => $title, 'api_token' => ImageManager::PUBLIC_TOKEN ] );
     }
 
     public function specialSpecs()
@@ -195,7 +197,7 @@ class Product extends Model
             $image = $this->images()->where('_image_position', false,false);
         }
         foreach($image as $image); // Added by Asad
-        return $image->is_embed ? $image->url : route('user::products.medias.image', [ 'file_name' => $image->title ]);
+        return $image->is_embed ? $image->url : route('user::products.medias.image', [ 'file_name' => $image->title, 'api_token' => ImageManager::PUBLIC_TOKEN ]);
     }
     // getImageURL() added by Asad
     public function getImageURL($index)
