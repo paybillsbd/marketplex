@@ -24,26 +24,62 @@
     <!-- Template styles -->
     <style rel="stylesheet">
         /* TEMPLATE STYLES */
-        
+      
         main {
             padding-top: 3rem;
             padding-bottom: 2rem;
         }
-        .carousel .carousel-inner img {
-          width: auto;
-          height: 39.4em;
-          max-height: 39.4em;
+        
+        .img-responsive,
+        .thumbnail > img,
+        .thumbnail a > img,
+        .carousel-inner > .carousel-item > img,
+        .carousel-inner > .carousel-item > a > img {
+          display: block;
+          max-width: 100%;
+          height: auto;
         }
+
+        img{
+            max-height: 100%!important;
+            width: 100%;
+        }
+
+        .card .item-card{
+            min-height: 300px!important;
+            
+        }
+
+        .carousel .carousel-inner .carousel-item{
+            height: 580px!important;
+        }     
+        
+
+        // Small screen
+        @media (min-width: 768px) {
+            
+        }
+
+        // Medium screen
+        @media (min-width: 992px) {
+           .card{
+                background: red;
+             }
+        }
+
+        // Large screen
+        @media (min-width: 1200px) {
+             .card{
+                background: red;
+             }      
+        }
+
         .widget-wrapper {
             padding-bottom: 2rem;
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 2rem;
         }
-        .view .card-img{
-            width: auto;
-            display: block;
-            max-height: 15em;
-        }
+        
         .extra-margins {
             margin-top: 1rem;
             margin-bottom: 2.5rem;
