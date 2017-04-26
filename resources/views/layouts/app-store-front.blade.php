@@ -40,15 +40,24 @@
           height: auto;
         }
 
-        img{
+        .carousel-img{
             max-height: 100%!important;
             width: 100%;
         }
 
-        .card .item-card{
-            min-height: 300px!important;
-            
+        .card-img{
+            height: 100%;  
+            width: 100%!important;
         }
+
+        .card .view{
+            min-height: 280px!important;
+        }
+/*
+        .item-card{
+            min-height: 500px!important; 
+                     
+        }*/
 
         .carousel .carousel-inner .carousel-item{
             height: 580px!important;

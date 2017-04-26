@@ -6,8 +6,8 @@
     <div class="card  wow fadeIn"  data-wow-delay="0.2s" >
      
         <!--Card image-->
-        <div class="view overlay hm-white-slight item-card" >
-            <img src="{{ $product->thumbnail() }}" class="img-responsive" alt="">
+        <div class="view overlay hm-white-slight" >
+            <img src="{{ $product->thumbnail() }}" class="img-responsive card-img" alt="">
             <a href="#">
                 <div class="mask"></div>
             </a>
