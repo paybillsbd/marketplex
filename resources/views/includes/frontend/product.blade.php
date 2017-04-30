@@ -3,11 +3,11 @@
 
 <div class="col-lg-4">
     <!--Card-->
-    <div class="card  wow fadeIn" data-wow-delay="0.2s">
+    <div class="card  wow fadeIn"  data-wow-delay="0.2s" >
      
         <!--Card image-->
-        <div class="view overlay hm-white-slight">
-            <img src="{{ $product->thumbnail() }}" class="img-fluid" alt="">
+        <div class="view overlay hm-white-slight" >
+            <img src="{{ $product->thumbnail() }}" class="img-responsive card-img" alt="">
             <a href="#">
                 <div class="mask"></div>
             </a>
@@ -21,7 +21,7 @@
             <h4 class="card-title"> {{ $product->title }}</h4>
             <!--Text--> 
             <p class="card-text"> {!!$product->description!!} </p>
-            <a href="#" class="btn btn-default">Buy now for <strong>{{ $product->mrp }} &#2547</strong></a>
+            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $product->mrp }} &#2547</strong></a>
         </div>
         <!--/.Card content-->
 

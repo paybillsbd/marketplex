@@ -13,6 +13,10 @@
 
 Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
 
+Route::get('/about', function(){
+    return View::make('layouts.app-store-about');
+});
+
 Auth::routes();
 
 Route::group([ 'as' => 'user::' ], function() {

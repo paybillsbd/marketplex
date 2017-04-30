@@ -42,6 +42,7 @@
       margin-bottom: 40px;
       z-index: 900;
     }
+    
     .block-title{
       padding: 0em 0.7em;
     }
