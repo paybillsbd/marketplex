@@ -118,9 +118,9 @@
                                     </th>
                                     <th>Image</th>
                                     <th>Available Quantity</th>
-                                    <th data-sort="status" data-order="ASC" id="sort_by_click">
+<!--                                     <th data-sort="status" data-order="ASC" id="sort_by_click">
                                         <a href="#">Status</a>
-                                    </th>
+                                    </th> -->
                                     <th>Action</th>
                                 </tr>
 
@@ -143,7 +143,6 @@
                                                     </a>
                                                 </td>
                                                 <td id="child"><a href="">{{ $product->available_quantity }}</a></td> <!-- Available quantity-->
-                                                <td id="child">@include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])</td>
                                                 <td class="text-center" id="child">
                                                     <form id="product-modification-form" class="form-horizontal" method="POST" >
                                                         {!! csrf_field() !!}
