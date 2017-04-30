@@ -78,7 +78,7 @@
                         <label for="contact-number"> Contact Number</label>
 
                         <div class="row col-sm-12 col-md-12 col-lg-12">
-                            <div class="row col-sm-1 col-md-1 col-lg-1" style="text-align: right">code</div>
+                            <!-- <div class="row col-sm-1 col-md-1 col-lg-1" style="text-align: right">code</div> -->
                             <div class="form-group col-sm-2 col-md-2 col-lg-2">
                                 <div>
                                     <select name="code" text="code" class="form-control">
@@ -126,7 +126,7 @@
                 </div><!-- /.box-body -->
 
                 <div class="box-footer text-right">
-                  <button type="{{ MarketPlex\Store::storeCreated() ? 'button' : 'submit' }}" class="btn btn-info btn-flat{{ MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
+                  <button type="{{ MarketPlex\Store::storeCreated() && !isset($store) ? 'button' : 'submit' }}" class="btn btn-info btn-flat{{ MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
                 </div>
               </form>
               <!--end of form-->
@@ -154,11 +154,9 @@
                 <div class="box-body table-responsive no-padding">
                   <table id="parent" class="table table-hover">
                     <tr>
-                      <!-- <th class="text-center hidden">ID</th> -->
                       <th class="text-center">Store Name</th>
 
                       <th class="text-center">Address</th>
-                      <th class="text-center">Status</th>
                       <th class="text-center">Action</th>
                     </tr>
                     @if(isset($stores))
@@ -170,14 +168,16 @@
 
                         <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
 
-                        <td class="text-center" id="child">@include('includes.approval-label', [ 'status' => $store->status, 'labelText' => $store->getStatus() ])</td>
-
                         <td class="text-center" id="child">
-                          <form id="store-modification-form" class="form-horizontal">
-                            <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                            {!! csrf_field() !!}
-                            <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                          <form id="store-edit-form">                            
+                            <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" formnovalidate="formnovalidate"
+                                    id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                           </form>
+<!--                           <form id="store-delete-form" class="form-horizontal">
+                            {--{!! csrf_field() !!}--}
+                            <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" formnovalidate="formnovalidate" 
+                                    id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                          </form> -->
                         </td>
 
                       </tr>

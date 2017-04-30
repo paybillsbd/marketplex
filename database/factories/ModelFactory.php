@@ -42,10 +42,8 @@ $factory->define(MarketPlex\Store::class, function (Faker\Generator $faker) {
     ];
     return [
         'name' => $storeName,
-        // 'domain' => 'com',//$faker->tld,
-        'address' => MarketPlex\User::encodeAddress($fakeAddress),
+        'address' => MarketPlex\Helpers\ContactProfileManager::encodeAddress($fakeAddress),
         'name_as_url' => strtolower(preg_replace('/[\s.,\']/', '', $storeName)),
-        // 'sub_domain' => 'inzaana',
         'store_type' => 'NOT_SURE',
         'description' => $faker->realText($faker->numberBetween(50,100)),
         'status' => 'ON_APPROVAL',

@@ -13,7 +13,7 @@
     <div class="carousel-inner" role="listbox">
         @foreach($categories as $key=>$item) 
         <div class="carousel-item {{ $key==0 ? 'active' : '' }}">
-            <img src="{{ $item->imageWhatsNew() }}" alt="slide {{ $key }}">
+            <img src="{{ $item->imageWhatsNew() }}" class="img-fluid" alt="slide {{ $key }}">
             <div class="carousel-caption">
                 <h4>{{$item->category_slug}}</h4>
                 <br>

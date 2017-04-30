@@ -112,7 +112,7 @@ class User extends Authenticatable
         {
             if($email == $this->email)
             {
-                Log::info( '[' . config('app.vendor') . ']' . 'Dev user email found' . $this->email);
+                Log::info( '[' . config('app.vendor') . ']' . 'Dev user email found: ' . $this->email);
                 return true;
             }
         }

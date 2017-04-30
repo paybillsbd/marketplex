@@ -60,8 +60,8 @@ Route::group([ 'as' => 'user::' ], function() {
     // Category controller
     Route::get('/categories', [ 'uses' => 'CategoryController@index', 'as' => 'categories' ]);
     Route::post('/categories/create', [ 'uses' => 'CategoryController@create', 'as' => 'categories.create' ]);
-    Route::get('/categories/edit/{category_id}', [ 'uses' => 'CategoryController@edit', 'as' => 'categories.edit' ]);
-    Route::post('/categories/edit/{category_id}', [ 'uses' => 'CategoryController@postEdit', 'as' => 'categories.update' ]);
+    Route::get('/categories/{category_id}/edit', [ 'uses' => 'CategoryController@edit', 'as' => 'categories.edit' ]);
+    Route::post('/categories/{category_id}', [ 'uses' => 'CategoryController@postEdit', 'as' => 'categories.update' ]);
     Route::post('/categories/delete/{category_id}', [ 'uses' => 'CategoryController@delete', 'as' => 'categories.delete' ]);
     Route::get('/categories/approvals', [ 'uses' => 'CategoryController@approvals', 'as' => 'categories.approvals' ]);
     Route::post('/categories/approvals/confirm/{id}', [ 'uses' => 'CategoryController@confirmApproval', 'as' => 'categories.approvals.confirm' ]);

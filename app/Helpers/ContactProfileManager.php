@@ -2,10 +2,13 @@
 
 namespace MarketPlex\Helpers;
 
+use Log;
+
 class ContactProfileManager
 {
     const TIDY_ADDRESS_DEVIDER = ', ';	
     const ADDRESS_DELIMITER = "<address>";
+    const ADDRESS_SECTIONS = [ 'DEFAULT', 'HOUSE', 'STREET', 'LANDMARK', 'TOWN', 'POSTCODE', 'STATE' ];
 
     public static function areaCodes()
     {
@@ -36,11 +39,10 @@ class ContactProfileManager
         if(count($keywords) == 1)
             return [ 'DEFAULT' => '', 'HOUSE' => '', 'STREET' => '', 'LANDMARK' => '', 'TOWN' => '', 'POSTCODE' => '', 'STATE' => '' ];
         $addressDecoded = array();
-        $sections = [ 'DEFAULT', 'HOUSE', 'STREET', 'LANDMARK', 'TOWN', 'POSTCODE', 'STATE' ];
         $index = 0;
         foreach($keywords as $keyword)
         {
-            $addressDecoded[$sections[$index]] = $keyword;
+            $addressDecoded[self::ADDRESS_SECTIONS[$index]] = $keyword;
             ++$index;
         }
         return $addressDecoded;
@@ -58,7 +60,7 @@ class ContactProfileManager
                 $tidyAddress = rtrim($tidyAddress, self::TIDY_ADDRESS_DEVIDER);
                 continue;
             }
-            if($key == 'POSTCODE' || $key == 'STATE')
+            if($key == 'POSTCODE' || $key == 'STATE') // We do not show postcode and state as view
                 continue;
             $tidyAddress .= $value . ($key == 'TOWN' ? '' : self::TIDY_ADDRESS_DEVIDER);
         }
@@ -68,8 +70,15 @@ class ContactProfileManager
     public static function encodeAddress(array $inputs)
     {
         $address = '';
+
+        $endKey = 'address_town_city';
+        if(array_has($inputs, 'state'))
+            $endKey = 'state';
+        else if(array_has($inputs, 'postcode'))
+            $endKey = 'postcode';
+
         foreach($inputs as $key => $value)
-            $address .= $value . self::ADDRESS_DELIMITER;
-        return rtrim($address, self::ADDRESS_DELIMITER);
+            $address .= $value . ($key == $endKey ? '' : self::ADDRESS_DELIMITER);
+        return $address;
     }
 }

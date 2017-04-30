@@ -27,10 +27,10 @@
                     <label for="category-name">Category</label>
                     <input type="text" class="form-control" value="{{ isset($categoryEdit) ? $categoryEdit->name : '' }}" id="category-name" name="category-name" placeholder="Add your category name here...">
                   </div>
-                  <div class="form-group">
+<!--                   <div class="form-group">
                     <label for="sub-category-name">Sub Category</label>
                     <input type="text" class="form-control" id="sub-category-name" name="sub-category-name" placeholder="Sub category name (Optional)">
-                  </div>
+                  </div> -->
                   <div class="form-group">
                     <label for="description">Category Description</label>
                     <textarea placeholder="Add category description here..." class="form-control" rows="5" id="description" name="description">{{ isset($categoryEdit) ? $categoryEdit->description : '' }}</textarea>
@@ -79,8 +79,10 @@
                       <td class="text-center" id="child"><a href="">{{ $category->description or 'This is a description'}}</a></td>
                       <td class="text-center" id="child"><a href=""> @include('includes.approval-label', [ 'status' => $category->status, 'labelText' => $category->getStatus() ]) </a></td>
                       <td class="text-center" id="child">
-                        <form id="category-modification-form" class="form-horizontal">
+                        <form id="category-edit-form" class="form-horizontal">
                           <input formmethod="GET" formaction="{{ route('user::categories.edit', [$category->id]) }}" id="category-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
+                        </form>
+                        <form id="category-delete-form" class="form-horizontal">
                           {!! csrf_field() !!}
                           <input formmethod="POST" formaction="{{ route('user::categories.delete', [$category->id]) }}" id="category-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
                         </form>

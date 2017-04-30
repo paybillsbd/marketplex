@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use MarketPlex\User;
 use MarketPlex\Product;
 use MarketPlex\Category;
+use Auth;
 
 class StoreFrontController extends Controller
 {
@@ -18,6 +19,11 @@ class StoreFrontController extends Controller
             return view('store-comingsoon');
 
         $user = User::whereEmail(config('mail.admin.address'))->first();
+        
+        // Developer debug access
+        if(!Auth::guest() && Auth::user()->isDeveloper())
+            $user = Auth::user();
+
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
 
@@ -26,7 +32,7 @@ class StoreFrontController extends Controller
         return view('store-front-1',  
                 [
                     'categories' => Category::all(),
-                    'carousels' => [ 'Slogan0', 'Slogan1', 'Slogan2' ]
+                    // 'carousels' => [ 'Slogan0', 'Slogan1', 'Slogan2' ]
 
                 ])->withPaginatedProducts($paginatedProducts);
     }

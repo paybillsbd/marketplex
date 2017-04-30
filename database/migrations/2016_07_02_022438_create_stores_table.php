@@ -21,7 +21,7 @@ class CreateStoresTable extends Migration
             $table->string('phone_number')->nullable();
             $table->string('address', 500)->nullable();
             $table->string('domain')->default('com');
-            $table->string('sub_domain')->default('inzaana');
+            $table->string('host')->default(strtolower(config('app.vendor')));
             $table->enum('store_type', [
                 'NOT_SURE', 'ANIMAL_PET', 'ART_ENTERTAINMENT', 'HARDWARE_HOME_DEVELOPMENT', 'OTHERS'
             ])->default('NOT_SURE');

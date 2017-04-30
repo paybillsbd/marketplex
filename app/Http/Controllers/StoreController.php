@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use MarketPlex\Http\Requests;
 use MarketPlex\Http\Controllers\Controller;
 
+use Log;
 use Auth;
 use Validator as StoreValidator;
 use Redirect as StoreRedirect;
@@ -85,8 +86,9 @@ class StoreController extends Controller
     public function update(Store $store)
     {
         $user = User::find($store->user_id);
-        $phone_number = ContactProfileManager   ::decodePhoneNumber($store->phone_number ? $store->phone_number : $user->phone_number);
+        $phone_number = ContactProfileManager::decodePhoneNumber($store->phone_number ? $store->phone_number : $user->phone_number);
         $address = ContactProfileManager::decodeAddress($store->address ? $store->address : $user->address);
+        Log::info($address);
         return $this->viewUserStore(compact('store', 'phone_number', 'address'));
     }
 
@@ -95,7 +97,11 @@ class StoreController extends Controller
         $storeName = $request->input('store_name');
 
         $address = ContactProfileManager::encodeAddress($request->only(
-            'mailing-address', 'address_flat_house_floor_building', 'address_colony_street_locality', 'address_landmark', 'address_town_city', 'postcode', 'state'
+            'mailing-address',
+            'address_flat_house_floor_building',
+            'address_colony_street_locality',
+            'address_landmark',
+            'address_town_city'
         ));
 
         $data = collect([
@@ -134,14 +140,19 @@ class StoreController extends Controller
 
     public function create(StoreRequest $request)
     {
-        $store_name = $request->input('store_name');
+        $storeName = $request->input('store_name');
 
         $address = ContactProfileManager::encodeAddress($request->only(
-            'mailing-address', 'address_flat_house_floor_building', 'address_colony_street_locality', 'address_landmark', 'address_town_city', 'postcode', 'state'
+            'mailing-address',
+            'address_flat_house_floor_building',
+            'address_colony_street_locality',
+            'address_landmark',
+            'address_town_city'
         ));
 
+
         $data = [
-            'name' => $store_name,
+            'name' => $storeName,
             'description' => $request->input('description'),
             'address' => $address,
             'phone_number' => $request->input('code') . $this->delimiter_phone_number . $request->input('phone_number'),
@@ -152,9 +163,9 @@ class StoreController extends Controller
             return redirect()->back()->withErrors($validator->errors())->withInput();
         }        
         $store = Store::create([
-            'name' => $store_name,
+            'name' => $storeName,
             'user_id' => Auth::user()->id,
-            'name_as_url' => strtolower(str_replace('.', '', str_replace(' ', '', $store_name))),
+            'name_as_url' => strtolower(str_replace('.', '', str_replace(' ', '', $storeName))),
             'description' => $data['description'],
             'address' => $data['address'],
             'phone_number' => $data['phone_number'],
