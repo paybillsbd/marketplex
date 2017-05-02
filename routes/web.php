@@ -12,9 +12,10 @@
 */
 
 Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
+Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
 
-Route::get('/about', function(){
-    return View::make('layouts.app-store-about');
+Route::get('/about', function() {
+    return view('store-about');
 });
 
 Auth::routes();

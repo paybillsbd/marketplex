@@ -39,7 +39,7 @@
 
         <!--Second row-->
         <div class="row">        
-            @include('includes.frontend.product', [ 'products' => $paginated_products ])         
+            @include('includes.frontend.product', [ 'market_products' => $paginated_products ])         
         </div>
         <!--/.Second row-->
 

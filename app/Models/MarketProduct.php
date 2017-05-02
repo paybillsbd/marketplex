@@ -65,4 +65,14 @@ class MarketProduct extends Model
     {
         return $this->product->thumbnail();
     }
+
+    public function scopeUserProducts($query, $user)
+    {
+        return $query->with([ 'product' => function($query) use ($user) { return $query->where('user_id', $user->id); } ]);
+    }
+
+    public function scopeCategorized($query, $category)
+    {
+        return $query->where('category_id', $category->id);
+    }
 }

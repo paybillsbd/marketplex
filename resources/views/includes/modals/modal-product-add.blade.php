@@ -126,39 +126,14 @@
                                         </select>
                                     </div>
                                 </div>
-                                <!--<div class="form-group{{ $errors->has('mrp') ? ' has-error' : '' }}">
-                  <label for="mrp" class="col-sm-3 control-label">MRP:</label>
-                  <div class="col-sm-2">
-                    <input type="text" class="form-control" id="mrp" name="mrp" placeholder="ex: 3₹">
-                    @if ($errors->has('mrp'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('mrp') }}</strong>
-                          </span>
-                    @endif
-                                        </div>
-                                          {{--<div class="col-sm-7 padT5"><b>$</b></div>--}}
-                                        </div>-->
-                                <!--<div class="form-group{{ $errors->has('discount') ? ' has-error' : '' }}">
-                  <label for="discount" class="col-sm-3 control-label">Discount:</label>
-                  <div class="col-sm-2">
-                    <input type="text" class="form-control" id="discount" name="discount" value="{{ isset($product) ? $product->discount : '' }}" placeholder="ex: 30%">
-                    @if ($errors->has('discount'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('discount') }}</strong>
-                          </span>
-                    @endif
-                                        </div>
-                                          {{--<div class="col-sm-7 padT5"><b>%</b></div>--}}
-                                        </div>-->
-
                                 <div class="form-group{{ $errors->has('price') ? ' has-error' : '' }}">
                                     <label for="price" class="col-sm-3 control-label">Price:</label>
                                     <div class="col-sm-2">
                                         <input type="text" class="form-control" id="price" name="price" placeholder="ex: 3₹" value="{{ isset($product) ? $product->marketPrice() : old('price') }}">
                                         @if ($errors->has('price'))
                                             <span class="help-block">
-                              <strong>{{ $errors->first('price') }}</strong>
-                          </span>
+                                              <strong>{{ $errors->first('price') }}</strong>
+                                            </span>
                                         @endif
                                     </div>
                                 </div>
@@ -177,27 +152,6 @@
                                         </div>
                                     </div>
                                     @endif
-                                            <!--<div class="form-group">
-                    <label class="col-xs-3 control-label">Created Date:</label>
-                    <div class="col-sm-2 date">
-                        <div class="input-group input-append date" id="dateRangePicker">
-                            <input type="text" class="form-control" name="date" />
-                            <span class="input-group-addon add-on"><span class="glyphicon glyphicon-calendar"></span></span>
-                        </div>
-                    </div>
-                </div>-->
-
-                                    <!-- <div class="form-group{{ $errors->has('upload-image') ? ' has-error' : '' }}">
-                  <label for="upload-image" class="col-sm-3 control-label">Upload Image:</label>
-                  <div class="col-sm-9">
-                    <input type="file" class="form-control" id="upload-image" name="upload-image">
-                    @if ($errors->has('upload-image'))
-                                            <span class="help-block">
-                                                <strong>{{ $errors->first('upload-image') }}</strong>
-                          </span>
-                    @endif
-                                            </div>
-                                          </div>-->
 
                                     <div class="form-group{{ $errors->has('available_quantity') ? ' has-error' : '' }}">
                                         <label for="available_quantity" class="col-sm-3 control-label">Available Quantity:</label>
@@ -220,21 +174,6 @@
                                             @endif
                                         </div>
                                     </div>
-
-
-                                    <!--<div class="form-group{{ $errors->has('return_time_limit') ? ' has-error' : '' }}">
-                    <label for="return_time_limit" class="col-sm-3 control-label">Time limit For Return (in days)</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" id="return_time_limit" name="return_time_limit" placeholder="2 days">
-                        @if ($errors->has('return_time_limit'))
-                                            <span class="help-block">
-                                              <strong>{{ $errors->first('return_time_limit') }}</strong>
-                          </span>
-                        @endif
-                                            </div>
-                                            {{--<div class="col-sm-7 padT5"><b>$</b></div>--}}
-                                            </div>-->
-
                             </div>
                         </div>
 
@@ -243,25 +182,9 @@
                         <div class="block-of-block">
                             <div id="product-create-upload-image" class="form-horizontal">
 
-                                @for($i = 1; $i <= 4; ++$i)
-                                    <div class="form-group{{ ($errors->has('upload_image_' . $i)) ? ' has-error' : '' }}">
-
-                                       {{-- <label for="upload_image" class="col-sm-3 control-label"> {{ $i == 1 ? 'Upload Image:' : '' }} </label>--}}
-
-                                        {{--<div class="col-sm-3">
-                                            <input id="upload_image_{{ $i }}" name="upload_image_{{ $i }}" type="file" style="margin-top: 7px" placeholder="Include some file">
-                                            @if ($errors->has('upload_image_' . $i))
-                                                <span class="help-block">
-                                <strong>{{ $errors->first('upload_image_' . $i) }}</strong>
-                            </span>
-                                            @endif
-                                        </div>--}}
-                                    </div>
-                                @endfor
-
                                 <div class="from-group">
                                     <div class="row">
-                                        <label for="" class="col-sm-3 control-label"></label>
+                                        <label for="" class="col-sm-3 control-label">Upload Images:</label>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
                                                 <img id="blah-1" src="{{ isset($product) ? $product->previewImage(0) : MarketPlex\Product::defaultImage() }}">

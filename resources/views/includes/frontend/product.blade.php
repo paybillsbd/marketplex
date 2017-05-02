@@ -1,5 +1,5 @@
 <!--columnn-->
-@foreach($products as $key => $product)
+@foreach($market_products as $market_product)
 
 <div class="col-lg-4">
     <!--Card-->
@@ -7,7 +7,7 @@
      
         <!--Card image-->
         <div class="view overlay hm-white-slight" >
-            <img src="{{ $product->thumbnail() }}" class="img-responsive card-img" alt="">
+            <img src="{{ $market_product->thumbnail() }}" class="img-responsive card-img" alt="">
             <a href="#">
                 <div class="mask"></div>
             </a>
@@ -18,10 +18,10 @@
         <div class="card-block">
             <!--Title-->
 
-            <h4 class="card-title"> {{ $product->title }}</h4>
+            <h4 class="card-title"> {{ $market_product->title }}</h4>
             <!--Text--> 
-            <p class="card-text"> {!!$product->description!!} </p>
-            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $product->mrp }} &#2547</strong></a>
+            <p class="card-text"> {!! $market_product->product->description !!} </p>
+            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $market_product->product->mrp }} &#2547</strong></a>
         </div>
         <!--/.Card content-->
 
@@ -32,7 +32,7 @@
 @endforeach
 
 <div class="container text-center">
-  {{ $products->links('includes.frontend.pagination') }}
+  {{ $market_products->links('includes.frontend.pagination') }}
 </div>
 
 <!--end column -->

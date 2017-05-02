@@ -5,6 +5,7 @@ namespace MarketPlex\Http\Controllers;
 use Illuminate\Http\Request;
 use MarketPlex\User;
 use MarketPlex\Product;
+use MarketPlex\MarketProduct;
 use MarketPlex\Category;
 use Auth;
 
@@ -27,13 +28,22 @@ class StoreFrontController extends Controller
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
 
-        $paginatedProducts = $user->products()->paginate(4);
-        // $paginatedProducts->setPath('showcase');
-        return view('store-front-1',  
-                [
-                    'categories' => Category::all(),
-                    // 'carousels' => [ 'Slogan0', 'Slogan1', 'Slogan2' ]
+        $marketProducts = MarketProduct::UserProducts($user);
+        $category = null;
+        if(session()->has('category'))
+        {
+            $category = session('category');
+            $marketProducts = MarketProduct::UserProducts($user)->Categorized($category);
+        }
+        $viewData = [
+            'active_category' => $category ? $category->id : Category::first()->id,
+        ];
+        return view('store-front-1', $viewData)->withPaginatedProducts($marketProducts->paginate(6))
+                                               ->withCategories(Category::all()->pluck('name', 'id'));
+    }
 
-                ])->withPaginatedProducts($paginatedProducts);
+    public function filterCategory(Category $category)
+    {
+        return redirect()->route('store-front')->withCategory($category);
     }
 }

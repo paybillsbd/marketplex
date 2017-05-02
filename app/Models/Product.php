@@ -192,13 +192,14 @@ class Product extends Model
 
     public function previewImage($index)
     {
-        $image = $this->images()->where('_image_position', $index+1,false);
+        $image = $this->images()->where('_image_position', $index + 1);
         if($image->isEmpty()){
-            $image = $this->images()->where('_image_position', false,false);
+            $image = $this->images()->where('_image_position', false);
         }
         foreach($image as $image); // Added by Asad
         return $image->is_embed ? $image->url : route('user::products.medias.image', [ 'file_name' => $image->title, 'api_token' => ImageManager::PUBLIC_TOKEN ]);
     }
+    
     // getImageURL() added by Asad
     public function getImageURL($index)
     {
@@ -207,10 +208,10 @@ class Product extends Model
             $image = $this->images()->where('_image_position', false,false);
         }
         foreach($image as $image);
-        return $image->url != $this->defaultImage() ? ['title' => $image->title, 'url'=> $image->url] : false;
+        return $image->url != $this->defaultImage() ? [ 'title' => $image->title, 'url' => $image->url ] : false;
     }
 
-    public function scopeSearchByTitle($query,$title)
+    public function scopeSearchByTitle($query, $title)
     {
         return $query->where('title', $title)->orWhere('title', 'ilike', '%' . $title . '%');
     }
@@ -249,7 +250,6 @@ class Product extends Model
     {
         return  ($this->marketProduct()) ? $this->marketProduct()->manufacturer_name : 'Unknown';
     }
-
 
 	public function sendApprovals()
 	{

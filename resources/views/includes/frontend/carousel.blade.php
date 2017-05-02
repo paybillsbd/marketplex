@@ -4,18 +4,17 @@
     <!--Indicators-->
     <ol class="carousel-indicators">
         @for ($i = 0; $i < count($categories); $i++)
-            <li data-target="#carousel-example-1z" data-slide-to="{{$i}}" 
-            class="{{ $i==0 ? 'active': '' }}"></li>
+            <li data-target="#carousel-example-1z" data-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active': '' }}"></li>
         @endfor    
     </ol>
     <!--/.Indicators-->
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
-        @foreach($categories as $key=>$item) 
-        <div class="carousel-item {{ $key==0 ? 'active' : '' }}">
-            <img src="{{ $item->imageWhatsNew() }}" class="img-responsive carousel-img" alt="slide {{ $key }}">
+        @foreach($categories as $key => $item) 
+        <div class="carousel-item {{ $key == MarketPlex\Category::first()->id ? 'active' : '' }}">
+            <img src="{{ MarketPlex\Category::find($key)->imageWhatsNew() }}" class="img-responsive carousel-img" alt="slide {{ $key }}">
             <div class="carousel-caption">
-                <h4>{{$item->category_slug}}</h4>
+                <h4>{{ MarketPlex\Category::find($key)->name }}</h4>
                 <br>
             </div>
         </div>
