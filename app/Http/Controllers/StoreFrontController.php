@@ -22,7 +22,7 @@ class StoreFrontController extends Controller
         $user = User::whereEmail(config('mail.admin.address'))->first();
         
         // Developer debug access
-        if(!Auth::guest() && Auth::user()->isDeveloper())
+        if(!Auth::guest() && (Auth::user()->isDeveloper() || Auth::user()->isGuest()))
             $user = Auth::user();
 
         if(!$user || $user->hasNoProduct())

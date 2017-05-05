@@ -107,12 +107,31 @@ class User extends Authenticatable
 
     public function isDeveloper()
     {
-        $dev_mails = preg_split("/[,]+/", env('SECURITY_MAIL_DEV', 'firewings1097@gmail.com'));
+        if($this->hasEnvEmail('SECURITY_MAIL_DEV'))
+        {
+            Log::info( '[' . config('app.vendor') . ']' . 'Developer user action detected: ' . $this->email);
+            return true;
+        }
+        return false;
+    }
+
+    public function isGuest()
+    {
+        if($this->hasEnvEmail('GUEST_MAIL_ADDRESSES'))
+        {
+            Log::info( '[' . config('app.vendor') . ']' . 'Guest user action detected: ' . $this->email);
+            return true;
+        }
+        return false;
+    }
+
+    private function hasEnvEmail($env_var_key)
+    {
+        $dev_mails = preg_split("/[,]+/", env($env_var_key, 'unknown.user@' . strtolower(config('app.vendor')) . '.com'));
         foreach($dev_mails as $email)
         {
             if($email == $this->email)
             {
-                Log::info( '[' . config('app.vendor') . ']' . 'Dev user email found: ' . $this->email);
                 return true;
             }
         }

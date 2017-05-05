@@ -7,9 +7,11 @@ use ErrorException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Database\QueryException;
+use \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 use Log;
 use PDOException;
+use Swift_TransportException;
 
 class Handler extends ExceptionHandler
 {
@@ -23,7 +25,7 @@ class Handler extends ExceptionHandler
         \Illuminate\Auth\Access\AuthorizationException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Session\TokenMismatchException::class,
+        // \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
     ];
 
@@ -81,6 +83,18 @@ class Handler extends ExceptionHandler
             $errorMessage = 'Error Occurred.';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] " . $errorMessage . ".");
             flash()->error('problem occure '.$exception->getMessage());
+            return redirect()->back();
+        }
+        if($exception instanceof Swift_TransportException)
+        {
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
+            flash()->error('Something went wrong during sending the mail.');
+            return redirect()->back();
+        }
+        if($exception instanceof MethodNotAllowedHttpException)
+        {
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
+            flash()->warning('You are not allowed to make this request.');
             return redirect()->back();
         }
         return parent::render($request, $exception);
