@@ -63,7 +63,7 @@ class MarketProduct extends Model
 
     public function thumbnail()
     {
-        return $this->product->thumbnail();
+        return $this->product ? $this->product->thumbnail() : ProductMedia::defaultThumbnailImage();
     }
 
     public function scopeUserProducts($query, $user)

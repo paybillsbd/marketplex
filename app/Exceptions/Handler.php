@@ -82,7 +82,7 @@ class Handler extends ExceptionHandler
         {
             $errorMessage = 'Error Occurred.';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] " . $errorMessage . ".");
-            flash()->error('problem occure '.$exception->getMessage());
+            flash()->error('Something went wrong. Please contact your administrator for assistance.');
             return redirect()->back();
         }
         if($exception instanceof Swift_TransportException)

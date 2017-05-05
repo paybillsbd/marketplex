@@ -152,4 +152,9 @@ class ProductMedia extends Model
     {
         return self::IMAGES_PATH_PUBLIC . self::DEFAULT_IMAGE_WHATS_NEW;
     }
+
+    public static function defaultThumbnailImage()
+    {
+        return self::IMAGES_PATH_PUBLIC . self::DEFAUL_IMAGE;
+    }
 }
