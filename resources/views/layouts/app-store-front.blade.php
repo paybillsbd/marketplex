@@ -136,7 +136,7 @@
         <!--Copyright-->
         <div class="footer-copyright">
             <div class="container-fluid">
-                © 2017 Copyright: <a href="http://paybillsbd.asdtechltd.com"> Alternative System & Development Technology Ltd. (ASDTechLtd.) </a>
+                © 2017 Copyright: <a href="http://paybills.asdtechltd.com"> Alternative System & Development Technology Ltd. (ASDTechLtd.) </a>
             </div>
         </div>
         <!--/.Copyright-->

@@ -2,6 +2,9 @@
 @section('title', 'Store')
 @section('title-module-name', 'Store')
 
+@section('header-styles')
+@endsection
+
 @section('footer-scripts')
     <script src="{{ asset('/vendor/inzaana/js/product/product.js') }}" type="text/javascript"></script>
 @endsection
