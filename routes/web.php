@@ -40,7 +40,6 @@ Route::group([ 'as' => 'user::' ], function() {
 	    Route::get('/approvals', [ 'uses' => 'ProductController@approvals', 'as' => 'products.approvals' ]);
 	    Route::post('/approvals/confirm/{id}', [ 'uses' => 'ProductController@confirmApproval', 'as' => 'products.approvals.confirm' ]);
 	    Route::post('/import/csv', [ 'uses' => 'ProductController@uploadCSV', 'as' => 'products.upload.csv' ]);
-	    Route::get('/{product}/quick-view', [ 'uses' => 'ProductController@quickView', 'as' => 'products.quick.view' ]);
 	    Route::get('/{image_title}/image-delete', [ 'uses' => 'ProductController@imageDelete', 'as' => 'products.image.delete' ]);
 	    Route::get('/{search_item}/search-product', [ 'uses' => 'ProductController@productSearch', 'as' => 'products.search.table' ]);
 	    Route::get('/{search_item}/search-single-product', [ 'uses' => 'ProductController@productSearchSingle', 'as' => 'products.search.single.table' ]);

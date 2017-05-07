@@ -138,7 +138,7 @@
                                                 <td id="child"><a href="">{{ $product->discount }} %</a></td>
                                                 <td id="child"><a href="">&#2547 {{ $product->marketProduct()->price }}</a></td>
                                                 <td id="child">
-                                                    <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [$product]) }}">
+                                                    <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [ 'product' => $product, 'api_token' => MarketPlex\Helpers\ImageManager::PUBLIC_TOKEN ]) }}">
                                                         <img src="{{ $product->thumbnail() }}" height="60px" width="90px"/>
                                                     </a>
                                                 </td>

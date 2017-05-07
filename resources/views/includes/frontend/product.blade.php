@@ -8,7 +8,7 @@
         <!--Card image-->
         <div class="view overlay hm-white-slight" >
             <img src="{{ $market_product->thumbnail() }}" class="img-responsive card-img" alt="">
-            <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [$market_product->product]) }}">
+            <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [ 'product' => $market_product->product, 'api_token' => MarketPlex\Helpers\ImageManager::PUBLIC_TOKEN ]) }}">
                 <div class="mask"></div>
             </a>
         </div>
