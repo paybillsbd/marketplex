@@ -143,6 +143,8 @@
 
     </footer>
     <!--/.Footer-->
+    
+    @yield('modals')
 
 
     <!-- SCRIPTS -->
@@ -158,6 +160,8 @@
 
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="/vendor/mdb/js/mdb.min.js"></script>
+
+    @yield('footer-scripts')
     
     <script>
     new WOW().init();
