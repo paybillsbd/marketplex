@@ -289,6 +289,11 @@ class Product extends Model
         return $this->marketProduct()->price * ( 1 -  ( $this->discount / 100.0) );
     }
 
+    public function currencyIcon()
+    {
+        return env('STORE_CURRENCY_ICON', '₹');
+    }
+
     public function getStatus()
     {
         switch($this->status)

@@ -56,7 +56,7 @@
       <div class="col-md-6">
         <h3 class="padmar0 headtext1">{{ $product->title }}</h3>
         <p>Category: {{ $product->categoryName() }}</p>
-        <h4>₹{{ $product->marketProduct()->price }}</h4>
+        <h4>{{ $product->currencyIcon() . ' ' . $product->marketProduct()->price }}</h4>
         <p class="sku">{{ $product->discount }}% discount!</p>
           @include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])
         <hr>
