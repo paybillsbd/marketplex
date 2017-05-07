@@ -19,7 +19,10 @@
     <link href="/vendor/mdb/css/mdb.min.css" rel="stylesheet">    
     <link href="/vendor/mdb/css/style.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="{{ asset('/vendor/inzaana/css/css-m/main.css')}}" rel="stylesheet">
+    
+    @yield('header-styles')
 
     <!-- Template styles -->
     <style rel="stylesheet">
@@ -107,6 +110,7 @@
             margin-top: 2rem;
         }
     </style>
+
 </head>
 
 <body>
