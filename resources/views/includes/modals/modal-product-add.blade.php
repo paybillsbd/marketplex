@@ -111,8 +111,8 @@
                                         <input type="text" class="form-control" id="manufacturer_name" name="manufacturer_name" placeholder="ex: dairy milk" value="{{ isset($product) ? $product->marketManufacturer() : old('manufacturer_name') }}">
                                         @if ($errors->has('manufacturer_name'))
                                             <span class="help-block">
-                              <strong>{{ $errors->first('manufacturer_name') }}</strong>
-                          </span>
+                                              <strong>{{ $errors->first('manufacturer_name') }}</strong>
+                                          </span>
                                         @endif
                                     </div>
                                 </div>
@@ -182,9 +182,9 @@
                         <div class="block-of-block">
                             <div id="product-create-upload-image" class="form-horizontal">
 
-                                <div class="from-group">
+                                <div class="from-group{{ $errors->has('upload_image_1') || $errors->has('upload_image_2') || $errors->has('upload_image_3') || $errors->has('upload_image_4') ? ' has-error' : '' }}">
                                     <div class="row">
-                                        <label for="" class="col-sm-3 control-label">Upload Images:</label>
+                                        <label for="" class="col-sm-3 control-label">Upload Images: (Max: {{ MarketPlex\ProductMedia::getMaxUploadFileSizeInMBytes() . ' MB' }})</label>
                                         <div class="col-md-2">
                                             <div class="thumbnail">
                                                 <img id="blah-1" src="{{ isset($product) ? $product->previewImage(0) : MarketPlex\Product::defaultImage() }}">
@@ -241,6 +241,16 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6">
+                                    @if ($errors->has('upload_image_1') || $errors->has('upload_image_2') || $errors->has('upload_image_3') || $errors->has('upload_image_4'))
+                                        <span class="help-block">
+                                          <strong>{{ $errors->first('upload_image_1') }}</strong>
+                                      </span>
+                                    @endif
+                                    </div>
+                                </div>
 
                                 <div class="form-group{{ $errors->has('upload_video') ? ' has-error' : '' }}">
                                     <label for="upload_video" class="col-sm-3 control-label">Upload Video:</label>
@@ -249,8 +259,8 @@
 
                                         @if ($errors->has('upload_video'))
                                             <span class="help-block">
-                                  <strong>{{ $errors->first('upload_video') }}</strong>
-                              </span>
+                                              <strong>{{ $errors->first('upload_video') }}</strong>
+                                          </span>
                                         @endif
                                     </div>
                                 </div>

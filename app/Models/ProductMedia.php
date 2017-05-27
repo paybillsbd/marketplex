@@ -24,7 +24,7 @@ class ProductMedia extends Model
     ];
     const MAX_ALLOWED_IMAGE = 4;
     const MEDIA_CONTEXT = "products";
-    const DEFAUL_IMAGE = 'default_product.png';
+    const DEFAULT_IMAGE = 'default_product.png';
     const DEFAULT_IMAGE_WHATS_NEW = 'default_whats_new.jpg';
     const IMAGES_PATH_PUBLIC = '/images/products/';
 
@@ -110,9 +110,19 @@ class ProductMedia extends Model
         return str_replace($dirtyChars, "/", $mimes);
     }
 
+    public static function getMaxUploadFileSizeInMBytes()
+    {
+        return (self::getMaxUploadFileSizeInKBytes()/ 1024);
+    }
+
+    public static function getMaxUploadFileSizeInKBytes()
+    {
+        return (UploadedFile::getMaxFilesize()/ 1024);
+    }
+
     public static function getMediaRule($mediaType)
     {
-        $size_limit_rule = '|max:' . (UploadedFile::getMaxFilesize()/ 1000);
+        $size_limit_rule = '|max:' . self::getMaxUploadFileSizeInKBytes();
         if($mediaType == 'IMAGE')
             return 'image|mimes:' . self::tidyMimes('IMAGE') . $size_limit_rule;
         return 'mimetypes:' . self::tidyMimes('VIDEO') . $size_limit_rule;

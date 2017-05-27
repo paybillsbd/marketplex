@@ -12,14 +12,18 @@
       <div class="modal-body">
           <div class="row">
       <div class="col-md-6  padT10">
-        <img class="img-responsive imgborder" data-toggle="magnify" src="{{ $product->thumbnail() }}" />
+        <img class="img-responsive imgborder" data-toggle="magnify" src="{{ $product->banner() }}" />
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" style="height:500px;overflow-y:auto">
         <h3 class="padmar0 headtext1">{{ $product->title }}</h3>
         <p>Category: {{ $product->categoryName() }}</p>
         <h4>{!! $product->currencyIcon() !!} {{ $product->mrp }}</h4>
         <p class="sku">{{ $product->discount }}% discount!</p>
-          @include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])
+          
+          @if(false)
+            @include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])
+          @endif
+
         <hr>
         <h5><strong>Product Info</strong></h5>
         <p class="slidePara1">{!! $product->description or '<i>No description is found to this product</i>' !!}</p>

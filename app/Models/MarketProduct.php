@@ -66,6 +66,11 @@ class MarketProduct extends Model
         return $this->product ? $this->product->thumbnail() : ProductMedia::defaultThumbnailImage();
     }
 
+    public function banner()
+    {
+        return $this->product ? $this->product->banner() : ProductMedia::defaultThumbnailImage();
+    }
+
     public function scopeUserProducts($query, $user)
     {
         return $query->with([ 'product' => function($query) use ($user) { return $query->where('user_id', $user->id); } ]);

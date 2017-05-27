@@ -511,7 +511,7 @@
                     var imageIndexToLoad = totalMediaLoaded;
                     while(imageIndexToLoad++)
                     {
-                        var default_image_filename = {{ MarketPlex\ProductMedia::DEFAUL_IMAGE }};
+                        var default_image_filename = {{ MarketPlex\ProductMedia::DEFAULT_IMAGE }};
                         if(imgHTML.attr("src").indexOf(default_image_filename) > -1)
                         {
                             setBackgroundImage( imgHTML , reader.result);

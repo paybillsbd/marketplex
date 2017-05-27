@@ -54,6 +54,13 @@ class Product extends Model
 
     const MAX_AVAILABLE_QUANTITY = 15;
     const MIN_AVAILABLE_QUANTITY = 1;
+
+    const IMAGE_DISPLAY_TYPES = [
+        'thumbnail' => 0,
+        'banner' => 1,
+        'front' => 2,
+        'back' => 3,
+    ];
 	 
     public function user()
     {
@@ -129,7 +136,7 @@ class Product extends Model
             if($media->media_type == 'IMAGE')
                 return [ 'is_default' => false, 'title' => $media->title ];
         }
-        return [ 'is_default' => true, 'title' => (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAUL_IMAGE) ];
+        return [ 'is_default' => true, 'title' => (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE) ];
     }
 
     public function hasEmbedVideo()
@@ -146,11 +153,20 @@ class Product extends Model
         return [ 'is_default' => true, 'url' => '' ];
     }
 
+    private function isThumbnailDefault()
+    {
+        return $this->thumbnailMediaUrl()['is_default'];
+    }
+
     public function thumbnail()
     {
         $title = $this->thumbnailMediaUrl()['title'];
-        $isDefaulImage = $this->thumbnailMediaUrl()['is_default'];
-        return $isDefaulImage ? $title : route('user::products.medias.image', [ 'file_name' => $title, 'api_token' => ImageManager::PUBLIC_TOKEN ] );
+        return $this->isThumbnailDefault() ? $title : route('user::products.medias.image', [ 'file_name' => $title, 'api_token' => ImageManager::PUBLIC_TOKEN ] );
+    }
+
+    public function banner()
+    {
+        return $this->previewImage(Product::IMAGE_DISPLAY_TYPES['banner']);
     }
 
     public function specialSpecs()
@@ -218,7 +234,7 @@ class Product extends Model
 
     public static function defaultImage()
     {
-        return (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAUL_IMAGE);
+        return (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE);
     }
 
     public function isMine()

@@ -86,7 +86,9 @@ class ProductController extends Controller
         $image_file_rule = ProductMedia::getMediaRule('IMAGE');
 
         $title_rule = $product ? 'bail|required|unique:products,title,' . $product->id . ',id,deleted_at,NULL|max:200' : 'bail|required|unique:products,title,NULL,id,deleted_at,NULL|max:200';
-
+        $messages = [
+            'size' => 'The uploaded image must be less than :size.',
+        ];
         // dd($title_rule);
         // dd($image_file_rule);
         return Validator::make(
@@ -104,7 +106,8 @@ class ProductController extends Controller
                 'upload_video'   => ProductMedia::getMediaRule('VIDEO'),
                 // 'embed_video_url' => 'required_unless:has_embed_video,checked|url',
                 // 'embed_video_url' => 'url',
-            ]
+            ],
+            $messages
         );
     }
 

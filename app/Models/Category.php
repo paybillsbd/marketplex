@@ -78,7 +78,7 @@ class Category extends Model
 
     public function imageWhatsNew()
     {
-        return $this->latestMarketProduct()->first() ? $this->latestMarketProduct()->first()->thumbnail() : ProductMedia::defaultImageWhatsNew();
+        return $this->latestMarketProduct()->first() ? $this->latestMarketProduct()->first()->banner() : ProductMedia::defaultImageWhatsNew();
     }
     
     public function getStatus()
