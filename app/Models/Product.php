@@ -95,7 +95,7 @@ class Product extends Model
         $success = true;
         if(collect($data)->has('uploaded_files') && !collect($data['uploaded_files'])->isEmpty())
         {
-            $newImageCount = count($data['uploaded_files']);
+            $images = $this->images();
             foreach($data['uploaded_files'] as $file)
             {
                 $isVideo = ProductMedia::isMedia($file->getMimeType(), 'VIDEO');
@@ -104,6 +104,11 @@ class Product extends Model
                 $productMedia->url = $file->getRealPath();
                 $productMedia->media_type = $isVideo ? 'VIDEO' : 'IMAGE';
                 $productMedia->title = $file->getBasename();
+
+                // remove old image of same media position if exists
+                $image = $images->where('_image_position', $file->_media_position)->first();
+                if($image)
+                    $image->delete();
 
                 $success = $this->medias()->save($productMedia);
 
@@ -129,16 +134,6 @@ class Product extends Model
         return $success;
     }
 
-    private function thumbnailMediaUrl()
-    {
-        foreach($this->medias as $media)
-        {
-            if($media->media_type == 'IMAGE')
-                return [ 'is_default' => false, 'title' => $media->title ];
-        }
-        return [ 'is_default' => true, 'title' => (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE) ];
-    }
-
     public function hasEmbedVideo()
     {
         return !$this->videoEmbedUrl()['is_default'];
@@ -153,15 +148,9 @@ class Product extends Model
         return [ 'is_default' => true, 'url' => '' ];
     }
 
-    private function isThumbnailDefault()
-    {
-        return $this->thumbnailMediaUrl()['is_default'];
-    }
-
     public function thumbnail()
     {
-        $title = $this->thumbnailMediaUrl()['title'];
-        return $this->isThumbnailDefault() ? $title : route('user::products.medias.image', [ 'file_name' => $title, 'api_token' => ImageManager::PUBLIC_TOKEN ] );
+        return $this->previewImage(Product::IMAGE_DISPLAY_TYPES['thumbnail']);
     }
 
     public function banner()
@@ -184,14 +173,14 @@ class Product extends Model
         $images = $this->medias->where('is_embed', false)->where('media_type', 'IMAGE');
         /*Sk Asadur Rahman Script*/
         foreach($images as $image){
-            $_location = explode('_',$image->title);
+            $_location = explode('_', $image->title);
             if(count($_location) > 1){
                 $image->_image_position = $_location[1]; // runtime added properties
             }
         }
         /*EOS*/
-        $firstTime = true;
-        while($images->count() < 4 && $firstTime)
+        // $firstTime = true;
+        while($images->count() < ProductMedia::MAX_ALLOWED_IMAGE)// && $firstTime)
         {
             $image = new ProductMedia();
             $image->is_public = true;
@@ -199,31 +188,37 @@ class Product extends Model
             $image->media_type = 'IMAGE';
             $image->title = ProductMedia::uuid();
             $image->is_embed = true; // THIS BOOLEAN IS SET TO CHECK IF IT'S A DEFAULT IMAGE OR NOT
-            $image->_image_position = false; //Added by Asad
+            $image->_image_position = $images->count() + 1; // default image index
             $images->push($image);
-            $firstTime = false;
+            // $firstTime = false;
         }
         return $images;
     }
 
     public function previewImage($index)
     {
-        $image = $this->images()->where('_image_position', $index + 1);
-        if($image->isEmpty()){
-            $image = $this->images()->where('_image_position', false);
+        $image = $this->images()->where('_image_position', $index + 1)->first();
+        if(!$image)
+        {            
+            $image = new ProductMedia();
+            $image->url = $this->defaultImage();
+            $image->is_embed = true;
         }
-        foreach($image as $image); // Added by Asad
+        // foreach($image as $image); // Added by Asad
         return $image->is_embed ? $image->url : route('user::products.medias.image', [ 'file_name' => $image->title, 'api_token' => ImageManager::PUBLIC_TOKEN ]);
     }
     
     // getImageURL() added by Asad
     public function getImageURL($index)
     {
-        $image = $this->images()->where('_image_position', $index+1,false);
-        if($image->isEmpty()){
-            $image = $this->images()->where('_image_position', false,false);
+        $image = $this->images()->where('_image_position', $index + 1)->first();
+        if(!$image)
+        {            
+            $image = new ProductMedia();
+            $image->url = $this->defaultImage();
+            $image->is_embed = true;
         }
-        foreach($image as $image);
+        // foreach($image as $image);
         return $image->url != $this->defaultImage() ? [ 'title' => $image->title, 'url' => $image->url ] : false;
     }
 
@@ -235,6 +230,11 @@ class Product extends Model
     public static function defaultImage()
     {
         return (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE);
+    }
+
+    public static function imageDisplayOrientation($index)
+    {
+        return array_keys(self::IMAGE_DISPLAY_TYPES)[$index];
     }
 
     public function isMine()
@@ -303,11 +303,6 @@ class Product extends Model
     public function discountedPrice()
     {
         return $this->marketProduct()->price * ( 1 -  ( $this->discount / 100.0) );
-    }
-
-    public function currencyIcon()
-    {
-        return env('STORE_CURRENCY_ICON', '₹');
     }
 
     public function getStatus()

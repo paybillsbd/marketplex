@@ -80,4 +80,9 @@ class MarketProduct extends Model
     {
         return $query->where('category_id', $category->id);
     }
+
+    public function mrp()
+    {
+        return $this->product ? $this->product->mrp : $this->price;
+    }
 }

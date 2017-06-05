@@ -70,12 +70,13 @@ class ProductMedia extends Model
         {
             return $mediaUploader->errors();
         }
-        $image_name = ProductMedia::uuid(). '_'.$requestedFile->_image_position.'_' . '.' . $requestedFile->getClientOriginalExtension();
-        $serverFile = $mediaUploader->upload($image_name);
+        $mediaName = ProductMedia::uuid() . '_'. $requestedFile->_image_position .'_' . '.' . $requestedFile->getClientOriginalExtension();
+        $serverFile = $mediaUploader->upload($mediaName);
         if($mediaUploader->fails())
         {
             return $mediaUploader->errors();
         }
+        $serverFile->_media_position = $requestedFile->_image_position;
         return $serverFile;
     }
 
@@ -85,15 +86,14 @@ class ProductMedia extends Model
         $errors = [];
         foreach($requestedFiles as $key => $requestedFile)
         {
-            $requestedFile->_image_position = $key;
-            $requestedFileName = $requestedFile->getClientOriginalName();
+            $requestedFile->_image_position = self::isMedia($requestedFile->getClientMimeType(), 'VIDEO') ? 0 : $key; // 0 is for the video file
             $serverEntity = self::uploadSingle($requestedFile);
             if(!is_array($serverEntity))
             {
                 $serverFiles []= $serverEntity;
                 continue;
             }
-            Log::error('[' . config('app.vendor') . '][ Uploading media failed for ' . $requestedFileName . ']');
+            Log::error('[' . config('app.vendor') . '][ Uploading media failed for ' . $requestedFile->getClientOriginalName() . ']');
             $errors []= $serverEntity;
         }
         return [ 'server_files' => $serverFiles, 'errors' => $errors  ];
@@ -165,6 +165,6 @@ class ProductMedia extends Model
 
     public static function defaultThumbnailImage()
     {
-        return self::IMAGES_PATH_PUBLIC . self::DEFAUL_IMAGE;
+        return self::IMAGES_PATH_PUBLIC . self::DEFAULT_IMAGE;
     }
 }

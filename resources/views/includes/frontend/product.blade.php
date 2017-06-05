@@ -1,6 +1,10 @@
 <!--columnn-->
 @foreach($market_products as $market_product)
 
+@if(!$market_product->product)
+    @continue
+@endif
+
 <div class="col-lg-4">
     <!--Card-->
     <div class="card  wow fadeIn"  data-wow-delay="0.2s" >
@@ -21,7 +25,7 @@
             <h4 class="card-title"> {{ $market_product->title }}</h4>
             <!--Text--> 
             <p class="card-text"> {!! $market_product->manufacturer_name !!} </p>
-            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $market_product->product->mrp }} &#2547</strong></a>
+            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $market_product->mrp() }} &#2547</strong></a>
         </div>
         <!--/.Card content-->
 

@@ -100,8 +100,8 @@
                                         <input type="text" class="form-control" id="title" name="title" placeholder="ex: kitkat 5RS" value="{{ isset($product) ? $product->title : old('title') }}">
                                         @if ($errors->has('title'))
                                             <span class="help-block">
-                              <strong>{{ $errors->first('title') }}</strong>
-                          </span>
+                                              <strong>{{ $errors->first('title') }}</strong>
+                                          </span>
                                         @endif
                                     </div>
                                 </div>
@@ -129,7 +129,7 @@
                                 <div class="form-group{{ $errors->has('price') ? ' has-error' : '' }}">
                                     <label for="price" class="col-sm-3 control-label">Price:</label>
                                     <div class="col-sm-2">
-                                        <input type="text" class="form-control" id="price" name="price" placeholder="ex: 3₹" value="{{ isset($product) ? $product->marketPrice() : old('price') }}">
+                                        <input type="text" class="form-control" id="price" name="price" placeholder="ex: 3{!! MarketPlex\Store::currencyIcon() !!}" value="{{ isset($product) ? $product->marketPrice() : old('price') }}">
                                         @if ($errors->has('price'))
                                             <span class="help-block">
                                               <strong>{{ $errors->first('price') }}</strong>
@@ -138,42 +138,42 @@
                                     </div>
                                 </div>
 
-                                @if(isset($product))
-                                    <div class="form-group">
-                                        <label for="status" class="col-sm-3 control-label">Status:</label>
-                                        <div class="col-sm-2">
-                                            <select name="status" id="status" class="form-control select2" style="width: 100%;"{{ isset($product) ? '' : ' hidden' }}>
-                                                @if(isset($product))
-                                                    @foreach(MarketPlex\Product::STATUS_FLOWS as $status)
-                                                        <option {{ $status == $product->status ? ' selected' : '' }}> {{ $status }} </option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                    </div>
-                                    @endif
-
-                                    <div class="form-group{{ $errors->has('available_quantity') ? ' has-error' : '' }}">
-                                        <label for="available_quantity" class="col-sm-3 control-label">Available Quantity:</label>
-                                        <div class="col-sm-2">
-                                            <div class="input-group spinner">
-                                                <input type="text" name="available_quantity" class="form-control"
-                                                       value="{{ isset($product) ? $product->available_quantity : MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                       min="{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                       max="{{ MarketPlex\Product::MAX_AVAILABLE_QUANTITY }}">
-
-                                                <div class="input-group-btn-vertical">
-                                                    <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
-                                                    <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
-                                                </div>
-                                            </div>
-                                            @if ($errors->has('available_quantity'))
-                                                <span class="help-block">
-                                                <strong>{{ $errors->first('available_quantity') }}</strong>
-                                                </span>
+                                @if(false)
+                                <div class="form-group">
+                                    <label for="status" class="col-sm-3 control-label">Status:</label>
+                                    <div class="col-sm-2">
+                                        <select name="status" id="status" class="form-control select2" style="width: 100%;"{{ isset($product) ? '' : ' hidden' }}>
+                                            @if(isset($product))
+                                                @foreach(MarketPlex\Product::STATUS_FLOWS as $status)
+                                                    <option {{ $status == $product->status ? ' selected' : '' }}> {{ $status }} </option>
+                                                @endforeach
                                             @endif
-                                        </div>
+                                        </select>
                                     </div>
+                                </div>
+                                @endif
+
+                                <div class="form-group{{ $errors->has('available_quantity') ? ' has-error' : '' }}">
+                                    <label for="available_quantity" class="col-sm-3 control-label">Available Quantity:</label>
+                                    <div class="col-sm-2">
+                                        <div class="input-group spinner">
+                                            <input type="text" name="available_quantity" class="form-control"
+                                                   value="{{ isset($product) ? $product->available_quantity : MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
+                                                   min="{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
+                                                   max="{{ MarketPlex\Product::MAX_AVAILABLE_QUANTITY }}">
+
+                                            <div class="input-group-btn-vertical">
+                                                <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
+                                                <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
+                                            </div>
+                                        </div>
+                                        @if ($errors->has('available_quantity'))
+                                            <span class="help-block">
+                                            <strong>{{ $errors->first('available_quantity') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -190,7 +190,7 @@
                                                 <img id="blah-1" src="{{ isset($product) ? $product->previewImage(0) : MarketPlex\Product::defaultImage() }}">
                                                 <span class="btn btn-default btn-file">
 
-                                                    Browse <input id="imgInp-1" name="upload_image_1" data-image_id="1" type="file" style="margin-top: 7px" >
+                                                    Browse ({{ MarketPlex\Product::imageDisplayOrientation(0) }}) <input id="imgInp-1" name="upload_image_1" data-image_id="1" type="file" style="margin-top: 7px" >
                                                 </span>
 
                                             </div>
@@ -203,7 +203,7 @@
                                                 <img id="blah-2" src="{{ isset($product) ? $product->previewImage(1) : MarketPlex\Product::defaultImage() }}">
                                                 <span class="btn btn-default btn-file">
 
-                                                    Browse <input id="imgInp-2" name="upload_image_2" data-image_id="2" type="file" style="margin-top: 7px" >
+                                                    Browse ({{ MarketPlex\Product::imageDisplayOrientation(1) }}) <input id="imgInp-2" name="upload_image_2" data-image_id="2" type="file" style="margin-top: 7px" >
                                                 </span>
 
                                             </div>
@@ -217,7 +217,7 @@
                                                 <img id="blah-3" src="{{ isset($product) ? $product->previewImage(2) : MarketPlex\Product::defaultImage() }}">
                                                 <span class="btn btn-default btn-file">
 
-                                                    Browse <input id="imgInp-3" name="upload_image_3" data-image_id="3" type="file" style="margin-top: 7px" >
+                                                    Browse ({{ MarketPlex\Product::imageDisplayOrientation(2) }}) <input id="imgInp-3" name="upload_image_3" data-image_id="3" type="file" style="margin-top: 7px" >
                                                 </span>
 
                                             </div>
@@ -231,7 +231,7 @@
                                                 <img id="blah-4" src="{{ isset($product) ? $product->previewImage(3) : MarketPlex\Product::defaultImage() }}">
                                                 <span class="btn btn-default btn-file">
 
-                                                    Browse <input id="imgInp-4" name="upload_image_4" data-image_id="4" type="file" style="margin-top: 7px" >
+                                                    Browse ({{ MarketPlex\Product::imageDisplayOrientation(3) }}) <input id="imgInp-4" name="upload_image_4" data-image_id="4" type="file" style="margin-top: 7px" >
                                                 </span>
                                             </div>
                                             <div class="col-md-6 col-md-offset-3">

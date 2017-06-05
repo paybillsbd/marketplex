@@ -141,6 +141,11 @@ class Store extends Model
     public static function storeCreated()
     {
         return Auth::user()->products->count() > 0;    
+    }    
+
+    public static function currencyIcon()
+    {
+        return env('STORE_CURRENCY_ICON', '₹');
     }
 
     public function isBelowStoreCountPolicy()

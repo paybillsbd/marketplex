@@ -89,26 +89,23 @@ class ProductController extends Controller
         $messages = [
             'size' => 'The uploaded image must be less than :size.',
         ];
+        $rules = [
+            'store_name' => 'bail|required',
+            'category' => 'bail|required',
+            'title' => $title_rule,
+            'price' => 'bail|required|numeric',
+            'manufacturer_name' => 'required|max:200',
+            'upload_image_1' => $image_file_rule,
+            'upload_image_2' => $image_file_rule,
+            'upload_image_3' => $image_file_rule,
+            'upload_image_4' => $image_file_rule,
+            'upload_video'   => ProductMedia::getMediaRule('VIDEO'),
+            // 'embed_video_url' => 'required_unless:has_embed_video,checked|url',
+            // 'embed_video_url' => 'url',
+        ];
         // dd($title_rule);
         // dd($image_file_rule);
-        return Validator::make(
-            $request->all(),
-            [
-                'store_name' => 'bail|required',
-                'category' => 'bail|required',
-                'title' => $title_rule,
-                'price' => 'bail|required|numeric',
-                'manufacturer_name' => 'required|max:200',
-                'upload_image_1' => $image_file_rule,
-                'upload_image_2' => $image_file_rule,
-                'upload_image_3' => $image_file_rule,
-                'upload_image_4' => $image_file_rule,
-                'upload_video'   => ProductMedia::getMediaRule('VIDEO'),
-                // 'embed_video_url' => 'required_unless:has_embed_video,checked|url',
-                // 'embed_video_url' => 'url',
-            ],
-            $messages
-        );
+        return Validator::make( $request->all(), $rules, $messages );
     }
 
     /**
@@ -128,8 +125,9 @@ class ProductController extends Controller
         if ($request->hasFile('upload_video'))
             $uploadedFiles [] = $request->file('upload_video');
         for ($i = 1; $i <= ProductMedia::MAX_ALLOWED_IMAGE; ++$i) {
-            if ($request->hasFile('upload_image_' . $i))
-                $uploadedFiles [$i] = $request->file('upload_image_' . $i);
+            $fileInputName = 'upload_image_' . $i;
+            if($request->hasFile($fileInputName))
+                $uploadedFiles [$i]= $request->file($fileInputName);
         }
         if (!collect($uploadedFiles)->isEmpty()) {
             try {
@@ -293,8 +291,9 @@ class ProductController extends Controller
             $uploadedFiles []= $request->file('upload_video');
         for($i = 1; $i <= ProductMedia::MAX_ALLOWED_IMAGE; ++$i)
         {
-            if($request->hasFile('upload_image_' . $i))
-                $uploadedFiles [$i]= $request->file('upload_image_' . $i);
+            $fileInputName = 'upload_image_' . $i;
+            if($request->hasFile($fileInputName))
+                $uploadedFiles [$i]= $request->file($fileInputName);
         }
         if (!collect($uploadedFiles)->isEmpty())
         {
@@ -387,7 +386,7 @@ class ProductController extends Controller
         catch(\Exception $e)
         {
             Log::error('[' . $vendor . '][Product update error: ' . $e->getMessage() . ' ]');
-            return redirect()->back()->withErrors([ 'Something went wrong during saving your product! We have already know the reason. Try again or please contact ' . $vendor . ' admnistrator.' ]);
+            return redirect()->back()->withErrors([ 'Something went wrong during saving your product! We have already know the reason. Try again or please contact ' . $vendor . ' administrator.' ]);
         }
         flash()->success('Your product is updated.');
         return redirect()->route('user::products');        
