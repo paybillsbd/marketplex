@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
                                     <label  class="col-sm-3 control-label">Product Category:</label>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-6">
                                         <select name="category" id="category" class="form-control select2" data-placeholder="Select a Category" style="width: 100%;">
 
                                             @if(isset($categories))

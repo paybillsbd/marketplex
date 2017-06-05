@@ -7,6 +7,7 @@ use ErrorException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Database\QueryException;
+use Illuminate\Session\TokenMismatchException;
 use \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 use Log;
