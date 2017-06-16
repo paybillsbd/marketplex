@@ -64,7 +64,7 @@ class Handler extends ExceptionHandler
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . '] ');
             // flash()->error($errorMessage[$errorCode]);
             flash()->error(config('app.name') . ' says: "Database credentials are denied. Please contact your database administrator"');
-            return redirect('/login');
+            abort(503);
         }
         if ($exception instanceof QueryException) {
             $errorMessage = 'Something went wrong while running database query. Please contact your database server administrator.';

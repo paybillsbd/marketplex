@@ -8,11 +8,12 @@ use MarketPlex\Product;
 use MarketPlex\MarketProduct;
 use MarketPlex\Category;
 use Auth;
+use MarketPlex\Mailers\ActionMailer;
 
 class StoreFrontController extends Controller
 {
     //
-    public function showStoreFront()
+    public function showStoreFront(Request $request, ActionMailer $mailer)
     {
         if(env('STORE_CLOSE', true) === true)
             return view('store-comingsoon');
@@ -27,6 +28,8 @@ class StoreFrontController extends Controller
 
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
+
+        $mailer->report($request);
 
         $marketProducts = MarketProduct::UserProducts($user);
         $category = null;

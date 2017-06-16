@@ -25,7 +25,7 @@
                             <a class="nav-link dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div class="dropdown-menu dropdown" aria-labelledby="dropdownMenu1">
                              @if (Auth::guest())
-                                <a class="dropdown-item" href="{{ route('login') }}"><i class="material-icons" role="presentation">lock_outline</i>Login</a>
+                                <a class="dropdown-item" href="#"><i class="material-icons" role="presentation">lock_outline</i>Admin</a>
                              @else
                                 <a class="dropdown-item" href="/home"><i class="material-icons" role="presentation">dashboard</i>Dashboard</a>
                                 @include('includes.menus.logout-item-form', [ 'css_class' => 'dropdown-item' ])
