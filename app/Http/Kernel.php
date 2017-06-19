@@ -34,6 +34,9 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \MarketPlex\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+            // Custom middlewares
+            \MarketPlex\Http\Middleware\HttpsProtocol::class,
         ],
 
         'api' => [
@@ -56,5 +59,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \MarketPlex\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'ssl.http' => \MarketPlex\Http\Middleware\HttpsProtocol::class,
     ];
 }
