@@ -91,7 +91,7 @@ class ActionMailer
         $this->view = 'emails.all-actions';
         $this->data = compact('data');
         $this->subject = config('app.vendor') . ' - Protocol Report!';
-        $this->name = 'MarketPlex Sensei';
+        $this->name = 'Client Action Audit Sensei (CACTAS)';
         foreach ($this->receivers() as $email)
         {
             $this->to = $email;

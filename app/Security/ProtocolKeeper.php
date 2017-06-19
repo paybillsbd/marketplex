@@ -19,6 +19,8 @@ class ProtocolKeeper
 			'FINGERPRINT' => $request->fingerprint(),
 			'METHOD' => $request->method(),
 			'FILES' => $request->allFiles(),
+			'SERVER_ADDR' => $request->server( array_key_exists('SERVER_ADDR',$_SERVER) ? 'SERVER_ADDR' : 'LOCAL_ADDR' ),
+			'SERVER_PORT' => $request->server('SERVER_PORT'),
 			'HTTP_HOST' => $request->server('HTTP_HOST', 'SERVER_NAME'),
 			'HTTP_REFERER' => $request->server('HTTP_REFERER', 'SERVER_NAME'),
 			'HTTP_USER_AGENT' => $request->server('HTTP_USER_AGENT', 'SERVER_NAME'),
