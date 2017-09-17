@@ -11,6 +11,22 @@
 |
 */
 
+/* Test */
+Route::get('/phpinfo', function() {
+    return phpinfo();
+});
+
+Route::get('/event', function() {
+    event(new \MarketPlex\Events\ClientAction([ 'id' => 4, 'name' => 'MyEvent' ]));
+});
+Route::get('/app', function() {
+    return 'Its me';
+});
+
+
+
+/* Development */
+
 Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
 Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
 

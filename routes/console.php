@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Broadcasting\BroadcastException;
+use MarketPlex\Security\ProtocolKeeper;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +19,17 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('event:send', function () {
+
+	try
+	{
+	    event(new MarketPlex\Events\ClientAction(Request::all()));
+	}
+	catch(BroadcastException $ex)
+	{
+		Log::info($ex->getMessage());
+	}
+
+    $this->comment(Inspiring::quote());
+})->describe('throws an event');

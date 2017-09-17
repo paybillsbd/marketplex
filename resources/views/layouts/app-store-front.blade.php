@@ -5,7 +5,9 @@
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.vendor') }} | @yield('title')</title>
 
@@ -111,6 +113,14 @@
         }
     </style>
 
+    <!-- Scripts -->
+    <script>
+        window.Laravel = {!! json_encode([
+            'csrfToken' => csrf_token(),
+        ]) !!};
+    </script>
+    @yield('header-scripts')
+
 </head>
 
 <body>
@@ -160,6 +170,11 @@
 
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="/vendor/mdb/js/mdb.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="/js/manifest.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/app.js"></script>
 
     @yield('footer-scripts')
     

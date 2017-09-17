@@ -185,7 +185,7 @@ return [
          */
         MarketPlex\Providers\AppServiceProvider::class,
         MarketPlex\Providers\AuthServiceProvider::class,
-        // MarketPlex\Providers\BroadcastServiceProvider::class,
+        MarketPlex\Providers\BroadcastServiceProvider::class,
         MarketPlex\Providers\EventServiceProvider::class,
         MarketPlex\Providers\RouteServiceProvider::class,
         /*

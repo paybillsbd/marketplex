@@ -3,10 +3,12 @@
 @section('title-module-name', 'Store')
 
 @section('header-styles')
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 @endsection
 
 @section('footer-scripts')
-    <script src="{{ asset('/vendor/inzaana/js/product/product.js') }}" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
 @endsection
 
 @section('modals')

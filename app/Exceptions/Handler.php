@@ -8,6 +8,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Database\QueryException;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Broadcasting\BroadcastException;
 use \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 use Log;
@@ -97,6 +98,11 @@ class Handler extends ExceptionHandler
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
             flash()->warning('You are not allowed to make this request.');
             return redirect()->back();
+        }
+        if($exception instanceof BroadcastException)
+        {
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
+            abort(503);
         }
         return parent::render($request, $exception);
     }

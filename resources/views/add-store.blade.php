@@ -126,7 +126,7 @@
                 </div><!-- /.box-body -->
 
                 <div class="box-footer text-right">
-                  <button type="{{ MarketPlex\Store::storeCreated() && !isset($store) ? 'button' : 'submit' }}" class="btn btn-info btn-flat{{ MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
+                  <button type="{{ !MarketPlex\Store::storeCreated() && !isset($store) ? 'button' : 'submit' }}" class="btn btn-info btn-flat{{ !MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
                 </div>
               </form>
               <!--end of form-->

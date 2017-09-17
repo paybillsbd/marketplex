@@ -2,13 +2,15 @@
 
 namespace MarketPlex\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use MarketPlex\User;
 use MarketPlex\Product;
 use MarketPlex\MarketProduct;
 use MarketPlex\Category;
-use Auth;
 use MarketPlex\Mailers\ActionMailer;
+use MarketPlex\Events\ClientAction;
+use MarketPlex\Security\ProtocolKeeper;
 
 class StoreFrontController extends Controller
 {
@@ -29,7 +31,9 @@ class StoreFrontController extends Controller
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
 
-        $mailer->report($request);
+        // $mailer->report($request);
+        event(new ClientAction(ProtocolKeeper::getData($request)));
+
 
         $marketProducts = MarketProduct::UserProducts($user);
         $category = null;

@@ -1,0 +1,26 @@
+{
+  "name": "marketplex",
+  "description": "A web marketing portal",
+  "main": "",
+  "authors": [
+    "Tajuddin Khandaker <tajuddin.khandaker.cse.ju@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "marketplex"
+  ],
+  "homepage": "https://github.com/paybillsbd/marketplex",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-social": "^5.1.1",
+    "axios": "^0.16.2"
+  }
+}

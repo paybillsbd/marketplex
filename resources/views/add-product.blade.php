@@ -63,425 +63,425 @@
 
 
 @section('content')
-    <div class="box box-info">
-        <div class="box-body">
-            <div class="row padTB">
-                {{--@include('includes.frontend.search-panel')--}}
+<div class="box box-info">
+<div class="box-body">
+<div class="row padTB">
+    {{--@include('includes.frontend.search-panel')--}}
 
-                <div class="box box-widget">
-                    <div class="box-footer box-comments{{ $productsCount == 0 ? '' : ' hidden' }}">
-                        <div class="box-comment">
-                            <div class="col-lg-6">
-                                <h4 class="C-header">If it is not in {{ config('app.vendor') }}'s catalog:</h4>
-                            </div>
-                            <div class="col-lg-6 text-right">
-                                <button id="product-form-open-button" class="btn btn-info btn-flat laravel-bootstrap-modal-form-open" data-toggle="modal" data-target="#addProduct" type="button"><i class="fa fa-lg fa-plus-square"></i>&ensp; Add Product</button>
-                            </div>
-                        </div>
+    <div class="box box-widget">
+        <div class="box-footer box-comments{{ $productsCount == 0 ? '' : ' hidden' }}">
+            <div class="box-comment">
+                <div class="col-lg-6">
+                    <h4 class="C-header">If it is not in {{ config('app.vendor') }}'s catalog:</h4>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button id="product-form-open-button" class="btn btn-info btn-flat laravel-bootstrap-modal-form-open" data-toggle="modal" data-target="#addProduct" type="button"><i class="fa fa-lg fa-plus-square"></i>&ensp; Add Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>       
+
+<!--recently added product-->
+<div class="row">
+<div class="col-xs-12">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Recently Added product</h3>
+            <div class="box-tools">
+                <div class="input-group" style="width: 150px;">
+                    <input type="text" name="table_search" id="search_box" class="form-control input-sm pull-right" placeholder="Search">
+                    <div class="input-group-btn">
+                        <button class="btn btn-sm btn-default" id="search_by_button_click"><i class="fa fa-search"></i></button>
                     </div>
                 </div>
             </div>
-        </div>       
+        </div><!-- /.box-header -->
+        <div class="box-body table-responsive no-padding">
+            <div id="delete_all"></div>
+            <div id="load_table_dom">
+                @include('includes.product-table')
+            </div><!-- /.box-body -->
+    </div><!-- /.box -->
+</div>
+</div>
 
-        <!--recently added product-->
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">Recently Added product</h3>
-                        <div class="box-tools">
-                            <div class="input-group" style="width: 150px;">
-                                <input type="text" name="table_search" id="search_box" class="form-control input-sm pull-right" placeholder="Search">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-default" id="search_by_button_click"><i class="fa fa-search"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- /.box-header -->
-                    <div class="box-body table-responsive no-padding">
-                        <div id="delete_all"></div>
-                        <div id="load_table_dom">
-                            @include('includes.product-table')
-                        </div><!-- /.box-body -->
-                </div><!-- /.box -->
-            </div>
-        </div>
+<!--end of recently added product-->
 
-        <!--end of recently added product-->
+@endsection
 
-        @endsection
+@section('footer-scripts')
+<script src="{{ asset('/vendor/inzaana/form-validation/add-product-validation.js') }}" type="text/javascript"></script>
 
-        @section('footer-scripts')
-            <script src="{{ asset('/vendor/inzaana/form-validation/add-product-validation.js') }}" type="text/javascript"></script>
+<script src="{{ asset('/vendor/inzaana/js/select2.full.min.js') }}" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{{ asset('/vendor/inzaana/js/product/product.js') }}" type="text/javascript"></script>
+<script>
+    function matchStart (term, text) {
+        if (text.toUpperCase().indexOf(term.toUpperCase()) == 0) {
+            return true;
+        }
 
-            <script src="{{ asset('/vendor/inzaana/js/select2.full.min.js') }}" type="text/javascript"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-            <script src="{{ asset('/vendor/inzaana/js/product/product.js') }}" type="text/javascript"></script>
-            <script>
-                function matchStart (term, text) {
-                    if (text.toUpperCase().indexOf(term.toUpperCase()) == 0) {
-                        return true;
-                    }
+        return false;
+    }
 
-                    return false;
-                }
+    $.fn.select2.amd.require(['select2/compat/matcher'], function (oldMatcher) {
+        $("select").select2({
+            matcher: oldMatcher(matchStart)
+        })
+    });
+</script>
 
-                $.fn.select2.amd.require(['select2/compat/matcher'], function (oldMatcher) {
-                    $("select").select2({
-                        matcher: oldMatcher(matchStart)
-                    })
-                });
-            </script>
+<script type="text/javascript">
 
-            <script type="text/javascript">
+    function requestProductsAutoCompleted(search_terms, auto_complete, response, context)
+    {
+        var URI = window.location.pathname;
+        route_url = URI + '/search';
+        targetDom = '#sell_yours_search';
+        processData = true;
+        var dataObj = {
+            search_box: search_terms,
+            search_title: auto_complete
+        };
 
-                function requestProductsAutoCompleted(search_terms, auto_complete, response, context)
+        return $.ajax( {
+            async: true,
+            type: 'GET',
+            url: route_url, // you need change it.
+            processData: processData, // high importance!
+            data: dataObj,
+            success: function (data) {
+                if(response === false)
                 {
-                    var URI = window.location.pathname;
-                    route_url = URI + '/search';
-                    targetDom = '#sell_yours_search';
-                    processData = true;
-                    var dataObj = {
-                        search_box: search_terms,
-                        search_title: auto_complete
-                    };
-
-                    return $.ajax( {
-                        async: true,
-                        type: 'GET',
-                        url: route_url, // you need change it.
-                        processData: processData, // high importance!
-                        data: dataObj,
-                        success: function (data) {
-                            if(response === false)
-                            {
-                                if(auto_complete == false)
-                                    $(targetDom).removeClass("hidden");
-                                    $(targetDom).html(data);
-                            }
-                            else
-                                response(data);
-                        },
-                        error: function (data) {
-                        },
-                        timeout: 5000
-                    });
+                    if(auto_complete == false)
+                        $(targetDom).removeClass("hidden");
+                        $(targetDom).html(data);
                 }
-                // $( ".search_boxs" ).autocomplete({
-                //     source: function( request, response ) {
-                //         requestProductsAutoCompleted(request.term, true, response, 'search-product');
-                //     },
-                //     minLength: 2,
-                //     select: function( event, ui ) {
-                //         requestProductsAutoCompleted(ui.item.value, this.id, false, 'search-all-product');
-                //     }
-                // });
+                else
+                    response(data);
+            },
+            error: function (data) {
+            },
+            timeout: 5000
+        });
+    }
+    // $( ".search_boxs" ).autocomplete({
+    //     source: function( request, response ) {
+    //         requestProductsAutoCompleted(request.term, true, response, 'search-product');
+    //     },
+    //     minLength: 2,
+    //     select: function( event, ui ) {
+    //         requestProductsAutoCompleted(ui.item.value, this.id, false, 'search-all-product');
+    //     }
+    // });
 
-                function productFormEvents()
+    function productFormEvents()
+    {
+        $('#product-form-open-button').click(function(){
+
+            console.log($('#product-create-form').attr("action"));
+            $('#product-create-form').attr("action", "{{ route('user::products.create') }}");
+            console.log('Changed action to:' + $('#product-create-form').attr("action"));
+        });
+
+        $('#embed_video_url').focusout(onUrlPaste);
+    }
+
+    function specControlEvents()
+    {
+        $('#input').prop("hidden", "");
+        $('.add-option').prop("hidden", "hidden");
+
+        $('#control_type').val("input");
+        $('#control_type').change();
+
+        $('#control_type').change( function(event) {
+
+            var controlId = this.value;
+            var showDefault = false;
+
+            if(this.value == 'dropdown' || this.value == 'options')
+            {
+                $('#' + this.value).prop("hidden", "");
+                $('.add-option').prop("hidden", "");
+            }
+            else if(this.value == 'spinner')
+            {
+                $('#' + this.value).prop("hidden", "");
+                $('.add-option').prop("hidden", "hidden");
+            }
+            else
+            {
+                showDefault = true;
+            }
+            $.each($('.spec-controls'), function(index, value) {
+
+                if(value.id != controlId)
                 {
-                    $('#product-form-open-button').click(function(){
-
-                        console.log($('#product-create-form').attr("action"));
-                        $('#product-create-form').attr("action", "{{ route('user::products.create') }}");
-                        console.log('Changed action to:' + $('#product-create-form').attr("action"));
-                    });
-
-                    $('#embed_video_url').focusout(onUrlPaste);
+                    $('#' + value.id).prop("hidden", "hidden");
                 }
+            });
+            if(showDefault)
+            {
+                $('#input').prop("hidden", "");
+                $('.add-option').prop("hidden", "hidden");
+            }
+        });
 
-                function specControlEvents()
-                {
-                    $('#input').prop("hidden", "");
-                    $('.add-option').prop("hidden", "hidden");
+        var isEdit = $('div.is-edit').length > 0;
+        var specs = '';
+        var spec_count = $('#spec_count').val();
+        var options = '';
+        var optionCount = 0;
+        var firstTime = true;
 
-                    $('#control_type').val("input");
-                    $('#control_type').change();
+        $('#apply_spec').click( function(e) {
 
-                    $('#control_type').change( function(event) {
+            e.preventDefault();
 
-                        var controlId = this.value;
-                        var showDefault = false;
+            ++spec_count;
 
-                        if(this.value == 'dropdown' || this.value == 'options')
-                        {
-                            $('#' + this.value).prop("hidden", "");
-                            $('.add-option').prop("hidden", "");
-                        }
-                        else if(this.value == 'spinner')
-                        {
-                            $('#' + this.value).prop("hidden", "");
-                            $('.add-option').prop("hidden", "hidden");
-                        }
-                        else
-                        {
-                            showDefault = true;
-                        }
-                        $.each($('.spec-controls'), function(index, value) {
+            var specValues = optionCount > 0 ? '' : $('#single_spec').val();
 
-                            if(value.id != controlId)
-                            {
-                                $('#' + value.id).prop("hidden", "hidden");
-                            }
-                        });
-                        if(showDefault)
-                        {
-                            $('#input').prop("hidden", "");
-                            $('.add-option').prop("hidden", "hidden");
-                        }
-                    });
+            var selectedControlType = $('#control_type').val();
+            console.log(selectedControlType);
 
-                    var isEdit = $('div.is-edit').length > 0;
-                    var specs = '';
-                    var spec_count = $('#spec_count').val();
-                    var options = '';
-                    var optionCount = 0;
-                    var firstTime = true;
+            if(selectedControlType == 'dropdown')
+            {
+                specValues = $('select#optdropdown option').map( function() {
+                    return this.value;
+                }).get().join(",");
+            }
+            if(selectedControlType == 'options')
+            {
+                specValues = $("input[type='radio']").map(function() {
+                    var idVal = $(this).attr("id");
+                    return $("label[for='"+idVal+"']").text();
+                }).get().join(",");
+            }
+            if(selectedControlType == 'spinner')
+            {
+                specValues = $('#optspinner_min').val() + ' ~ ' + $('#optspinner_max').val();
+            }
 
-                    $('#apply_spec').click( function(e) {
+            specs += '<tr>';
+            specs += '<td>' + $('#spec_title').val() + ' <input name="title_' + spec_count + '" type="text" value="' + $('#spec_title').val() + '" hidden></td>';
+            specs += '<td>' +  $('#control_type').val() + ' <input name="option_' + spec_count + '" type="text" value="' +  $('#control_type').val() + '" hidden></td>';
+            specs += '<td>' + specValues + ' <input name="values_' + spec_count + '" type="text" value="' + specValues + '" hidden></td>';
+            specs += '<td><a href="#" id="delete_me" class="btn btn-xs btn-danger">x</a></td>';
+            specs += '</tr>';
 
-                        e.preventDefault();
+            console.log(specValues);
+            if($('#spec_count').val() == 0)
+                $('table.spec-table tbody').html(specs);
+            else
+                $('table.spec-table tbody').append(specs);
 
-                        ++spec_count;
+            specs = '';
 
-                        var specValues = optionCount > 0 ? '' : $('#single_spec').val();
+            $('#spec_count').val($('table.spec-table tbody tr').length);
 
-                        var selectedControlType = $('#control_type').val();
-                        console.log(selectedControlType);
+            console.log('applied specs: ' + $('#spec_count').val());
 
-                        if(selectedControlType == 'dropdown')
-                        {
-                            specValues = $('select#optdropdown option').map( function() {
-                                return this.value;
-                            }).get().join(",");
-                        }
-                        if(selectedControlType == 'options')
-                        {
-                            specValues = $("input[type='radio']").map(function() {
-                                var idVal = $(this).attr("id");
-                                return $("label[for='"+idVal+"']").text();
-                            }).get().join(",");
-                        }
-                        if(selectedControlType == 'spinner')
-                        {
-                            specValues = $('#optspinner_min').val() + ' ~ ' + $('#optspinner_max').val();
-                        }
+            $('#option_input').val("");
+            $('#spec_title').val("");
+            $('#single_spec').val("");
 
-                        specs += '<tr>';
-                        specs += '<td>' + $('#spec_title').val() + ' <input name="title_' + spec_count + '" type="text" value="' + $('#spec_title').val() + '" hidden></td>';
-                        specs += '<td>' +  $('#control_type').val() + ' <input name="option_' + spec_count + '" type="text" value="' +  $('#control_type').val() + '" hidden></td>';
-                        specs += '<td>' + specValues + ' <input name="values_' + spec_count + '" type="text" value="' + specValues + '" hidden></td>';
-                        specs += '<td><a href="#" id="delete_me" class="btn btn-xs btn-danger">x</a></td>';
-                        specs += '</tr>';
+            // IMPORTANT to reset options entered last time
+            options = '';
+            optionCount = 0;
+        });
 
-                        console.log(specValues);
-                        if($('#spec_count').val() == 0)
-                            $('table.spec-table tbody').html(specs);
-                        else
-                            $('table.spec-table tbody').append(specs);
+        $('#add-option-btn').click(function(e) {
 
-                        specs = '';
+            e.preventDefault();
 
-                        $('#spec_count').val($('table.spec-table tbody tr').length);
+            var selectedControlType = $('#control_type').val();
+            console.log(selectedControlType);
 
-                        console.log('applied specs: ' + $('#spec_count').val());
+            var optionInput = $('#option_input').val();
+            if(selectedControlType == 'dropdown')
+            {
+                ++optionCount;
+                options += '<option>' + optionInput + '</option>';
+                $('#optdropdown').html(options);
+            }
+            if(selectedControlType == 'options')
+            {
+                ++optionCount;
+                options += '<div class="radio">';
+                options += '<label for="optradio_' + optionCount + '"><input type="radio" id="optradio_' + optionCount + '" name="optradio_' + optionCount + '">' + optionInput + '</label>';
+                options += '</div>';
+                $('#options').html(options);
+            }
+            $('#option_input').val("");
+        });
+    }
 
-                        $('#option_input').val("");
-                        $('#spec_title').val("");
-                        $('#single_spec').val("");
+    // Ready
+    $('#generalTabContent').ready(function() {
+        var showModal = ($('div.has-error').length > 0 || $('div.is-edit').length > 0);
+        $('#addProduct').modal({ 'show' : showModal });
 
-                        // IMPORTANT to reset options entered last time
-                        options = '';
-                        optionCount = 0;
-                    });
+        onChangeEmbedVideoCheck();
+        $( "#has_embed_video" ).change(onChangeEmbedVideoCheck);
 
-                    $('#add-option-btn').click(function(e) {
+        spinnerEvents();
+        specControlEvents();
+        productFormEvents();
+    });
 
-                        e.preventDefault();
+    function onChangeEmbedVideoCheck() {
 
-                        var selectedControlType = $('#control_type').val();
-                        console.log(selectedControlType);
+        if($('.embed_video').is(':hidden'))
+        {
+            $( ".embed_video" ).hide( "fast", function() {});
 
-                        var optionInput = $('#option_input').val();
-                        if(selectedControlType == 'dropdown')
-                        {
-                            ++optionCount;
-                            options += '<option>' + optionInput + '</option>';
-                            $('#optdropdown').html(options);
-                        }
-                        if(selectedControlType == 'options')
-                        {
-                            ++optionCount;
-                            options += '<div class="radio">';
-                            options += '<label for="optradio_' + optionCount + '"><input type="radio" id="optradio_' + optionCount + '" name="optradio_' + optionCount + '">' + optionInput + '</label>';
-                            options += '</div>';
-                            $('#options').html(options);
-                        }
-                        $('#option_input').val("");
-                    });
-                }
+            if(!$('#has_embed_video').is(':checked'))
+            {
+                $( "#has_embed_video" ).prop('checked', 'checked');
+            }
+        }
+        if($('#has_embed_video').is(':checked') || $( ".embed_video" ).hasClass( "has-error" ))
+        {
+            $( ".embed_video" ).show( 1000 );
+        }
+        else
+        {
+            $( ".embed_video" ).hide( "fast", function() {});
+            $( ".embed_video" ).removeClass( "has-error" );
+            $( ".embed_video" ).find("strong").html("");
+        }
+    }
+</script>
+<script>
+    $(document).on('click','#delete_me',function(e){
+        e.preventDefault();
+        $(this).parent().parent().remove();
+    });
+</script>
 
-                // Ready
-                $('#generalTabContent').ready(function() {
-                    var showModal = ($('div.has-error').length > 0 || $('div.is-edit').length > 0);
-                    $('#addProduct').modal({ 'show' : showModal });
+<script>
 
-                    onChangeEmbedVideoCheck();
-                    $( "#has_embed_video" ).change(onChangeEmbedVideoCheck);
+    // + function($) {
+    //       'use strict';
 
-                    spinnerEvents();
-                    specControlEvents();
-                    productFormEvents();
-                });
+    //       // UPLOAD CLASS DEFINITION
+    //       // ======================
 
-                function onChangeEmbedVideoCheck() {
+    //       var dropZone = document.getElementById('drop-zone');
+    //       var uploadForm = document.getElementById('js-upload-form');
 
-                    if($('.embed_video').is(':hidden'))
-                    {
-                        $( ".embed_video" ).hide( "fast", function() {});
-
-                        if(!$('#has_embed_video').is(':checked'))
-                        {
-                            $( "#has_embed_video" ).prop('checked', 'checked');
-                        }
-                    }
-                    if($('#has_embed_video').is(':checked') || $( ".embed_video" ).hasClass( "has-error" ))
-                    {
-                        $( ".embed_video" ).show( 1000 );
-                    }
-                    else
-                    {
-                        $( ".embed_video" ).hide( "fast", function() {});
-                        $( ".embed_video" ).removeClass( "has-error" );
-                        $( ".embed_video" ).find("strong").html("");
-                    }
-                }
-            </script>
-            <script>
-                $(document).on('click','#delete_me',function(e){
-                    e.preventDefault();
-                    $(this).parent().parent().remove();
-                });
-            </script>
-
-            <script>
-
-                // + function($) {
-                //       'use strict';
-
-                //       // UPLOAD CLASS DEFINITION
-                //       // ======================
-
-                //       var dropZone = document.getElementById('drop-zone');
-                //       var uploadForm = document.getElementById('js-upload-form');
-
-                //       var startUpload = function(files) {
-                //           console.log(files)
-                //           // var fileView = '<ul>';
-                //           // $.each(files, function(index, item){
-                //           //     fileView += '<li>' + item.name + '</li>';
-                //           // });
-                //           // fileView += '<ul>';
-                //           // $('#drop-zone').html(fileView);
-                //       }
+    //       var startUpload = function(files) {
+    //           console.log(files)
+    //           // var fileView = '<ul>';
+    //           // $.each(files, function(index, item){
+    //           //     fileView += '<li>' + item.name + '</li>';
+    //           // });
+    //           // fileView += '<ul>';
+    //           // $('#drop-zone').html(fileView);
+    //       }
 
 
-                //       // uploadForm.addEventListener('submit', function(e) {
-                //       //     var uploadFiles = document.getElementById('csv').files;
-                //       //     e.preventDefault()
+    //       // uploadForm.addEventListener('submit', function(e) {
+    //       //     var uploadFiles = document.getElementById('csv').files;
+    //       //     e.preventDefault()
 
 
-                //       //     startUpload(uploadFiles)
-                //       // });
+    //       //     startUpload(uploadFiles)
+    //       // });
 
-                //       dropZone.ondrop = function(e) {
-                //           e.preventDefault();
-                //           this.className = 'upload-drop-zone';
+    //       dropZone.ondrop = function(e) {
+    //           e.preventDefault();
+    //           this.className = 'upload-drop-zone';
 
-                //           startUpload(e.dataTransfer.files)
-                //       }
+    //           startUpload(e.dataTransfer.files)
+    //       }
 
-                //       dropZone.ondragover = function() {
-                //           this.className = 'upload-drop-zone drop';
-                //           return false;
-                //       }
+    //       dropZone.ondragover = function() {
+    //           this.className = 'upload-drop-zone drop';
+    //           return false;
+    //       }
 
-                //       dropZone.ondragleave = function() {
-                //           this.className = 'upload-drop-zone';
-                //           return false;
-                //       }
+    //       dropZone.ondragleave = function() {
+    //           this.className = 'upload-drop-zone';
+    //           return false;
+    //       }
 
 
-                //   }(jQuery);
+    //   }(jQuery);
 
-            </script>
+</script>
 
-            <script> /*for spinner*/
-                function spinnerEvents()
-                {
-                    $('.spinner .btn:first-of-type').on('click', function() {
-                        var btn = $(this);
-                        var input = btn.closest('.spinner').find('input');
-                        if (input.attr('max') == undefined || parseInt(input.val()) < parseInt(input.attr('max'))) {
-                            input.val(parseInt(input.val(), 10) + 1);
-                        } else {
-                            btn.next("disabled", true);
-                        }
-                    });
-                    $('.spinner .btn:last-of-type').on('click', function() {
-                        var btn = $(this);
-                        var input = btn.closest('.spinner').find('input');
-                        if (input.attr('min') == undefined || parseInt(input.val()) > parseInt(input.attr('min'))) {
-                            input.val(parseInt(input.val(), 10) - 1);
-                        } else {
-                            btn.prev("disabled", true);
-                        }
-                    });
-                }
+<script> /*for spinner*/
+    function spinnerEvents()
+    {
+        $('.spinner .btn:first-of-type').on('click', function() {
+            var btn = $(this);
+            var input = btn.closest('.spinner').find('input');
+            if (input.attr('max') == undefined || parseInt(input.val()) < parseInt(input.attr('max'))) {
+                input.val(parseInt(input.val(), 10) + 1);
+            } else {
+                btn.next("disabled", true);
+            }
+        });
+        $('.spinner .btn:last-of-type').on('click', function() {
+            var btn = $(this);
+            var input = btn.closest('.spinner').find('input');
+            if (input.attr('min') == undefined || parseInt(input.val()) > parseInt(input.attr('min'))) {
+                input.val(parseInt(input.val(), 10) - 1);
+            } else {
+                btn.prev("disabled", true);
+            }
+        });
+    }
 
-            </script>
+</script>
 
-            <!-- background image loader on browse -->
-            <script type="text/javascript">
+<!-- background image loader on browse -->
+<script type="text/javascript">
 
-                var totalMediaLoaded = 0;
-                var fileLimit = 5;
-                var reader = new FileReader();
-                reader.addEventListener("load", function() {
+    var totalMediaLoaded = 0;
+    var fileLimit = 5;
+    var reader = new FileReader();
+    reader.addEventListener("load", function() {
 
-                    var imgHTML = $('#preview-image-' + (++totalMediaLoaded));
-                    var imageIndexToLoad = totalMediaLoaded;
-                    while(imageIndexToLoad++)
-                    {
-                        var default_image_filename = {{ MarketPlex\ProductMedia::DEFAULT_IMAGE }};
-                        if(imgHTML.attr("src").indexOf(default_image_filename) > -1)
-                        {
-                            setBackgroundImage( imgHTML , reader.result);
-                            break;
-                        }
-                        imgHTML = $('#preview-image-' + imageIndexToLoad);
-                    }
-                }, false);
+        var imgHTML = $('#preview-image-' + (++totalMediaLoaded));
+        var imageIndexToLoad = totalMediaLoaded;
+        while(imageIndexToLoad++)
+        {
+            var default_image_filename = {{ MarketPlex\ProductMedia::DEFAULT_IMAGE }};
+            if(imgHTML.attr("src").indexOf(default_image_filename) > -1)
+            {
+                setBackgroundImage( imgHTML , reader.result);
+                break;
+            }
+            imgHTML = $('#preview-image-' + imageIndexToLoad);
+        }
+    }, false);
 
-                function setBackgroundImage(control, image_url) {
-                    // console.log("[DEBUG] Setting BG Image : " + control.attr("id") + " : " + image_url );
-                    // control.css("background-image", "url(" + image_url + ")");
-                    control.attr("src", image_url);
-                    // console.log("[DEBUG] BG Image URL : " + control.css("background-image"));
-                    // console.log("[DEBUG] BG Image URL : " + control.attr("src"));
-                }
-                function onBrowseFile(event) {
-                    // var fileName = $(this).val();
-                    // console.log(fileName);
-                    var file = event.target.files[0];
-                    if (file && totalMediaLoaded < fileLimit)
-                    {
-                        reader.readAsDataURL(file);
-                    }
-                }
+    function setBackgroundImage(control, image_url) {
+        // console.log("[DEBUG] Setting BG Image : " + control.attr("id") + " : " + image_url );
+        // control.css("background-image", "url(" + image_url + ")");
+        control.attr("src", image_url);
+        // console.log("[DEBUG] BG Image URL : " + control.css("background-image"));
+        // console.log("[DEBUG] BG Image URL : " + control.attr("src"));
+    }
+    function onBrowseFile(event) {
+        // var fileName = $(this).val();
+        // console.log(fileName);
+        var file = event.target.files[0];
+        if (file && totalMediaLoaded < fileLimit)
+        {
+            reader.readAsDataURL(file);
+        }
+    }
 
-                for(var i = 1; i < fileLimit; ++i)
-                    $('#upload_image_' + i).change( onBrowseFile );
+    for(var i = 1; i < fileLimit; ++i)
+        $('#upload_image_' + i).change( onBrowseFile );
 
-            </script>
-            @endsection
+</script>
+@endsection

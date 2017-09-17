@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'MarketPlex\Events\SomeEvent' => [
-            'MarketPlex\Listeners\EventListener',
+        'MarketPlex\Events\ClientAction' => [
+            'MarketPlex\Listeners\ClientActionListener',
         ],
     ];
 

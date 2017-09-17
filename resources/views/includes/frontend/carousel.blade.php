@@ -1,6 +1,6 @@
 
 <!--Carousel Wrapper-->
-<div id="carousel-example-1z" class="carousel slide carousel-fade" data-ride="carousel">
+<div id="carousel-example-1z" class="carousel slide carousel-fade" {{ count($categories) > 0 ? 'data-ride="carousel"' : '' }}>
     <!--Indicators-->
     <ol class="carousel-indicators">
         @for ($i = 0; $i < count($categories); $i++)

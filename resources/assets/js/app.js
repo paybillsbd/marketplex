@@ -15,6 +15,26 @@ require('./bootstrap');
 
 Vue.component('example', require('./components/Example.vue'));
 
-const app = new Vue({
-    el: '#app'
-});
+// const app = new Vue({
+//     el: '#app'
+// });
+
+Echo.channel('client-action.marketplex.aarombor')
+	.listen('.MarketPlex.Events.ClientAction', (e) => {
+
+		// console.log("hello pusher");
+
+		axios.get('http://127.0.0.1:5959/api/v1/app', {
+		    firstName: 'Fred',
+		    lastName: 'Flintstone'
+		  })
+		  .then(function (response) {
+		    console.log(response);		
+		    // alert(response);
+		  })
+		  .catch(function (error) {
+		    console.log(error);	
+		    // alert(error);
+		  });
+
+	});
