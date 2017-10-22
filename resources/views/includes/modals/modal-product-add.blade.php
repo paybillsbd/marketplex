@@ -316,7 +316,7 @@
                             </div>
                         </div>
 
-                        {{--@include('includes.product-modal-spec')--}}
+                        @include('includes.product-modal-spec')
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>

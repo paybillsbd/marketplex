@@ -26,7 +26,7 @@
           
         <h5><strong>Product Info</strong></h5>
         <p class="slidePara1">{!! $product->description or '<i>No description is found to this product</i>' !!}</p>
-        {{-- @include('includes.product-spec-viewer') --}}
+        @include('includes.product-spec-viewer')
       </div>
     </div>
       </div>

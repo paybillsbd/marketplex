@@ -23,7 +23,12 @@ class CreateProducts extends Migration
             $table->string('title', 200)->comment('Stored product title - can be RENAMED by store owner');
             $table->float('mrp', 10, 2)->default(0.0);
             $table->float('discount', 10, 2)->default(0.0);
+            
             // $table->json('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
+            
+            // NOTE: Temoporary field for specs it will be replaced with $table->json() if postgresql is available to server
+            $table->longText('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
+            
             $table->bigInteger('available_quantity')->default(0);
             $table->integer('return_time_limit')->default(0);
             $table->longText('description')->nullable();
