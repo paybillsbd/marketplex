@@ -196,30 +196,37 @@ class ProductController extends Controller
     {
         //dd($request->query('search_box'));
         if ($request->exists('search_box') && $request->has('search_box')) {
+            
             $search_terms = $request->query('search_box');
 
             // NOTE: like -> searches case sensitive
             // $productsBySearch = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%')->get();
-
-            // NOTE: ilike -> seaches case insensitive
-            $productsBySearch = Product::where('title', $search_terms)->orWhere('title', 'ilike', '%' . $search_terms . '%')->get();
             
-            $productsBySearchPaginated = Product::where('title', $search_terms)->orWhere('title', 'ilike', '%' . $search_terms . '%')->paginate(2);
+            // NOTE: ilike -> seaches case insensitive
+            $productQuery = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%');
+            $productsBySearch = $productQuery->get();
+            Log::info(collect($productsBySearch)->toJson());
+            
+            $productsBySearchPaginated = $productQuery->paginate(2);
             $productsBySearch = $productsBySearch->reject(function ($product) {
                 return $product->trashed() || $product->is_public === false;
             });
             $productsCount = $productsBySearch->count();
             $productsBySearchPaginated->setPath('products/search');
+
             if($request->ajax())
             {
                 if($request->exists('search_title') && $request->has('search_title') && $request->query('search_title') === "true")
                 {
                     $product_title = [];
-                    foreach($productsBySearch->take(10) as $product){
+                    foreach($productsBySearch->take(10) as $product)
+                    {
                         $product_title[] = $product->title;
                     }
                     return $product_title;
-                }else{
+                }
+                else
+                {
                     return response()->view('includes.product-search-table', [ 'productsBySearch' =>  $productsBySearchPaginated, 'search_terms' => $search_terms ])
                         ->header('Content-Type', 'html');
                 }
@@ -684,8 +691,24 @@ class ProductController extends Controller
     // http://image.intervention.io/api/response
     public function image($file_name)
     {
+        $imageFilePath = ProductMedia::getStoragePath('IMAGE') . $file_name;
+        if (!File::exists($imageFilePath))
+        {
+            $imageFilePath = Product::defaultImage();
+        }
         $manager = new ImageManager();
-        return $manager->make(ProductMedia::getStoragePath('IMAGE') . $file_name)->response();
+        return $manager->make( $imageFilePath )->resize(320, 240)->response();
+    }
+
+    public function thumbnail($file_name)
+    {
+        $imageFilePath = ProductMedia::getStoragePath('IMAGE') . $file_name;
+        if (!File::exists($imageFilePath))
+        {
+            $imageFilePath = Product::defaultImage();
+        }
+        $manager = new ImageManager();
+        return $manager->make( $imageFilePath )->resize(90, 80)->response();
     }
     
     public function quickView($product_id)

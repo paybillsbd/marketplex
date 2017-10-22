@@ -41,6 +41,7 @@ $(document).on('click','.view_detail', function (e) {
     myProduct.URI = $(this).data('product_url');
     var dataArea = {
         getResult:function(data){
+            // alert(data);
             $('#modal_container').html(data);
             $('#modal_open').modal('show');
         }
@@ -211,9 +212,12 @@ $('#search_box').keyup(function(e){
 
 $('#search_box').keyup(function(e){
     var serach_val = $('#search_box').val();
-    if(serach_val !== ''){
+    if(serach_val !== '')
+    {
         return true;
-    }else{
+    }
+    else
+    {
         myProduct.URI = myProduct.baseURI;
         var dataArea = {
             getResult: function (data) {

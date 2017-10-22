@@ -173,8 +173,8 @@
                             <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" formnovalidate="formnovalidate"
                                     id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                           </form>
-<!--                           <form id="store-delete-form" class="form-horizontal">
-                            {--{!! csrf_field() !!}--}
+                    <!--       <form id="store-delete-form" class="form-horizontal">
+                            {{--{!! csrf_field() !!}--}}
                             <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" formnovalidate="formnovalidate" 
                                     id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
                           </form> -->

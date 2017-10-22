@@ -307,9 +307,11 @@
                         <div class="block-of-block">
                             <div class="box-body">
                                 <div>
-                    <textarea name="description" class="textarea" placeholder="Product Description"
-                              style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
-                    >{{ isset($product) ? $product->description : old('description') }}</textarea>
+                                    <textarea name="description" class="textarea"
+                                    placeholder="Product Description"
+                                    style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"
+                    >{{ isset($product) ? $product->description : old('description') }}
+                                    </textarea>
                                 </div>
                             </div>
                         </div>

@@ -59,12 +59,19 @@ class Handler extends ExceptionHandler
             $errorMessage['42S22'] = 'Your information contains data that has no property in database. Please contact ' . $vendor . ' for help.';
             $errorMessage['HY000'] = 'Database access denied';
             $errorMessage['23502'] = 'You have skipped providing some data that database schema designed to expect.';
+            $errorMessage['42000'] = 'Invalid database query, please contect your databse administrator.';
             // $errorCode = !array_has($errorMessage, $exception->getCode()) ? 'DEFAULT' : $exception->getCode();
 
             // Log::critical('[' . $vendor . '][' . $exception->getMessage() . '] ' . $errorMessage[$errorCode] . '.'  );
-            Log::critical('[' . $vendor . '][' . $exception->getMessage() . '] ');
-            // flash()->error($errorMessage[$errorCode]);
-            flash()->error(config('app.name') . ' says: "Database credentials are denied. Please contact your database administrator"');
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . '][' . $exception->getCode() . '].'  );
+            if (!array_has($errorMessage, $exception->getCode()))
+            {
+                flash()->error(config('app.name') . ' says: "Database credentials are denied. Please contact your database administrator"');
+            }
+            else
+            {
+                flash()->error($errorMessage[$errorCode]);
+            }
             abort(503);
         }
         if ($exception instanceof QueryException) {

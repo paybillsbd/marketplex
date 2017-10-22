@@ -22,7 +22,7 @@
     <link href="/vendor/mdb/css/style.css" rel="stylesheet">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="{{ asset('/vendor/inzaana/css/css-m/main.css')}}" rel="stylesheet">
+    <link href="/vendor/inzaana/css/css-m/main.css" rel="stylesheet">
     
     @yield('header-styles')
 
@@ -146,7 +146,7 @@
         <!--Copyright-->
         <div class="footer-copyright">
             <div class="container-fluid">
-                © 2017 Copyright: <a href="http://portfolio.asdtechltd.com" target="_blank"> Alternative System & Development Technology Ltd. (ASDTechLtd.) </a>
+                © 2017 Copyright: <a href="{{ env('APP_POWER_OWNER_PORTFOLIO') }}" target="_blank"> {{ env('APP_POWER_OWNER_COMPANY_NAME') }} </a>
             </div>
         </div>
         <!--/.Copyright-->
@@ -172,9 +172,9 @@
     <script type="text/javascript" src="/vendor/mdb/js/mdb.min.js"></script>
 
     <!-- Scripts -->
-    <script src="/js/manifest.js"></script>
+<!--     <script src="/js/manifest.js"></script>
     <script src="/js/vendor.js"></script>
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js"></script> -->
 
     @yield('footer-scripts')
     

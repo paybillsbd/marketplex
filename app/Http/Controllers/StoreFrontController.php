@@ -43,7 +43,7 @@ class StoreFrontController extends Controller
             $marketProducts = MarketProduct::UserProducts($user)->Categorized($category);
         }
         $viewData = [
-            'active_category' => $category ? $category->id : Category::first()->id,
+            'active_category' => $category ? $category->id : -1,
         ];
         return view('store-front-1', $viewData)->withPaginatedProducts($marketProducts->paginate(6))
                                                ->withCategories(Category::all()->pluck('name', 'id'));

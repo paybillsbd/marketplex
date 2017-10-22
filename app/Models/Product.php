@@ -162,6 +162,8 @@ class Product extends Model
     {
         $specs = [];
         $id = 1;
+        if (is_null($this->special_specs))
+            return $specs;
         foreach (json_decode($this->special_specs) as $key => $value) {
             $specs[$key] = collect($value)->merge([ 'id' => $id++ ])->toArray();
         }
@@ -205,7 +207,8 @@ class Product extends Model
             $image->is_embed = true;
         }
         // foreach($image as $image); // Added by Asad
-        return $image->is_embed ? $image->url : route('user::products.medias.image', [ 'file_name' => $image->title, 'api_token' => ImageManager::PUBLIC_TOKEN ]);
+        $routeName = ($index == Product::IMAGE_DISPLAY_TYPES['thumbnail']  ? 'user::products.image.thumbnail' : 'user::products.medias.image');
+        return $image->is_embed ? $image->url : route( $routeName , [ 'file_name' => $image->title, 'api_token' => ImageManager::PUBLIC_TOKEN ]);
     }
     
     // getImageURL() added by Asad
@@ -224,7 +227,9 @@ class Product extends Model
 
     public function scopeSearchByTitle($query, $title)
     {
-        return $query->where('title', $title)->orWhere('title', 'ilike', '%' . $title . '%');
+        // ilike works only in postgresql
+        // return $query->where('title', $title)->orWhere('title', 'ilike', '%' . $title . '%');
+        return $query->where('title', $title)->orWhere('title', 'like', '%' . $title . '%');
     }
 
     public static function defaultImage()

@@ -140,7 +140,7 @@ class Store extends Model
 
     public static function storeCreated()
     {
-        return Auth::user()->products->count() > 0;    
+        return Auth::user()->stores->count() < env('STORE_LIMIT_PER_VENDOR', 1);    
     }    
 
     public static function currencyIcon()

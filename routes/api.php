@@ -23,6 +23,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 	Route::group([ 'prefix' => 'products' ], function () {
 		
 		Route::get('/medias/image/{file_name}', [ 'uses' => 'ProductController@image', 'as' => 'products.medias.image' ]);
+		Route::get('/medias/thumbnail/{file_name}', [ 'uses' => 'ProductController@thumbnail', 'as' => 'products.image.thumbnail' ]);
 	    Route::get('/{product}/quick-view', [ 'uses' => 'ProductController@quickView', 'as' => 'products.quick.view' ]);
 	});
 });
