@@ -8,14 +8,11 @@ use MarketPlex\User;
 use MarketPlex\Product;
 use MarketPlex\MarketProduct;
 use MarketPlex\Category;
-use MarketPlex\Mailers\ActionMailer;
-use MarketPlex\Events\ClientAction;
-use MarketPlex\Security\ProtocolKeeper;
 
 class StoreFrontController extends Controller
 {
     //
-    public function showStoreFront(Request $request, ActionMailer $mailer)
+    public function showStoreFront(Request $request)
     {
         if(env('STORE_CLOSE', true) === true)
             return view('store-comingsoon');
@@ -23,6 +20,12 @@ class StoreFrontController extends Controller
             return view('store-comingsoon');
 
         $user = User::whereEmail(config('mail.admin.address'))->first();
+
+        $guestUser = User::guestUser();
+        if ($guestUser)
+        {
+            $user = $guestUser;
+        }
         
         // Developer debug access
         if(!Auth::guest() && (Auth::user()->isDeveloper() || Auth::user()->isGuest()))
@@ -30,10 +33,6 @@ class StoreFrontController extends Controller
 
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
-
-        // $mailer->report($request);
-        event(new ClientAction(ProtocolKeeper::getData($request)));
-
 
         $marketProducts = MarketProduct::UserProducts($user);
         $category = null;

@@ -5,6 +5,7 @@ namespace MarketPlex;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Log;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -125,10 +126,19 @@ class User extends Authenticatable
         return false;
     }
 
+    public static function getGuestEmails()
+    {
+        return self::getUserEmails('GUEST_MAIL_ADDRESSES');
+    }
+
+    private static function getUserEmails($env_var_key)
+    {
+        return preg_split("/[,]+/", env($env_var_key, 'demo.user@' . strtolower(config('app.vendor')) . '.com'));
+    }
+
     private function hasEnvEmail($env_var_key)
     {
-        $dev_mails = preg_split("/[,]+/", env($env_var_key, 'unknown.user@' . strtolower(config('app.vendor')) . '.com'));
-        foreach($dev_mails as $email)
+        foreach(self::getUserEmails($env_var_key) as $email)
         {
             if($email == $this->email)
             {
@@ -136,6 +146,22 @@ class User extends Authenticatable
             }
         }
         return false;
+    }
+
+    public static function guestUser()
+    {
+        if (Auth::guest() && env('GUEST_PROFILE_ALLOWED', false) === true)
+        {
+            foreach (self::getGuestEmails() as $mail)
+            {
+                $guestUser = self::whereEmail($mail)->first();
+                if ($guestUser)
+                {
+                    return $guestUser;
+                }
+            }
+        }
+        return null;
     }
 
     public function hasNoProduct()

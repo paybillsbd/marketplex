@@ -15,7 +15,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $faker = UserFaker::create();
+        // $faker = UserFaker::create();
 
         /*
          * seed public user
@@ -30,5 +30,22 @@ class UsersTableSeeder extends Seeder
             Log::info('[' . config('app.vendor') . '][Single public user created for testing]');
         else
             Log::error('[' . config('app.vendor') . '][No public user created] -> [Seeding failed]');
+
+        /*
+         * seed guest users
+         *
+         * */
+        foreach (MarketPlex\User::getGuestEmails() as $email)
+        {
+            $user = factory(MarketPlex\User::class)->create([
+                'name' => env('GUEST_PROFILE_NAME', 'Guest'),
+                'password' => bcrypt('123456'),
+                'email' => $email,
+            ]);
+            if($user)
+                Log::info('[' . config('app.vendor') . '][Single guest user created for demostration]');
+            else
+                Log::error('[' . config('app.vendor') . '][No guest user created] -> [Seeding failed]');   
+        }
     }
 }
