@@ -17,7 +17,6 @@
             </a>
         </div>
         <!--/.Card image-->
-
         <!--Card content-->
         <div class="card-block">
             <!--Title-->
@@ -25,7 +24,7 @@
             <h4 class="card-title"> {{ $market_product->title }}</h4>
             <!--Text--> 
             <p class="card-text"> {!! $market_product->manufacturer_name !!} </p>
-            <a href="#" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $market_product->mrp() }} &#2547</strong></a>
+            <a href="{{ route('cart.add', ['id' => $market_product->id]) }}" style="width:100%;margin:0;" class="btn btn-default btn-fluid">Buy now for <br/><strong>{{ $market_product->mrp() }} &#2547</strong></a>
         </div>
         <!--/.Card content-->
 

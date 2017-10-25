@@ -200,6 +200,9 @@ return [
          * Driver based image processing service
          */
         Intervention\Image\ImageServiceProvider::class,
+        
+        // Cart
+        Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class
     ],
 
     /*
@@ -248,6 +251,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        
+        // Cart
+        'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
 
     ],
 

@@ -17,7 +17,6 @@
 
 @section('content')
 <div class="row">
-
     <!--Sidebar-->
     <div class="col-lg-4 wow fadeIn" data-wow-delay="0.2s">
 
@@ -38,10 +37,18 @@
         <!--First row-->
         <div class="row wow fadeIn" data-wow-delay="0.4s">
             <div class="col-lg-12">
+                <div>
+                <p><a href="{{ route('cart.show') }}" class="btn btn-success float-right" role="button">Total Item  <span class="badge">
+                    @if(count($cart) > 0)
+                        {{$cart}}
+                    @else
+                        0
+                    @endif
+                </span></a></p>
+                </div>
                 <div class="divider-new">
                     <h2 class="h2-responsive">What's new?</h2>
                 </div>        
-                
                 @include('includes.frontend.carousel')
         
             </div>
