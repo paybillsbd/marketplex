@@ -181,7 +181,6 @@
     function productFormEvents()
     {
         $('#product-form-open-button').click(function(){
-
             console.log($('#product-create-form').attr("action"));
             $('#product-create-form').attr("action", "{{ route('user::products.create') }}");
             console.log('Changed action to:' + $('#product-create-form').attr("action"));
@@ -321,14 +320,36 @@
         });
     }
 
-    // Ready
-    $('#generalTabContent').ready(function() {
+    function productModalEvents()
+    {
         var showModal = ($('div.has-error').length > 0 || $('div.is-edit').length > 0);
         $('#addProduct').modal({ 'show' : showModal });
 
+        $('#addProduct').on('hidden.bs.modal', function () {
+            $('#product-create-form').find('input[type="text"]').val('');
+            $('#product-create-form').find('input[name="available_quantity"]').val('{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}');
+            
+            var defaultTable = '';
+            defaultTable += '<tr>';
+            defaultTable += '<td>---- <input name="title_empty" type="text" value="" hidden></td>';
+            defaultTable += '<td>---- <input name="option_empty" type="text" value="" hidden></td>';
+            defaultTable += '<td>---- <input name="values_empty" type="text" value="" hidden></td>';
+            defaultTable += '</tr>';
+            $('table.spec-table tbody').html(defaultTable);
+
+
+            var fileLimit = 5;
+            var default_image_filename = '{{ MarketPlex\ProductMedia::IMAGES_PATH_PUBLIC . MarketPlex\ProductMedia::DEFAULT_IMAGE }}';
+            for(var i = 1; i < fileLimit; ++i)
+                $('#blah-' + i).attr('src', default_image_filename);
+        });
+    }
+
+    // Ready
+    $('#generalTabContent').ready(function() {
+        productModalEvents();
         onChangeEmbedVideoCheck();
         $( "#has_embed_video" ).change(onChangeEmbedVideoCheck);
-
         spinnerEvents();
         specControlEvents();
         productFormEvents();
