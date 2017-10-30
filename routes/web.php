@@ -24,49 +24,36 @@ Route::get('/app', function() {
 });
 
 
-// cart test
 
-// add products to the cart
-Route::get('/addcart/{id}', [
-    'uses' => 'StoreFrontController@addCart',
-    'as'=> 'cart.add'
-    ]);
-
-
-// show all cart products
-Route::get('/cart/show', [
-    'uses' => 'StoreFrontController@showCart',
-    'as'=> 'cart.show'
-    ]);
+Route::group([ 'prefix' => 'cart' ], function () {
+// cart test    
+    // add products to the cart
+    Route::get('/addcart/{id}', ['uses' => 'CartController@addCart', 'as'=> 'cart.add']);
     
-// add quantity of one product in cart page
-Route::get('/cart/addqt/{id}', [
-    'uses' => 'StoreFrontController@addQtCart',
-    'as'=> 'cart.addqt'
-    ]);
-    
-// decrease quantity of one product in cart page
-Route::get('/cart/remove/{id}', [
-    'uses' => 'StoreFrontController@removeCart',
-    'as'=> 'cart.remove'
-    ]);
-    
-// remove a product from cart page
-Route::get('/cart/removethis/{id}', [
-    'uses' => 'StoreFrontController@removethisCart',
-    'as'=> 'cart.removethis'
-    ]);
-    
-// remove all items from cart
-Route::get('/cart/removeall/', [
-    'uses' => 'StoreFrontController@removeallCart',
-    'as'=> 'cart.removeall'
-    ]);
+    // show all cart products
+    Route::get('/show', ['uses' => 'CartController@showCart', 'as'=> 'cart.show']);
+            
+    // add quantity of one product in cart page
+    Route::get('/addqt/{id}', ['uses' => 'CartController@addQtCart', 'as'=> 'cart.addqt']);
         
- 
-
+    // decrease quantity of one product in cart page
+    Route::get('/remove/{id}', ['uses' => 'CartController@decreaseCart', 'as'=> 'cart.remove']);
+    
+    // remove a product from cart page
+    Route::get('/removethis/{id}', ['uses' => 'CartController@removeItem', 'as'=> 'cart.removethis']);
+        
+    // remove all items from cart
+    Route::get('/removeall/', ['uses' => 'CartController@removeCart', 'as'=> 'cart.removeall']);
+            
+    // Go to check out page
+    Route::get('/checkout/', ['uses' => 'CartController@checkoutCart', 'as'=> 'cart.checkout']);
+    
 // end cart test
 
+// Corfirm Order
+    Route::post('/cart/confirm/', ['uses' => 'CartController@confirmCart', 'as'=> 'cart.confirm']);
+// end order  
+});
 
 
 /* Development */
@@ -74,6 +61,11 @@ Route::get('/cart/removeall/', [
 Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
 
 Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
+
+// store-front controller
+
+
+
 
 Route::get('/about', function() {
     return view('store-about');

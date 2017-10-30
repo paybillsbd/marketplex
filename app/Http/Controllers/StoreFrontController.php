@@ -9,6 +9,10 @@ use MarketPlex\Product;
 use MarketPlex\MarketProduct;
 use MarketPlex\Category;
 use Cart;
+use Validator;
+use Mail;
+use MarketPlex\Mail\Order;
+use MarketPlex\Mail\OrderPlacement;
 
 class StoreFrontController extends Controller
 {
@@ -58,68 +62,5 @@ class StoreFrontController extends Controller
         return redirect()->route('store-front')->withCategory($category);
     }
     
-    // Test Cart Functions
-    public function addCart($id)
-    {
-        $products = MarketProduct::find($id);
-        
-        $result = Cart::add([
-            'id' => $id,
-            'name' => $products->title,
-            'qty' => 1,
-            'price' => $products->mrp(),
-            'options' => ['image' => $products->thumbnail()]
-            ]);
-
-        
-        return redirect()->back();
-        
-        
-    }
-    public function showCart()
-    {
-        
-       $totalcart = Cart::content();
-        
-       $totalprice = Cart::subtotal();
-        
-       return view('testcartview',  compact('totalcart', 'totalprice'));
-    }
     
-    public function addQtCart($id)
-    {
-        $item = Cart::get($id);
-        
-        Cart::update($id, $item->qty + 1);
-        
-        return redirect()->back();
-    }
-
-
-    public function removeCart($id)
-    {
-        $item = Cart::get($id);
-        
-        Cart::update($id, $item->qty - 1);
-        
-        return redirect()->back();
-        
-    }
-    
-    
-    public function removethisCart($id)
-    {
-         Cart::remove($id);
-        
-        return redirect()->back();
-        
-    }
-
-    public function removeallCart()
-    {
-        Cart::destroy();
-        
-        return redirect()->route('store-front');
-    }
-    // End test cart
 }

@@ -28,8 +28,9 @@
                   <img src="{{ $product->options->image }}" alt="..." class="img-reponsive">
                   <div class="caption text-center">
                     <h3>{{ $product->name }}</h3>
-                    <h4>Quantity: {{ $product->qty}}</h4>
-                    <p>Price: ${{ $product->price }}</p>
+                    <h5>Cart Quantity: {{ $product->qty }}</h5>
+                    <p>Available Quantity: {{ $product->options->available_quantity }}</p>
+                    <p>Price: <span>{{ MarketPlex\Store::currencyIcon() }}</span>{{ $product->price }}</p>
                     <a href="{{ route('cart.remove', ['id' => $product->rowId] ) }}" ><button  class="btn btn-warning btn-sm fa fa-minus fa-2x"></button></a>
                     <a href="{{ route('cart.addqt', ['id' => $product->rowId] ) }}"><button  class="btn btn-success btn-sm fa fa-plus fa-2x"></button></a>
                     <br>
@@ -41,8 +42,8 @@
            @endforeach
            @if($totalprice > 0)
             <div class="text-center col-md-12">
-              <h3 class="alert alert-info">Total Price: {{$totalprice}}</h3>
-              <a href="#"><button  class="btn btn-primary">Checkout</button></a>
+              <h3 class="alert alert-info">Total Price: <span>{{ MarketPlex\Store::currencyIcon() }}</span>{{$totalprice}}</h3>
+              <a href="{{route('cart.checkout')}}"><button  class="btn btn-primary">Checkout</button></a>
             </div>
            @endif
         </div>
