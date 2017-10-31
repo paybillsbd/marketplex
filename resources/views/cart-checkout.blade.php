@@ -88,7 +88,8 @@
 @endsection
 
 @section('content')
-<div class="row">
+<div class="wow fadeIn" data-wow-delay="0.2s">
+  <div class="row">
       <!--cart form start from here-->
       <div class="col-12">
           <!--REVIEW ORDER-->
@@ -131,15 +132,7 @@
         {{--@include('layouts.secure-payment-checkout')--}}
       <!--CREDIT CART PAYMENT END-->
       <div class="col-12">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+       @include('includes.message.message')
           <!--SHIPPING METHOD-->
           <div class="card ">
             <form class="form-horizontal" method="post" action="{{ route('cart.confirm') }}">
@@ -214,4 +207,5 @@
       </div>
 <!--form end here-->
   </div>
+</div>
 @endsection

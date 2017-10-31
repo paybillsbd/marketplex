@@ -31,6 +31,6 @@ class OrderPlacement extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.orderforadmin');
+        return $this->view('emails.order-admin');
     }
 }

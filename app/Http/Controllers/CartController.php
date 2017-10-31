@@ -10,6 +10,7 @@ use Mail;
 use MarketPlex\Product;
 use MarketPlex\Mail\Order;
 use MarketPlex\Mail\OrderPlacement;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -40,12 +41,14 @@ class CartController extends Controller
        $totalcart = Cart::content();
         
        $totalprice = Cart::subtotal();
-    
+       
+       $products = Product::all();
+       
        if(Cart::count() == 0){
             return redirect()->route('store-front');
         }
         
-       return view('testcartview',  compact('totalcart', 'totalprice'));
+       return view('cart-view',  compact('totalcart', 'totalprice', 'products'));
     }
     
     public function addQtCart($id)
@@ -58,9 +61,14 @@ class CartController extends Controller
         
         // Checking cart quantity with available item quantity
         if($item->qty < $available_quantity){
-          Cart::update($id, $item->qty + 1);  
+          Cart::update($id, $item->qty + 1);
+          return redirect()->back();
         }
-        return redirect()->back();
+        else{
+            Session::flash('alert-danger', 'Product quantity is not available!');
+            return redirect()->back();
+        }
+
     }
 
 
@@ -106,7 +114,7 @@ class CartController extends Controller
         
         $totalcheckout = Cart::subtotal();
         
-        return view('testcheckout', compact('allcheckout', 'totalcheckout'));
+        return view('cart-checkout', compact('allcheckout', 'totalcheckout'));
     }    
     // Confirm Order    
     public function confirmCart(Request $request)

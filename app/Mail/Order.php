@@ -31,6 +31,6 @@ class Order extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.orderforcustomer');
+        return $this->view('emails.order-customer');
     }
 }

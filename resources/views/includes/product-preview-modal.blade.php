@@ -10,7 +10,7 @@
         <h4 class="modal-title">Product Details - Quick View</h4>
       </div>
       <div class="modal-body">
-          <div class="row">
+      <div class="row">
       <div class="col-md-6  padT10">
         <img class="img-responsive imgborder" data-toggle="magnify" src="{{ $product->banner() }}" />
       </div>
@@ -28,7 +28,7 @@
         <p class="slidePara1">{!! $product->description or '<i>No description is found to this product</i>' !!}</p>
         @include('includes.product-spec-viewer')
       </div>
-    </div>
+      </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
