@@ -49,10 +49,16 @@ class StoreFrontController extends Controller
         $viewData = [
             'active_category' => $category ? $category->id : -1,
         ];
+        
         $cart = Cart::count();
+        
+        $totalcart = Cart::content();
+        
+        // $products = MarketProduct::all();
+        
         return view('store-front-1', $viewData)->withPaginatedProducts($marketProducts->paginate(6))
                                                 ->withCategories(Category::all()->pluck('name', 'id'))
-                                                ->with('cart',$cart);
+                                                ->with(compact('cart', 'totalcart'));
                                                 
                                                
     }
