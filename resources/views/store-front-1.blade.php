@@ -16,6 +16,7 @@
 @endsection
 
 @section('content')
+@include('includes.message.message') 
 <div class="row">
     <!--Sidebar-->
     <div class="col-lg-4 wow fadeIn" data-wow-delay="0.2s">
@@ -54,7 +55,7 @@
         <hr class="extra-margins">
 
         <!--Second row-->
-        <div class="row">        
+        <div class="row">
             @include('includes.frontend.product', [ 'market_products' => $paginated_products ])         
         </div>
         <!--/.Second row-->

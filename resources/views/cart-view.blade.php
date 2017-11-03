@@ -39,12 +39,12 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body text-center">
                 <div class="row">
-                  <div class="col-md-3  padT10">
+                  <div class="col-md-6 offset-md-3 padT10">
                       <img class="img-responsive imgborder" data-toggle="magnify" src="{{ $product->banner() }}" />
                   </div>
-                  <div class="col-md-9" style="height:500px;overflow-y:auto">
+                  <div class="col-md-12" style="height:500px;overflow-y:auto">
                     <h3 class="padmar0 headtext1">{{ $product->title }}</h3>
                     <p>Category: {{ $product->categoryName() }}</p>
                     <h4>{!! MarketPlex\Store::currencyIcon() !!}{{ $product->mrp }}</h4>
