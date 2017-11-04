@@ -237,6 +237,11 @@ class Product extends Model
         return (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE);
     }
 
+    public static function isFeatureSpecAllowed()
+    {
+        return env('PRODUCT_FEATURE_SPEC_ALLOWED', false) === true;
+    }
+
     public static function imageDisplayOrientation($index)
     {
         return array_keys(self::IMAGE_DISPLAY_TYPES)[$index];

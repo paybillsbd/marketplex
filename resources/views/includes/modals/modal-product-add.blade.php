@@ -316,7 +316,9 @@
                             </div>
                         </div>
 
-                        @include('includes.product-modal-spec')
+                        @if ( MarketPlex\Product::isFeatureSpecAllowed() )
+                            @include('includes.product-modal-spec')
+                        @endif
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
