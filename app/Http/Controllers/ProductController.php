@@ -368,7 +368,10 @@ class ProductController extends Controller
 
         $product->title = $data['title'];
         $product->is_public = $data['is_public'];
-        // $product->special_specs = collect($data['spec'])->toJson();
+        if (Product::isFeatureSpecAllowed())
+        {
+            $product->special_specs = collect($data['spec'])->toJson();
+        }
         $product->available_quantity = $data['available_quantity'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
         // $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
@@ -594,7 +597,10 @@ class ProductController extends Controller
         $product->title = $marketProduct->title;
         $product->discount = $data['discount'];
         $product->mrp = $product->discountedPrice();
-        // $product->special_specs = collect($data['spec'])->toJson();
+        if (Product::isFeatureSpecAllowed())
+        {
+            $product->special_specs = collect($data['spec'])->toJson();
+        }
         $product->available_quantity = $data['available_quantity'];
         $product->return_time_limit = $data['return_time_limit'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
