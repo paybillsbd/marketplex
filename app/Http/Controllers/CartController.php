@@ -98,10 +98,9 @@ class CartController extends Controller
         
         $available_quantity = $products->product->available_quantity;
         
-        // Checking cart quantity with available item quantity
+        // Checking cart quantity with available item quantity in DB
         if($item->qty < $available_quantity){
           Cart::update($id, $item->qty + 1);
-          Session::flash('alert-success', 'Quantity added to the cart!');
           return redirect()->back();
         }
         else{
@@ -118,10 +117,9 @@ class CartController extends Controller
         Cart::update($id, $item->qty - 1);
         
         if(Cart::count() > 0){
-            Session::flash('alert-warning', 'Cart quantity decreased!');
             return redirect()->back();
         }
-        Session::flash('alert-warning', 'Cart removed!');
+        Session::flash('alert-warning', 'All Cart removed!');
         return redirect()->route('store-front');
         
     }
