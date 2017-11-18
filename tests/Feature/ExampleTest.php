@@ -7,8 +7,8 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-use MarketPlex\MarketProduct;
 use Cart;
+use MarketPlex\MarketProduct;
 
 class ExampleTest extends TestCase
 {
@@ -31,32 +31,32 @@ class ExampleTest extends TestCase
      */
     public function testBasicCart()
     {
-        $products = MarketProduct::find(1);
-        
-        $result = Cart::add([
+        $products = factory(App\MarketProduct::class)->create([
+        'name' => $faker->unique()->safeEmail,
+        'title' => $faker->name,
+        'price' => $faker->randomNumber(2),
+        'manufacturer_name' => str_random(10),
+    ]);
+                
+        $product = [
                     'id' => 1,
-                    'name' => $products->title,
-                    'qty' => 1,
-                    'price' => $products->mrp(),
+                    'name' => "Product 1",
+                    'qty' => 5,
+                    'price' => 100,
                     'options' => [
-                        'image' => $products->thumbnail(),
-                        'available_quantity' => $products->product->available_quantity
+                          'available_quantity' => 5
                         ]
-                    ]);
+                    ];
+        
+        $result = Cart::add($product);
                     
         $rowid = $result->rowId;
         
         $item = Cart::get($rowid);
         
-        $product = MarketProduct::find($item->id);
-        
-        $available_quantity = $products->product->available_quantity;
-        
-        
-        
         $response = $this->get('/addqt/{id}');
                          
-        $this->assertTrue($item->qty < $available_quantity);
+        $this->assertTrue($item->qty <= $product['options']['available_quantity']);
                          
         
     }

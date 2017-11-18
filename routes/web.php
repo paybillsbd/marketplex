@@ -23,7 +23,9 @@ Route::get('/app', function() {
     return 'Its me';
 });
 
+// Sales Route
 
+Route::get('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
 
 Route::group([ 'prefix' => 'cart' ], function () {
 // cart test    
