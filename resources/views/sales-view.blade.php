@@ -47,13 +47,22 @@
       
       $('#addBankRow').click(function(){  
            i++;  
-           $('#dynamic_field_bank').append('<tr id="row'+i+'" class="dynamic-added"><td><p>12/10/17</p></td><td><input id="bank_title" name="bank_title" required="required" type="text"></td><td><select class="form-control" id="bank_ac_no"><option>151035654646001</option><option>151035654646002</option><option>151035654646003</option></select></td><td><input id="paid_amount" name="paid_amount" required="required" type="text"></td><td><button type="button" name="remove" id="'+i+'" class="btn btn-danger btn-sm btn_remove">X</button></td></tr>');
+           $('#dynamic_field_bank').append('<tr id="row'+i+'" class="dynamic-added"><td><p>12/10/17</p></td><td><select class="form-control" id="deposit_method"><option>Bank</option><option>Vault</option></select></td><td><input id="bank_title" name="bank_title" required="required" type="text"></td><td><select class="form-control" id="bank_ac_no"><option>151035654646001</option><option>151035654646002</option><option>151035654646003</option></select></td><td><input id="paid_amount" name="paid_amount" required="required" type="text"></td><td><button type="button" name="remove" id="'+i+'" class="btn btn-danger btn-sm btn_remove">X</button></td></tr>');
       });
       
       $(document).on('click', '.btn_remove', function(){  
            var button_id = $(this).attr("id");   
            $('#row'+button_id+'').remove();  
       }); 
+      
+      $('select').change(function() {
+          var selected = $('#deposit_method option:selected');
+          if(selected.html() == 'Vault'){
+            $('#bank_title , #bank_ac_no').hide();
+          }else{
+            $('#bank_title , #bank_ac_no').show();
+          }
+      });
 
   }); 
   
@@ -84,7 +93,7 @@
 @section('content')
 @include('includes.message.message') 
 <div class="wow fadeIn" data-wow-delay="0.2s" id="app">
-  <!--<div class="row">-->
+  <div class="row">
   <!--      <div class="col-12">-->
   <!--        <div class="card top_card">-->
   <!--          <form class="form-horizontal" method="post" action="">-->
@@ -325,15 +334,22 @@
               			<thead>
               			  <tr>  
               			  <th width="10%">Deposit Date</th>
+              			  <th width="10%">Deposit Method</th>
               				<th width="25%">Bank Title</th>
               				<th width="25%">Account No</th>
-              				<th width="30%">Deposit Amount</th>
+              				<th width="20%">Deposit Amount</th>
               				<th width="10%">#</th>
               			  </tr>
               			</thead>
               			<tbody>
               			  <tr>
               			    <td><p>12/10/17</p></td>
+              			    <td>
+              			      <select class="form-control" id="deposit_method">
+                            <option>Bank</option>
+                            <option>Vault</option>
+                          </select>
+                        </td>
               			    <td><input id="bank_title" name="bank_title" required="required" type="text"></td>
           			        <td>
           			        <select class="form-control" id="bank_ac_no">

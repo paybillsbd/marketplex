@@ -27,6 +27,11 @@ Route::get('/app', function() {
 
 Route::get('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
 
+Route::get('/searchsales', ['uses' => 'SaleController@getSaleSearch', 'as'=> 'get.sale.search']);
+
+Route::get('/salesresults', ['uses' => 'SaleController@getSaleSearchResults', 'as'=> 'sale.search.results']);
+
+
 Route::group([ 'prefix' => 'cart' ], function () {
 // cart test    
     // add products to the cart

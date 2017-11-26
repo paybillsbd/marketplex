@@ -6,14 +6,20 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function getSale()
     {
         return view('sales-view');
+    }
+
+    public function getSaleSearch()
+    {
+        return view('sales-search-view');
+    }
+    
+    public function getSaleSearchResults()
+    {
+        return view('sales-search-results');
     }
 
     /**
