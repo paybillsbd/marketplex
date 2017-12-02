@@ -1,6 +1,6 @@
 @extends('layouts.app-store-front')
-@section('title', 'Sales')
-@section('title-module-name', 'Sales')
+@section('title', 'Edit Sales')
+@section('title-module-name', 'Edit Sales')
 
 @section('header-styles')
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -38,13 +38,7 @@
     <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
     <script>
     $(document).ready(function(){      
-      var i=1;  
-
-      $('#addBillingRow').click(function(){  
-           i++;  
-           $('#dynamic_field_shipping').append('<tr class="ship_bill" id="row'+i+'"><td></td><td><input id="purpose" type="text" name="purpose" required></td><td><input id="amount" name="amount" type="number" min="0" required></td><td><input id="quantity" name="quantity" required="required" type="number" min="0" value="0"></td><td><strong><i><span class="multTotal">0.00</span></i></strong></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');  
-      });   
-
+      
       $('#addPayRow').click(function(){  
            i++;  
            $('#dynamic_field_pay').append('<tr id="row'+i+'" class="dynamic-added"><td><p>12/10/17</p></td><td><select class="form-control" id="trans_option"><option>By Cash (hand to hand)</option><option>By Cash (cheque deposit)</option><option>By Cash (electronic transfer)</option><option>By Cheque (hand to hand)</option></select></td><td><input id="paid_amount" name="paid_amount" required="required" type="number" min="0"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
@@ -59,34 +53,16 @@
            e.preventDefault();
            var button_id = $(this).attr("id");
            $('#row'+button_id+'').remove();
-           multInputs();
       }); 
       
-
-      $("tbody").on('change', "#deposit_method", function() {
-          if ($(this).val() == 'Vault'){
-              $('#bank_title , #bank_ac_no').hide();
-          } else {
-              $('#bank_title , #bank_ac_no').show();
+      $('select').change(function() {
+          var selected = $('#deposit_method option:selected');
+          if(selected.html() == 'Vault'){
+            $('#bank_title , #bank_ac_no').hide();
+          }else{
+            $('#bank_title , #bank_ac_no').show();
           }
       });
-      
-
-       function multInputs() {
-           var mult = 0;
-           // for each row:
-           $("tr.ship_bill").each(function () {
-               // get the values from this row:
-               var $amount = $('#amount', this).val();
-               var $quantity = $('#quantity', this).val();
-               var $total = ($amount * 1) * ($quantity * 1)
-               $('.multTotal',this).text($total);
-               mult += $total;
-           });
-           $("#grandTotal").text(mult);
-       }
-       
-       $("tbody").on('change', '.ship_bill input',multInputs);
 
   }); 
     </script>
@@ -105,86 +81,21 @@
           <div class="card">
             <form class="form-horizontal" method="post" action="">
               {{ csrf_field() }}
-              <div class="card-header text-center"><h4><strong>Sales Data</strong></h4></div>
+              <div class="card-header text-center"><h4><strong>Edit Sales Data</strong></h4></div>
               <div class="card-block">
-                    <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
                         <label for="bill_id"><strong>Billing ID:</strong></label>
-                        <div class="col-md-12">
-                            <input type="text" name="bill_id" value="" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                      <label for="selected_client_name"><strong>Business/Client/Company Name:</strong></label>
-                      <div class="row">
-                        <div class="col-md-10">
-                          <select class="form-control" id="selected_client_name">
-                            <option>Name 1</option>
-                            <option>Name 2</option>
-                            <option>Name 3</option>
-                            <option>Name 4</option>
-                            <option>Name 5</option>
-                          </select>
-                        </div>
-                        <div class="col-md-2">
-                          <div class="clearfix">
-                    			  <a href="#" data-toggle="modal" data-target="#add_client" class="btn btn-success btn-sm float-right">Add</a>
-                          </div>
-                        	<div class="modal fade" id="add_client" tabindex="-1" role="dialog" aria-hidden="true">
-                        	  <div class="modal-dialog">
-                        			<div class="modal-content">
-                        				<div class="modal-header">
-                        					<button type="button" class="close" data-dismiss="modal">
-                        						<span aria-hidden="true">&times;</span>
-                        						<span class="sr-only">Close</span>
-                        					</button>
-                        					<h4 class="modal-title">Add Client</h4>
-                        				</div>
-                        				<div class="modal-body">
-                                    <div class="form-group">
-                                      <input type="text" name="client_name" placeholder="Client/Company/Business Name" required />
-                                    </div>
-                                    <div class="form-group">
-                                      <textarea class="form-control" rows="5" name="client_info" id="client_info" placeholder="Client/Company/Business Info" required></textarea>
-                        				    </div>
-                        				</div>
-                        				<div class="modal-footer">
-                        					<button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
-                        					<button type="sumbit" class="btn btn-success">Save</button>
-                        				</div>
-                        			</div>
-                        		</div>
-                          </div>
-                        </div>
+                        <p>1</p>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="store_name_input"><strong>Store:</strong></label>
-                      <div class="row">
-                        <div class="col-md-12">
-                          <select class="form-control" id="store_name_input">
-                            <option>Store 1</option>
-                            <option>Store 2</option>
-                            <option>Store 3</option>
-                            <option>Store 4</option>
-                            <option>Store 5</option>
-                          </select>
-                        </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="selected_client_name"><strong>Business/Client/Company Name:</strong></label>
+                        <p>Client Name</p>
                       </div>
                     </div>
-                    <div class="form-group">
-                      <label for="product_name"><strong>Product:</strong></label>
-                      <div class="row">
-                        <div class="col-md-12">
-                          <input type="hidden" name="product_id" value="{{ 1 }}" />
-                          <select class="form-control" id="product_name">
-                            <option>Product 1</option>
-                            <option>Product 2</option>
-                            <option>Product 3</option>
-                            <option>Product 4</option>
-                            <option>Product 5</option>
-                          </select>
-                        </div>
-                      </div>
                   </div>
                   <h4><strong>Billing</strong></h4>
                   <div class="form-group">
@@ -192,12 +103,6 @@
                     <div class="col-md-10">
                       <label for="poduct_billing"><strong>Product Billing:</strong></label>
                     </div>
-                    <div class="col-md-2">
-                      <div class="clearfix">
-                			  <a href="#" data-toggle="modal" data-target="#add_billing_data" class="btn btn-success btn-sm float-right">Add</a>
-                      </div>
-                    </div>
-                    
                   </div>
                   <table class="table table-bordered">
             			<thead>
@@ -215,8 +120,8 @@
             			    <td>12/12/17</td>
         			        <td><p>Product Name</p></td>
         			        <td><p>Store Name</p></td>
-          				    <td><input id="store_name" name="store_name" required="required" type="number" min="0"></td>
-          				    <td><strong><i>659.00</i></strong></td>
+          				    <td><strong><i><spa>3</span></i></strong></td>
+          				    <td><strong><i>238.00</i></strong></td>
           				    <td></td>
             			  </tr>
             			</tbody>
@@ -226,9 +131,6 @@
                     <div class="row">
                       <div class="col-md-11">
                         <label for="shipping_billing"><strong>Shipping Billing:</strong></label>
-                      </div>
-                      <div class="col-md-1">
-                        <button type="button" id="addBillingRow" class="btn btn-success btn-sm fa fa-plus fa-3x float-right"></button>
                       </div>
                     </div>
                     <table class="table table-bordered" id="dynamic_field_shipping">
@@ -248,16 +150,16 @@
           			          12/12/17
           			        </td>
           			        <td>
-          			          <input id="purpose" type="text" name="purpose" required>
+          			          <p>Purpose Name</p>
           			        </td>
           			        <td>
-          			          <input id="amount" name="amount" type="number" min="0" required>
+          			          <p>213.00</p>
           			        </td>
           				      <td>
-          				        <input id="quantity" name="quantity" required="required" type="number" min="0" value="0">
+          				        <p>5</p>
           				      </td>
           				      <td>
-          				        <strong><i><span class="multTotal">0.00</span></i></strong>
+          				        <strong><i><span class="multTotal">238.00</span></i></strong>
           				      </td>
           				      <td>
           				      </td>
@@ -269,7 +171,7 @@
                     <tbody>
                       <tr>
                         <td width="50%"><strong><i>Bill Amount:</i></strong></td>
-                        <td><strong><i><span id="grandTotal">0.00</span></i></strong></td>
+                        <td><strong><i><span id="grandTotal">230.00</span></i></strong></td>
                       </tr>
                     </tbody>
                   </table>
@@ -376,7 +278,7 @@
               			  </tr>
               			</thead>
               			<tbody>
-              			  <tr class="bank_deposit">
+              			  <tr>
               			    <td><p>12/10/17</p></td>
               			    <td>
               			      <select class="form-control" id="deposit_method">

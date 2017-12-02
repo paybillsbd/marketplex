@@ -11,15 +11,20 @@ class SaleController extends Controller
     {
         return view('sales-view');
     }
+    
+    public function editSale()
+    {
+        return view('edit-sales-view');
+    }
 
     public function getSaleSearch()
     {
         return view('sales-search-view');
     }
-    
-    public function getSaleSearchResults()
+
+    public function salesIncome()
     {
-        return view('sales-search-results');
+        return view('sales-income');
     }
 
     /**

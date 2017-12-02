@@ -27,9 +27,11 @@ Route::get('/app', function() {
 
 Route::get('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
 
+Route::get('/editsales', ['uses' => 'SaleController@editSale', 'as'=> 'edit.sale']);
+
 Route::get('/searchsales', ['uses' => 'SaleController@getSaleSearch', 'as'=> 'get.sale.search']);
 
-Route::get('/salesresults', ['uses' => 'SaleController@getSaleSearchResults', 'as'=> 'sale.search.results']);
+Route::get('/salesincome', ['uses' => 'SaleController@salesIncome', 'as'=> 'sale.income']);
 
 
 Route::group([ 'prefix' => 'cart' ], function () {
