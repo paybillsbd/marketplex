@@ -29,7 +29,7 @@
     <!-- Template styles -->
     <style rel="stylesheet">
         /* TEMPLATE STYLES */
-      
+
         main {
             padding-top: 3rem;
             padding-bottom: 2rem;
@@ -69,23 +69,29 @@
         }     
         
 
-        // Small screen
-        @media (min-width: 768px) {
+        /*Small screen*/
+        @media screen and (max-width: 750px){
+            
+            body{
+                 width: fit-content;
+            }
             
         }
 
-        // Medium screen
-        @media (min-width: 992px) {
-           .card{
-                background: red;
-             }
+        /*Medium screen*/
+        @media screen and (min-width: 992px) {
+           /*.card{*/
+           /*     background: red;*/
+           /*  }*/
+
         }
 
-        // Large screen
-        @media (min-width: 1200px) {
-             .card{
-                background: red;
-             }      
+        /*Large screen*/
+        @media screen and (min-width: 1200px) {
+             /*.card{*/
+             /*   background: red;*/
+             /*}      */
+
         }
 
         .widget-wrapper {

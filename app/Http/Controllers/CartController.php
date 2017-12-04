@@ -7,6 +7,7 @@ use MarketPlex\MarketProduct;
 use Cart;
 use Validator;
 use Mail;
+use MarketPlex\User;
 use MarketPlex\Product;
 use MarketPlex\Mail\Order;
 use MarketPlex\Mail\OrderPlacement;
@@ -25,32 +26,25 @@ class CartController extends Controller
         
         if(count($totalcart) > 0){
 
-            foreach($totalcart as $cartitem) {
-
-              $cart_quantity = $cartitem->qty;
-                // compare available item quantity before add to cart  
-              if($product_quantity > $cart_quantity){
-                  
-                $result = Cart::add([
-                    'id' => $id,
-                    'name' => $products->title,
-                    'qty' => 1,
-                    'price' => $products->mrp(),
-                    'options' => [
-                        'image' => $products->thumbnail(),
-                        'available_quantity' => $products->product->available_quantity
-                        ]
-                    ]);
-                    
-                Session::flash('alert-success', 'Product added to the cart!');
-                return redirect()->back();
-                  
-              }
-              else {
-                  
+            foreach($totalcart as $cartitem) 
+            {
+                $rowId = $cartitem->rowId;
+             
+                $item = Cart::get($cartitem->rowId);
+              
+                $marketProduct = MarketProduct::find($item->id);
+        
+                $available_quantity = $marketProduct->product->available_quantity;
+                
+                // Checking cart quantity with available item quantity in DB
+                if($item->qty < $available_quantity){
+                  Cart::update($rowId, $item->qty + 1);
+                  Session::flash('alert-success', 'Product added to the cart!');
+                  return redirect()->back();
+                }
+                else{
                     Session::flash('alert-danger', 'Product quantity is not available!');
                     return redirect()->back();
-                  
                 }
 
             }
@@ -70,8 +64,7 @@ class CartController extends Controller
                     ]);
                     Session::flash('alert-success', 'Product added to the cart!');
                     return redirect()->back();
-            
-        }
+            }
 
     }
     public function showCart()
@@ -80,14 +73,12 @@ class CartController extends Controller
        $totalcart = Cart::content();
         
        $totalprice = Cart::subtotal();
-       
-       $products = Product::all();
-       
+ 
        if(Cart::count() == 0){
             return redirect()->route('store-front');
         }
         
-       return view('cart-view',  compact('totalcart', 'totalprice', 'products'));
+       return view('cart-view',  compact('totalcart', 'totalprice'));
     }
     
     public function addQtCart($id)
@@ -98,10 +89,9 @@ class CartController extends Controller
         
         $available_quantity = $products->product->available_quantity;
         
-        // Checking cart quantity with available item quantity
+        // Checking cart quantity with available item quantity in DB
         if($item->qty < $available_quantity){
           Cart::update($id, $item->qty + 1);
-          Session::flash('alert-success', 'Quantity added to the cart!');
           return redirect()->back();
         }
         else{
@@ -118,10 +108,9 @@ class CartController extends Controller
         Cart::update($id, $item->qty - 1);
         
         if(Cart::count() > 0){
-            Session::flash('alert-warning', 'Cart quantity decreased!');
             return redirect()->back();
         }
-        Session::flash('alert-warning', 'Cart removed!');
+        Session::flash('alert-warning', 'All Cart removed!');
         return redirect()->route('store-front');
         
     }
