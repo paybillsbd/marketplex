@@ -156,10 +156,10 @@
               <div class="row">
                 <div class="col-6">
                   <div class="form-group"> <!-- Date input -->
-                    <input class="form-control" id="vault_total" name="vault_total" placeholder="Vault total" type="text"/>
+                    <strong>Vault total: <i>238.00</i></strong>
                   </div>                    
                   <div class="form-group"> <!-- Date input -->
-                    <input class="form-control" id="cash_total" name="cash_total" placeholder="Cash total" type="text"/>
+                    <strong>Cash total: <i>138.00</i></strong>
                   </div>
                 </div>
               </div>

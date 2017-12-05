@@ -12,9 +12,9 @@ class SaleController extends Controller
         return view('sales-view');
     }
     
-    public function editSale()
+    public function editSale(Request $request)
     {
-        return view('edit-sales-view');
+        return $request->all();
     }
 
     public function getSaleSearch()

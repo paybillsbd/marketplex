@@ -27,7 +27,9 @@ Route::get('/app', function() {
 
 Route::get('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
 
-Route::get('/editsales', ['uses' => 'SaleController@editSale', 'as'=> 'edit.sale']);
+Route::post('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
+
+Route::post('/editsales', ['uses' => 'SaleController@editSale', 'as'=> 'edit.sale']);
 
 Route::get('/searchsales', ['uses' => 'SaleController@getSaleSearch', 'as'=> 'get.sale.search']);
 
