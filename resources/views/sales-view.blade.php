@@ -37,7 +37,20 @@
 @section('footer-scripts')
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script>
+    // $("#showName").click(function(e){
+    //   e.preventDefault();
+    //   $("#showNameFiled").slideToggle();
+    // });
+    // $("#showStore").click(function(e){
+    //   e.preventDefault();
+    //   $("#showStoreFiled").slideToggle();
+    // });
+    // $("#showProduct").click(function(e){
+    //   e.preventDefault();
+    //   $("#showProductFiled").slideToggle();
+    // });
     $(document).ready(function(){      
       var i=1;  
 
@@ -72,6 +85,13 @@
       	$("#bank_title[row-id='"+rowId+"'], #bank_ac_no[row-id='"+rowId+"']").show();
         }
       
+      $('select').change(function() {
+          var selected = $('#deposit_method option:selected');
+          if(selected.html() == 'Vault'){
+            $('#bank_title , #bank_ac_no').hide();
+          }else{
+            $('#bank_title , #bank_ac_no').show();
+          }
       });
       
 
@@ -92,6 +112,24 @@
        $("tbody").on('change', '.ship_bill input',multInputs);
 
   }); 
+  
+        
+  var app=new Vue({
+    		el: "#app",
+    		data: {
+    	    value: '',
+    	    quantity: '',
+    	    total: 0
+    	  },
+    	computed: {
+        		
+        	calc: function() {
+    			
+          return this.total = parseFloat(this.value) * parseFloat(this.quantity); 			
+    
+          },
+    	}
+  });
     </script>
 @endsection
 
@@ -103,6 +141,47 @@
 @include('includes.message.message') 
 <div class="wow fadeIn" data-wow-delay="0.2s" id="app">
   <div class="row">
+  <!--      <div class="col-12">-->
+  <!--        <div class="card top_card">-->
+  <!--          <form class="form-horizontal" method="post" action="">-->
+  <!--            {{ csrf_field() }}-->
+  <!--            <div class="card-header text-center"><h4><strong>Daily Income/Expense Entry</strong></h4></div>-->
+  <!--            <div class="card-block">-->
+  <!--            <br>-->
+  <!--            <h3>Transaction</h3>-->
+  <!--            <table class="table table-bordered">-->
+  <!--        			<thead>-->
+  <!--        			  <tr>        -->
+  <!--        				<th>Amount</th>-->
+  <!--        				<th>Purpose</th>-->
+  <!--        				<th>Type</th>-->
+  <!--        			  </tr>-->
+  <!--        			</thead>-->
+  <!--        			<tbody>-->
+  <!--        			  <tr>-->
+  <!--        			      <td><input id="ac_name" name="ac_name" required="required" type="text"></td>-->
+  <!--        				    <td><input id="p_name" name="p_name" required="required" type="text"></td>-->
+  <!--        				    <td>-->
+  <!--      			        <select class="form-control" id="shipping">-->
+  <!--                            <option>Income</option>-->
+  <!--                            <option>Expense</option>-->
+  <!--                    </select>-->
+  <!--        			      </td>-->
+  <!--        			  </tr>-->
+  <!--        			</tbody>-->
+  <!--          	</table>-->
+  <!--          	<div class="form-group">-->
+  <!--              <strong><i class="col-md-11">Stored Amount:</i><span class="col-md-1 float-right" style="padding-right:10em">6469</span></strong>-->
+  <!--            </div>-->
+  <!--            <div class="form-group">-->
+  <!--                <div class="col-md-6 col-sm-6 col-xs-12">-->
+  <!--                    <button type="submit" class="btn btn-primary btn-submit-fix">Show Income</button>-->
+  <!--                </div>-->
+  <!--            </div>  -->
+  <!--            </div>  -->
+  <!--          </form>  -->
+  <!--        </div>-->
+  <!--      </div>-->
         <div class="col-12">
           <!--SHIPPING METHOD-->
           <div class="card">
@@ -546,6 +625,11 @@
             		    </table>
                     </div>
                     <br>
+                    <div class="form-group">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-submit-fix">Save</button>
+                        </div>
+                    </div>
               </div>
             @endif
               <div class="form-group">

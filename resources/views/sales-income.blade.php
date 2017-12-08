@@ -1,6 +1,6 @@
-@extends('layouts.app-store-front')
-@section('title', 'Sales Income')
-@section('title-module-name', 'Sales Income')
+@extends('layouts.app-dashboard-admin')
+@section('title', 'Income/ Expense Calendar')
+@section('title-module-name', 'Income/ Expense Calendar')
 
 @section('header-styles')
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -31,7 +31,7 @@
         var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
         var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
         var options={
-          format: 'mm/dd/yyyy',
+          format: 'dd/mm/yyyy',
           container: container,
           todayHighlight: true,
           autoclose: true,
@@ -54,44 +54,53 @@
 
 @section('content')
 @include('includes.message.message') 
-<div class="wow fadeIn" data-wow-delay="0.2s" id="app">
-  <div class="row">
-        <div class="col-12">
-          <div class="card card_top">
-            <form class="form-horizontal" method="post" action="">
+
+<div class="box box-info">    
+    <div class="box-body">
+      <div class="row padTB"> 
+          <div class="col-lg-6 col-lg-offset-3">
+            <div class="box box-noborder">
+
+            <form role="form" method="post" action="">
               {{ csrf_field() }}
-              <div class="card-header text-center"><h4><strong>Sales Income Search</strong></h4></div>
-              <div class="card-block">
+              <div class="box-body">
                 <div class="row">
                   <div class="col-6">
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="from_date"><h5><strong>From</strong></h5></label>
-                      <input class="form-control" id="from_date" name="from_date" placeholder="MM/DD/YYY" type="text"/>
+                      <input class="form-control" id="from_date" name="from_date" placeholder="DD/MM/YYYY" type="text"/>
                     </div>                    
                   </div>
                   <div class="col-6">
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="to_date"><h5><strong>To</strong></h5></label>
-                      <input class="form-control" id="to_date" name="to_date" placeholder="MM/DD/YYY" type="text"/>
+                      <input class="form-control" id="to_date" name="to_date" placeholder="DD/MM/YYYY" type="text"/>
                     </div>                    
                   </div>
                 </div>
                 <div class="form-group text-center"> <!-- Submit button -->
-                  <button class="btn btn-primary" id="search_sales_income" name="search_sales_income" type="submit">Show Sales Income</button>
+                  <button class="btn btn-info btn-flat btn-sm" id="search_sales_income" name="search_sales_income" type="submit">Show Sales Income</button>
                 </div>
               </div>  
             </form>  
+            <!--form end here-->
+
+            </div>
           </div>
-        </div>
-<!--form end here-->
-  </div>
+    </div>
 <!--Sales Search Results-->
     <div class="row">
-        <div class="col-12">
-          <div class="card card_income_result wow fadeIn" data-wow-delay="0.2s" id="app">
-            <div class="card-header text-center"><h4><strong>Sales Income Results</strong></h4></div>
-            <div class="card-block">
-            <h5><strong>Income</strong></h5>
+
+          <div class="col-md-12">
+
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Income/ Expense records from Sales</h3>
+              </div><!-- /.box-header -->
+              <div class="box-body table-responsive padTB">
+
+              <h5><strong>Income</strong></h5>
+
               <table class="table">
                 <thead>
                   <tr>
@@ -154,7 +163,7 @@
                 </tbody>
               </table>
               <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                   <div class="form-group"> <!-- Date input -->
                     <strong>Vault total: <i>238.00</i></strong>
                   </div>                    
@@ -189,11 +198,14 @@
                 </tr>
                 </tbody>
               </table>
-            </div>  
-          </div>
-        </div>
-  </div>
 
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->  
+        </div>
+
+      </div>
+</div>
+</div>
 </div>
 @endsection
 

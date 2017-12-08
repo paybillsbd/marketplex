@@ -26,4 +26,25 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::get('/medias/thumbnail/{file_name}', [ 'uses' => 'ProductController@thumbnail', 'as' => 'products.image.thumbnail' ]);
 	    Route::get('/{product}/quick-view', [ 'uses' => 'ProductController@quickView', 'as' => 'products.quick.view' ]);
 	});
+
+	// Sale Controller
+	Route::resource('sales', 'SaleController');
+
+	// Bill controller
+	Route::group([ 'prefix' => 'bills' ], function () {
+
+		Route::resource('products', 'ProductBillController');
+		Route::resource('shippings', 'ShippingBillController');
+		Route::resource('payments', 'BillPaymentController');
+	});
+	// Expense controller
+	Route::resource('deposites', 'BankDepositController');
+	Route::resource('expenses', 'ExpenseController');
+
+	// Settings controller
+	Route::group([ 'prefix' => 'settings' ], function () {
+
+		Route::resource('banks', 'BankController');
+		Route::resource('clients', 'ClientController');
+	});
 });

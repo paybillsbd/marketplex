@@ -19,22 +19,19 @@ Route::get('/phpinfo', function() {
 Route::get('/event', function() {
     event(new \MarketPlex\Events\ClientAction([ 'id' => 4, 'name' => 'MyEvent' ]));
 });
-Route::get('/app', function() {
-    return 'Its me';
+
+
+/* Development */
+
+// store-front controller
+
+Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
+
+Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
+
+Route::get('/about', function() {
+    return view('store-about');
 });
-
-// Sales Route
-
-Route::get('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
-
-Route::post('/sales', ['uses' => 'SaleController@getSale', 'as'=> 'get.sale']);
-
-Route::post('/editsales', ['uses' => 'SaleController@editSale', 'as'=> 'edit.sale']);
-
-Route::get('/searchsales', ['uses' => 'SaleController@getSaleSearch', 'as'=> 'get.sale.search']);
-
-Route::get('/salesincome', ['uses' => 'SaleController@salesIncome', 'as'=> 'sale.income']);
-
 
 Route::group([ 'prefix' => 'cart' ], function () {
 // cart test    
@@ -59,27 +56,11 @@ Route::group([ 'prefix' => 'cart' ], function () {
     // Go to check out page
     Route::get('/checkout/', ['uses' => 'CartController@checkoutCart', 'as'=> 'cart.checkout']);
     
-// end cart test
+    // end cart test
 
-// Corfirm Order
+    // Corfirm Cart
     Route::post('/cart/confirm/', ['uses' => 'CartController@confirmCart', 'as'=> 'cart.confirm']);
 // end order  
-});
-
-
-/* Development */
-
-Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
-
-Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
-
-// store-front controller
-
-
-
-
-Route::get('/about', function() {
-    return view('store-about');
 });
 
 Auth::routes();

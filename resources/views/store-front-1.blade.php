@@ -59,12 +59,6 @@
             @include('includes.frontend.product', [ 'market_products' => $paginated_products ])         
         </div>
         <!--/.Second row-->
-        
-        <!--test for sales action-->
-        <p><a href="{{ route('get.sale') }}" class="btn btn-info" role="button">Sales</a></p>
-        <p><a href="{{ route('edit.sale') }}" class="btn btn-info" role="button">Edit Sales</a></p>
-        <p><a href="{{ route('get.sale.search') }}" class="btn btn-info" role="button">Search Sales</a></p>
-        <p><a href="{{ route('sale.income') }}" class="btn btn-info" role="button">Sales Income</a></p>
 
     </div>
     <!--/.Main column-->

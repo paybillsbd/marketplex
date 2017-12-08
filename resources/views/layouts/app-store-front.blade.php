@@ -175,7 +175,7 @@
     <script type="text/javascript" src="/vendor/mdb/js/bootstrap.min.js"></script>
 
     <!-- MDB core JavaScript -->
-    <script type="text/javascript" src="/vendor/mdb/js/mdb.min.js"></script>
+    <script type="text/javascript" src="/vendor/mdb/js/mdb.min.js"></script>                                                                                                                                                            
 
     <!-- Scripts -->
 <!--     <script src="/js/manifest.js"></script>

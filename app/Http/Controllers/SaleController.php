@@ -3,28 +3,19 @@
 namespace MarketPlex\Http\Controllers;
 
 use Illuminate\Http\Request;
+use MarketPlex\SaleTransaction as Sale;
 
 class SaleController extends Controller
 {
-
-    public function getSale()
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        return view('sales-view');
-    }
-    
-    public function editSale(Request $request)
-    {
-        return $request->all();
-    }
-
-    public function getSaleSearch()
-    {
-        return view('sales-search-view');
-    }
-
-    public function salesIncome()
-    {
-        return view('sales-income');
+        //
+        return view('sales-search-view')->withErrors([]);
     }
 
     /**
@@ -35,6 +26,7 @@ class SaleController extends Controller
     public function create()
     {
         //
+        return view('sales-book-1')->withErrors([]);
     }
 
     /**
@@ -54,9 +46,10 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($sale)
     {
         //
+        return view('sales-income')->withSale($sale)->withErrors([]);
     }
 
     /**
@@ -65,9 +58,10 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($sale)
     {
         //
+        return view('sales-book-1')->withSale($sale)->withErrors([]);
     }
 
     /**
@@ -77,7 +71,7 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $sale)
     {
         //
     }
