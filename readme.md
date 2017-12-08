@@ -25,7 +25,7 @@ Thank you for considering contributing to the MarketPlex framework! The contribu
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within MarketPlex, please send an e-mail to ASDTechLtd. at paybillsbd.rafata@gmail.com. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within MarketPlex, please send an e-mail to ASDTechLtd. at asdtechltd@gmail.com. All security vulnerabilities will be promptly addressed.
 
 ## License
 
