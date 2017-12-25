@@ -2,10 +2,10 @@
 
 namespace MarketPlex\Http\Controllers;
 
-use MarketPlex\BankDeposit;
+use MarketPlex\Deposite;
 use Illuminate\Http\Request;
 
-class BankDepositController extends Controller
+class DepositController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class BankDepositController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \MarketPlex\BankDeposit  $bankDeposit
+     * @param  \MarketPlex\Deposite  $deposit
      * @return \Illuminate\Http\Response
      */
-    public function show(BankDeposit $bankDeposit)
+    public function show(Deposite $deposit)
     {
         //
     }
@@ -52,10 +52,10 @@ class BankDepositController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \MarketPlex\BankDeposit  $bankDeposit
+     * @param  \MarketPlex\Deposite  $deposit
      * @return \Illuminate\Http\Response
      */
-    public function edit(BankDeposit $bankDeposit)
+    public function edit(Deposite $deposit)
     {
         //
     }
@@ -64,10 +64,10 @@ class BankDepositController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \MarketPlex\BankDeposit  $bankDeposit
+     * @param  \MarketPlex\Deposite  $deposit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, BankDeposit $bankDeposit)
+    public function update(Request $request, Deposite $deposit)
     {
         //
     }
@@ -75,10 +75,10 @@ class BankDepositController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \MarketPlex\BankDeposit  $bankDeposit
+     * @param  \MarketPlex\Deposite  $deposit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(BankDeposit $bankDeposit)
+    public function destroy(Deposite $deposit)
     {
         //
     }

@@ -12,6 +12,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('header-styles')
 
     <!-- Scripts -->
     <script>
@@ -85,6 +86,8 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+
+    @yield('footer-scripts')
 <!-- 
     <script src="{{ asset('/vendor/inzaana/browser-events/browser-event-navigation.js') }}" type="text/javascript"></script> -->
     <script type="text/javascript">

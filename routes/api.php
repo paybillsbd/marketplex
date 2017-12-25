@@ -19,6 +19,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], function () {
 
+    Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
+    Route::get('/products/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);     
+
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {
 		
@@ -38,7 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::resource('payments', 'BillPaymentController');
 	});
 	// Expense controller
-	Route::resource('deposites', 'BankDepositController');
+	Route::resource('deposites', 'DepositController');
 	Route::resource('expenses', 'ExpenseController');
 
 	// Settings controller

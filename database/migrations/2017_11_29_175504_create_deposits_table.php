@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBillPaymentsTable extends Migration
+class CreateDepositsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,17 @@ class CreateBillPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bill_payments', function (Blueprint $table) {
+        Schema::create('deposits', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('sale_transaction_id')->unsigned();
-
-            $table->enum('method', [
-                'by_cash_hand2hand',
-                'by_cash_cheque_deposit',
-                'by_cash_electronic_trans',
-                'by_cheque_hand2hand' ])->default('by_cash_hand2hand');
-
+            $table->string('bank_title')->nullable();
+            $table->string('bank_account_no')->nullable();
+            $table->string('bank_branch')->nullable();
+            $table->enum('method', [ 'bank', 'vault' ])->default('bank');
             $table->float('amount', 10, 2)->default(0.0);
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['id', 'sale_transaction_id', 'created_at'], 'bill_payments_index');
+            $table->index(['id', 'sale_transaction_id', 'created_at'], 'deposits_index');
             $table->foreign('sale_transaction_id')
                     ->references('id')->on('sale_transactions')
                     ->onDelete('cascade');
@@ -40,6 +37,6 @@ class CreateBillPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bill_payments');
+        Schema::dropIfExists('deposits');
     }
 }

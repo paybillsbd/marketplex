@@ -690,6 +690,20 @@ class ProductController extends Controller
             return redirect()->back()->withErrors([ 'Something went wrong during bulk upload! We already know the reason. Please contact your administrator.']);
         }
     }
+
+    public function showPrice(ProductRequest $request, Product $product)
+    {
+        if($request->ajax())
+        {
+            return response()->json([
+                'id' => $product->id,
+                'title' => $product->title,
+                'store_name' => $product->store->name,
+                'price' => $product->mrp
+            ]);
+        }
+        dd($product);
+    }
     
     public function image($file_name)
     {

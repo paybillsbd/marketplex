@@ -14,6 +14,23 @@ class ClientController extends Controller
     public function index()
     {
         //
+        $options = [
+            [ 'id' => 1, 'text' => 'Client 1' ],
+            [ 'id' => 1, 'text' => 'Client 2' ],
+            [ 'id' => 1, 'text' => 'Client 3' ],
+            [ 'id' => 1, 'text' => 'Client 4' ],
+        ];
+        $data = [
+            'items' => $options,
+            'total_count' => count($options)
+        ];
+        $clients = [
+            [ 'value' => 1, 'label' => 'ColdFusion' ],
+            [ 'value' => 2, 'label' => 'Scala' ],
+            [ 'value' => 3, 'label' => 'Haskell' ],
+            [ 'value' => 4, 'label' => 'Python' ],
+        ];
+        return response()->json($clients);
     }
 
     /**

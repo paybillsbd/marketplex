@@ -20,6 +20,14 @@ Route::get('/event', function() {
     event(new \MarketPlex\Events\ClientAction([ 'id' => 4, 'name' => 'MyEvent' ]));
 });
 
+Route::get('/select', function() {
+    return view('demo.select2');
+});
+
+Route::get('/autocomplete', function() {
+    return view('demo.autocomplete');
+});
+
 
 /* Development */
 
@@ -95,7 +103,7 @@ Route::group([ 'as' => 'user::' ], function() {
     Route::group(['prefix' => 'stores'], function () {
 
         Route::get('/', [ 'uses' => 'StoreController@index', 'as' => 'stores' ]);           
-        Route::get('/redirect/site/{site}', [ 'uses' => 'StoreController@redirectUrl', 'as' => 'stores.redirect' ]);           
+        Route::get('/redirect/site/{site}/ssl/{ssl?}', [ 'uses' => 'StoreController@redirectUrl', 'as' => 'stores.redirect' ]);           
         Route::get('/create/name/{name}/site/{site}/business/{business}', [ 'uses' => 'StoreController@createOnSignUp', 'as' => 'stores.create-on-signup' ]);           
         Route::post('/create', [ 'uses' => 'StoreController@create', 'as' => 'stores.create' ]);           
         Route::post('/{store}', [ 'uses' => 'StoreController@postUpdate', 'as' => 'stores.update' ]);           

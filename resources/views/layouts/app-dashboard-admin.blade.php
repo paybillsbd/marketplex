@@ -112,11 +112,10 @@
     @yield('modals')
     @include('icons.graphs-svg-demo')
     <!-- <a href="https://github.com/google/material-design-lite/blob/mdl-1.x/templates/dashboard/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white">View Source</a> -->
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     @include('includes.scripts.inzaana')
-
     @yield('footer-scripts')
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <!-- <script src="{{ asset('/vendor/inzaana/browser-events/browser-event-navigation.js') }}" type="text/javascript"></script> -->
     <script type="text/javascript">

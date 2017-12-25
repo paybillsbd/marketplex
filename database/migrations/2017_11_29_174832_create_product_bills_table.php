@@ -15,7 +15,15 @@ class CreateProductBillsTable extends Migration
     {
         Schema::create('product_bills', function (Blueprint $table) {
             $table->increments('id');
+            $table->bigInteger('sale_transaction_id')->unsigned();
+            $table->bigInteger('product_id')->unsigned();
+            $table->integer('quantity')->default(0);
             $table->timestamps();
+            $table->softDeletes();
+            $table->index(['id', 'sale_transaction_id', 'created_at'], 'product_bills_index');
+            $table->foreign('sale_transaction_id')
+                    ->references('id')->on('sale_transactions')
+                    ->onDelete('cascade');
         });
     }
 

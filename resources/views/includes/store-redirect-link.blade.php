@@ -1,1 +1,1 @@
-<a target="_blank" href="{{ route('user::stores.redirect', [ 'site' => $url ] ) }}">{{ $title }}</a>
+<a target="_blank" href="{{ route( $single ? $route : 'user::stores.redirect', $single ? [] : [ 'site' => $url ] ) }}">{{ $title }}</a>

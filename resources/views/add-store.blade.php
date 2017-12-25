@@ -126,7 +126,10 @@
                 </div><!-- /.box-body -->
 
                 <div class="box-footer text-right">
-                  <button type="{{ !MarketPlex\Store::storeCreated() && !isset($store) ? 'button' : 'submit' }}" class="btn btn-info btn-flat{{ !MarketPlex\Store::storeCreated() && !isset($store) ? ' disabled' : '' }}">{{ isset($store) ? 'Update' : 'Add' }} Store</button>
+                  <button type="{{ $submitable ? 'submit' : 'button' }}"
+                          class="btn btn-info btn-flat{{ $submitable ? '' : ' disabled' }}"
+                          data-toggle="tooltip" data-placement="top" title="{{ $store_count_warning }}">
+                          {{ isset($store) ? 'Update' : 'Add' }} Store</button>
                 </div>
               </form>
               <!--end of form-->
@@ -163,7 +166,16 @@
                       @foreach($stores as $store)
                       <tr>
                         <td class="text-center" id="child">
-                          @include('includes.store-redirect-link', [ 'url' => 'localhost', 'title' => $store->name ])
+                          @include('includes.store-redirect-link', 
+                              $single_store ?
+                                [
+                                  'route' => 'store-front',
+                                  'single' => $single_store,
+                                  'title' => $store->name
+                                ] : [
+                                      'url' => $store->getTidyUrl(),
+                                      'title' => $store->name 
+                                    ])
                         </td>
 
                         <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
@@ -173,11 +185,13 @@
                             <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" formnovalidate="formnovalidate"
                                     id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
                           </form>
-                    <!--       <form id="store-delete-form" class="form-horizontal">
-                            {{--{!! csrf_field() !!}--}}
+                          @if ($store->isStoreDeleteAllowed())
+                          <form id="store-delete-form" class="form-horizontal">
+                            {!! csrf_field() !!}
                             <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" formnovalidate="formnovalidate" 
                                     id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
-                          </form> -->
+                          </form>
+                          @endif
                         </td>
 
                       </tr>

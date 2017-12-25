@@ -5,6 +5,8 @@ namespace MarketPlex\Http\Controllers;
 use Illuminate\Http\Request;
 use MarketPlex\SaleTransaction as Sale;
 
+use Auth;
+
 class SaleController extends Controller
 {
     /**
@@ -26,7 +28,9 @@ class SaleController extends Controller
     public function create()
     {
         //
-        return view('sales-book-1')->withErrors([]);
+        // dd(Auth::user()->stores);
+        return view('sales-book-1')->withErrors([])
+                                    ->withStores(Auth::user()->stores->pluck('id', 'name'));
     }
 
     /**

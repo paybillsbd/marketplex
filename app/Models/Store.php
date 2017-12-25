@@ -10,8 +10,10 @@ use MarketPlex\User;
 
 class Store extends Model
 {
+    const STORE_UNLIMITED = '*';
     //
     protected $table = 'stores';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -136,25 +138,57 @@ class Store extends Model
     public function getTidyUrl()
     {
         return str_replace('http://', '', $this->getUrl());
-    }
-
-    public static function storeCreated()
-    {
-        return Auth::user()->stores->count() < env('STORE_LIMIT_PER_VENDOR', 1);    
-    }    
+    }  
 
     public static function currencyIcon()
     {
         return env('STORE_CURRENCY_ICON', '₹');
     }
 
-    public function isBelowStoreCountPolicy()
+    public function canDelete()
     {
-        return $this->user->stores()->count() == env('STORE_LIMIT_PER_VENDOR', 1);
+        return $this->user->stores()->count() > env('STORE_MIN_LIMIT_PER_VENDOR', 1);
     }
 
-    public function isAllowedMasterDelete()
+    public function canCreate()
     {
-        return env('STORE_DELETE_MIN_POLICY_BREAK', false) === true;
+        return self::isAllowedToCreate($this->user);
+    }
+
+    public static function isAuthUserAllowedToCreate()
+    {
+        return self::isAllowedToCreate(Auth::user());
+    }
+
+    private static function isAllowedToCreate($user)
+    {
+        return self::isUnlimited() || $user->stores()->count() < env('STORE_MAX_LIMIT_PER_VENDOR', self::STORE_UNLIMITED);
+    }
+
+    public static function isStoreOwnsSubdomain()
+    {
+        return env('STORE_OWNS_SUBDOMAIN', false) === true;
+    }
+
+    public function isStoreDeleteAllowed()
+    {
+        return env('STORE_DELETE_ALLOWED', false) === true;
+    }
+
+    public static function isUnlimited()
+    {
+        $maxStoreLimit = env('STORE_MAX_LIMIT_PER_VENDOR', self::STORE_UNLIMITED);
+        return (ctype_punct($maxStoreLimit) && $maxStoreLimit == self::STORE_UNLIMITED);
+    }
+
+    // returns mixed (integer / string)
+    public static function getAvailebleCount()
+    {
+        $max = env('STORE_MAX_LIMIT_PER_VENDOR', self::STORE_UNLIMITED);
+        if (self::isUnlimited())
+            return $max;
+        $min = env('STORE_MIN_LIMIT_PER_VENDOR', 1);
+        $maxAllowed = ( $max - $min + 1 );
+        return ($maxAllowed - Auth::user()->stores()->count());
     }
 }
