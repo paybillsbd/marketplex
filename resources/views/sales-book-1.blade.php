@@ -110,6 +110,7 @@
       $(document).ready(function(){      
         var i=1;  
         var d = new Date(Date.now());
+        var priceCollection = [];
 
         $('#addBillingRow').click(function(){  
              i++;  
@@ -118,12 +119,12 @@
 
         $('#addPayRow').click(function(){  
              i++;  
-             $('#dynamic_field_pay').append('<tr id="row'+i+'" class="dynamic-added"><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="trans_option"><option>By Cash (hand to hand)</option><option>By Cash (cheque deposit)</option><option>By Cash (electronic transfer)</option><option>By Cheque (hand to hand)</option></select></td><td><input id="paid_amount" name="paid_amount" class="paid-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
+             $('#dynamic_field_pay').append('<tr id="row'+i+'" class="dynamic-added bill_payment"><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="trans_option"><option>By Cash (hand to hand)</option><option>By Cash (cheque deposit)</option><option>By Cash (electronic transfer)</option><option>By Cheque (hand to hand)</option></select></td><td><input id="paid_amount" name="paid_amount" class="paid-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
         });
         
         $('#addBankRow').click(function(){  
              i++;  
-             $('#dynamic_field_bank').append('<tr id="row'+i+'" class="dynamic-added" ><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="deposit_method" row-id="'+i+'"><option>Bank</option><option>Vault</option></select></td><td><input id="bank_title" name="bank_title" class="form-control" required="required" type="text" row-id="'+i+'"></td><td><select class="form-control" id="bank_ac_no" row-id="'+i+'"><option>151035654646001</option><option>151035654646002</option><option>151035654646003</option></select></td><td><input id="deposit_amount" name="deposit_amount" class="deposit-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" row-id="'+i+'"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
+             $('#dynamic_field_bank').append('<tr id="row'+i+'" class="dynamic-added"><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="deposit_method" row-id="'+i+'"><option>Bank</option><option>Vault</option></select></td><td><input id="bank_title" name="bank_title" class="form-control" required="required" type="text" row-id="'+i+'"></td><td><select class="form-control" id="bank_ac_no" row-id="'+i+'"><option>151035654646001</option><option>151035654646002</option><option>151035654646003</option></select></td><td><input id="deposit_amount" name="deposit_amount" class="deposit-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" row-id="'+i+'"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
         });
 
         $('#add_product_bill').click(function(){ 
@@ -132,6 +133,8 @@
 
           DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
           DataManager.onLoad = function(data) {
+
+              priceCollection["row" + i] = data.price;
 
               $('#product_bill_table').append('<tr id="row'+i+'" class="product_bill" > <td>' + d.toLocaleDateString() + '</td> <td><p>' + data.title + '</p></td> <td><p>' + data.store_name + '</p></td> <td><input id="product_quantity" name="product_quantity" required="required" type="number" min="0" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td> <td><strong class="multTotal"><i>0.00</i></strong></td> <td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td> </tr>');
           };
@@ -144,6 +147,7 @@
              var button_id = $(this).attr("id");
              $('#row'+button_id+'').remove();
              multInputs();
+             calculateDue();
         }); 
 
         $("tbody").on('change', "#deposit_method", function() {
@@ -166,29 +170,52 @@
                  // get the values from this row:
                  var amount = $('#amount', this).val();
                  var quantity = $('#quantity', this).val();
-                 var total = (amount * 1) * (quantity * 1);
+                 var total = (amount * 1.0) * (quantity * 1.0);
                  $('.multTotal',this).text(total);
                  grandTotal += total;
               });
               $("tr.product_bill").each(function () {
-                
-                var quantity = $('#product_quantity', this).val();
-                var priceLabel = $('.multTotal',this);
 
-                DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
-                DataManager.onLoad = function(data) {
-                    var total = (data.price * 1) * (quantity * 1);
-                    priceLabel.text(total);
-                    grandTotal += total;
-                    $("#grandTotal").text(grandTotal);
-                };
-                DataManager.request();
+                var quantity = $('#product_quantity', this).val();
+                var unitPrice = priceCollection[this.id];
+                var total = (unitPrice * 1.0) * (quantity * 1.0);
+                $('.multTotal', this).text(total);
+                grandTotal += total;
+                $("#grandTotal").text(grandTotal);
+                $("#current_due").text(grandTotal);
+                // $("#prev_due").text(grandTotal);
               });
               $("#grandTotal").text(grandTotal);
+              $("#current_due").text(grandTotal);
+              // $("#prev_due").text(grandTotal);
+         }
+
+         function calculateDue()
+         {
+             var totalPaid = 0.0;
+             var grandTotalBill = $("#grandTotal").text();
+              // for each row:
+              $("tr.bill_payment").each(function () {
+                 // get the values from this row:
+                 var amount = $('#paid_amount', this).val();
+                 totalPaid += amount * 1.0;
+              });
+
+              var grandTotalDue = (grandTotalBill * 1.0) - totalPaid;
+              if (grandTotalDue < 0.0)
+              {
+                  alert("Client has paid more than due payment!" );
+              }
+              if (grandTotalDue == 0.0)
+              {
+                  alert("Client has paid full due payment!" );
+              }
+              $("#current_due").text(grandTotalDue);
          }
          
          $("tbody").on('change', '.ship_bill input', multInputs);
          $("tbody").on('change', '.product_bill input', multInputs);
+         $("tbody").on('change', '.bill_payment input', calculateDue);
 
     }); 
 
@@ -431,11 +458,11 @@
                     <tbody>
                       <tr>
                         <td width="50%"><strong><i>Current Due:</i></strong></td>
-                        <td><strong></i>586</i></strong></td>
+                        <td><strong><i id="current_due">0.00</i></strong></td>
                       </tr>
                       <tr>
                         <td><strong><i>Previous Due:</i></strong></td>
-                        <td><strong><i>256</i></strong></td>
+                        <td><strong><i id="prev_due">0.00</i></strong></td>
                       </tr>
                     </tbody>
                   </table>
