@@ -73,6 +73,40 @@
     </script>
 
     <script>
+
+      var DataManager = {
+          serviceUrl: '',
+          onLoad: function(data) {},
+          request: function() {
+
+              // alert(serviceUrl);
+              $.get(this.serviceUrl, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status == 404)
+                  return;
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 401) {
+                    msg = errorThrown + '. [' + jqXHR.status + ']';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (textStatus === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (textStatus === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (textStatus === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
+                }                
+                // Render the errors with js ...
+                alert(msg);
+              });
+          }
+      };
+
       $(document).ready(function(){      
         var i=1;  
         var d = new Date(Date.now());
@@ -94,38 +128,14 @@
 
         $('#add_product_bill').click(function(){ 
             
-            i++; 
+          i++;
 
-          var serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
-          // alert(serviceUrl);
-          $.get(serviceUrl, function(data) {
+          DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
+          DataManager.onLoad = function(data) {
 
-              $('#product_bill_table').append('<tr id="row'+i+'" class="ship_bill" > <td>' + d.toLocaleDateString() + '</td> <td><p>' + data.title + '</p></td> <td><p>' + data.store_name + '</p></td> <td><input id="quantity" name="quantity" required="required" type="number" min="0" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td> <td><strong class="multTotal"><i>' + data.price + '</i></strong></td> <td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td> </tr>');
-          })
-          .fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status == 404)
-              return;
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connected.\n Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 401) {
-                msg = errorThrown + '. [' + jqXHR.status + ']';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (textStatus === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (textStatus === 'timeout') {
-                msg = 'Time out error.';
-            } else if (textStatus === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
-            }                
-            // Render the errors with js ...
-            alert(msg);
-          });
+              $('#product_bill_table').append('<tr id="row'+i+'" class="product_bill" > <td>' + d.toLocaleDateString() + '</td> <td><p>' + data.title + '</p></td> <td><p>' + data.store_name + '</p></td> <td><input id="product_quantity" name="product_quantity" required="required" type="number" min="0" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td> <td><strong class="multTotal"><i>0.00</i></strong></td> <td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td> </tr>');
+          };
+          DataManager.request();
 
         });
         
@@ -149,20 +159,36 @@
         
 
          function multInputs() {
-             var mult = 0.0;
-             // for each row:
-             $("tr.ship_bill").each(function () {
+
+             var grandTotal = 0.0;
+              // for each row:
+              $("tr.ship_bill").each(function () {
                  // get the values from this row:
                  var amount = $('#amount', this).val();
                  var quantity = $('#quantity', this).val();
-                 var total = (amount * 1) * (quantity * 1)
+                 var total = (amount * 1) * (quantity * 1);
                  $('.multTotal',this).text(total);
-                 mult += total;
-             });
-             $("#grandTotal").text(mult);
+                 grandTotal += total;
+              });
+              $("tr.product_bill").each(function () {
+                
+                var quantity = $('#product_quantity', this).val();
+                var priceLabel = $('.multTotal',this);
+
+                DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
+                DataManager.onLoad = function(data) {
+                    var total = (data.price * 1) * (quantity * 1);
+                    priceLabel.text(total);
+                    grandTotal += total;
+                    $("#grandTotal").text(grandTotal);
+                };
+                DataManager.request();
+              });
+              $("#grandTotal").text(grandTotal);
          }
          
          $("tbody").on('change', '.ship_bill input', multInputs);
+         $("tbody").on('change', '.product_bill input', multInputs);
 
     }); 
 
@@ -173,9 +199,10 @@
           {
               return;
           }
-          var serviceUrl = '/api/v1/stores/' + selectedVal + '/products?api_token={{ Auth::user()->api_token }}';
-          // alert(serviceUrl);
-          $.get(serviceUrl, function(data) {
+
+          DataManager.serviceUrl = '/api/v1/stores/' + selectedVal + '/products?api_token={{ Auth::user()->api_token }}';
+          DataManager.onLoad = function(data) {
+
             var content = '<option value="-1">-- Select --</option>';//JSON.stringify(data);
             // alert(content);
             data.forEach(function(item, index){
@@ -183,32 +210,8 @@
             });
 
             $('#product_name').html(content);
-          })
-          .done(function() {
-            // alert( "sucesss" );
-          })
-          .fail(function(jqXHR, textStatus, errorThrown) {
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connected.\n Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 401) {
-                msg = errorThrown + '. [' + jqXHR.status + ']';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (textStatus === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
-            } else if (textStatus === 'timeout') {
-                msg = 'Time out error.';
-            } else if (textStatus === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else {
-                msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
-            }                
-            // Render the errors with js ...
-            alert(msg);
-          });
+          };
+          DataManager.request();
       });
     </script>
 @endsection
