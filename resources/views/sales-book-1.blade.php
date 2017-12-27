@@ -76,11 +76,12 @@
 
       var DataManager = {
           serviceUrl: '',
+          payload: {},
           onLoad: function(data) {},
           request: function() {
 
               // alert(serviceUrl);
-              $.get(this.serviceUrl, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
+              $.get(this.serviceUrl, this.payload, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status == 404)
                   return;
                 var msg = '';
@@ -113,18 +114,59 @@
         var priceCollection = [];
 
         $('#addBillingRow').click(function(){  
-             i++;  
-             $('#dynamic_field_shipping').append('<tr class="ship_bill" id="row'+i+'"><td>' + d.toLocaleDateString() + '</td><td><input id="purpose" type="text" name="purpose" class="form-control" required></td><td><input id="amount" class="amount form-control" name="amount" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required></td><td><input id="quantity" class="form-control" name="quantity" required="required" type="number" min="0" value="0" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td><td><strong><i><span class="multTotal">0.00</span></i></strong></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');  
+            
+            i++; 
+
+            var rowTemplate = 'sales-row-shipping-bill';
+            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
+            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
+            DataManager.onLoad = function(data) {
+
+                $('#dynamic_field_shipping').append(data);
+            };
+            DataManager.request(); 
         });   
 
         $('#addPayRow').click(function(){  
-             i++;  
-             $('#dynamic_field_pay').append('<tr id="row'+i+'" class="dynamic-added bill_payment"><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="trans_option"><option>By Cash (hand to hand)</option><option>By Cash (cheque deposit)</option><option>By Cash (electronic transfer)</option><option>By Cheque (hand to hand)</option></select></td><td><input id="paid_amount" name="paid_amount" class="paid-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
+             
+            i++;  
+
+            var rowTemplate = 'sales-row-paid-bill';
+            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
+            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
+            DataManager.onLoad = function(data) {
+
+                $('#dynamic_field_pay').append(data);
+            };
+            DataManager.request();
+        });  
+
+        $('#add_expense_btn').click(function(){  
+             
+            i++;  
+
+            var rowTemplate = 'sales-row-expense';
+            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
+            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
+            DataManager.onLoad = function(data) {
+
+                $('#dynamic_field_expenses').append(data);
+            };
+            DataManager.request();
         });
         
         $('#addBankRow').click(function(){  
-             i++;  
-             $('#dynamic_field_bank').append('<tr id="row'+i+'" class="dynamic-added"><td><p>' + d.toLocaleDateString() + '</p></td><td><select class="form-control" id="deposit_method" row-id="'+i+'"><option>Bank</option><option>Vault</option></select></td><td><input id="bank_title" name="bank_title" class="form-control" required="required" type="text" row-id="'+i+'"></td><td><select class="form-control" id="bank_ac_no" row-id="'+i+'"><option>151035654646001</option><option>151035654646002</option><option>151035654646003</option></select></td><td><input id="deposit_amount" name="deposit_amount" class="deposit-amount form-control" required="required" type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" row-id="'+i+'"></td><td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td></tr>');
+             
+            i++;  
+
+            var rowTemplate = 'sales-row-bank-deposit';
+            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
+            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
+            DataManager.onLoad = function(data) {
+
+                $('#dynamic_field_bank').append(data);
+            };
+            DataManager.request();
         });
 
         $('#add_product_bill').click(function(){ 
@@ -136,7 +178,14 @@
 
               priceCollection["row" + i] = data.price;
 
-              $('#product_bill_table').append('<tr id="row'+i+'" class="product_bill" > <td>' + d.toLocaleDateString() + '</td> <td><p>' + data.title + '</p></td> <td><p>' + data.store_name + '</p></td> <td><input id="product_quantity" name="product_quantity" required="required" type="number" min="0" class="form-control" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8"></td> <td><strong class="multTotal"><i>0.00</i></strong></td> <td><a href="" name="remove" id="'+i+'" class="btn_remove">X</a></td> </tr>');
+              var rowTemplate = 'sales-row-product-bill';
+              DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
+              DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString(), product_title: data.title, store_name: data.store_name };
+              DataManager.onLoad = function(data) {
+
+                  $('#product_bill_table').append(data);
+              };
+              DataManager.request();
           };
           DataManager.request();
 
@@ -160,9 +209,22 @@
           }
         
         });
+
+        function Decimal(numberText)
+        {
+            if (Number(numberText) == 0.0)
+            {
+                return Number(numberText).toPrecision(3);
+            }
+            if (numberText.toString().indexOf('.') > -1)
+            {
+                return Number(numberText);
+            }
+            return Number(numberText).toPrecision(numberText.toString().length + 2);
+        }
         
 
-         function multInputs() {
+        function multInputs() {
 
              var grandTotal = 0.0;
               // for each row:
@@ -170,24 +232,24 @@
                  // get the values from this row:
                  var amount = $('#amount', this).val();
                  var quantity = $('#quantity', this).val();
-                 var total = (amount * 1.0) * (quantity * 1.0);
-                 $('.multTotal',this).text(total);
+                 var total = Number(amount) * Number(quantity);
+                 $('.multTotal',this).text(Decimal(total));
                  grandTotal += total;
               });
               $("tr.product_bill").each(function () {
 
-                var quantity = $('#product_quantity', this).val();
-                var unitPrice = priceCollection[this.id];
-                var total = (unitPrice * 1.0) * (quantity * 1.0);
-                $('.multTotal', this).text(total);
-                grandTotal += total;
-                $("#grandTotal").text(grandTotal);
-                $("#current_due").text(grandTotal);
-                // $("#prev_due").text(grandTotal);
+                  var quantity = $('#product_quantity', this).val();
+                  var unitPrice = priceCollection[this.id];
+                  var total = Number(unitPrice) * Number(quantity);
+                  $('.multTotal', this).text(Decimal(total));
+                  grandTotal += total;
               });
-              $("#grandTotal").text(grandTotal);
-              $("#current_due").text(grandTotal);
+              var grandTotalDecimal = Decimal(grandTotal);
+              $("#grandTotal").text(grandTotalDecimal);
+              $("#current_due").text(grandTotalDecimal);
               // $("#prev_due").text(grandTotal);
+              var totalDue = Number($("#prev_due").text()) + grandTotal;
+              $("#total_due").text(Decimal(totalDue));
          }
 
          function calculateDue()
@@ -198,24 +260,45 @@
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
                  var amount = $('#paid_amount', this).val();
-                 totalPaid += amount * 1.0;
+                  $('#paid_amount', this).val(Decimal(amount));
+                 totalPaid += Number(amount);
               });
 
-              var grandTotalDue = (grandTotalBill * 1.0) - totalPaid;
-              if (grandTotalDue < 0.0)
+              var grandTotalDue = Number(grandTotalBill) - totalPaid;
+              if (grandTotalBill > 0.0)
               {
-                  alert("Client has paid more than due payment!" );
+                  if (grandTotalDue < 0.0)
+                  {
+                      alert("Client has paid more than due payment!" );
+                  }
+                  if (grandTotalDue == 0.0)
+                  {
+                      alert("Client has paid full due payment!" );
+                  }
               }
-              if (grandTotalDue == 0.0)
-              {
-                  alert("Client has paid full due payment!" );
-              }
-              $("#current_due").text(grandTotalDue);
+              $("#current_due").text(Decimal(grandTotalDue));
+
+              var totalDue = Number($("#prev_due").text()) + grandTotalDue;
+              $("#total_due").text(Decimal(totalDue));
+         }
+
+         function formatInputs()
+         {            
+              $("tr.expenses").each(function () {
+
+                  $('#expense_amount', this).val(Decimal($('#expense_amount', this).val()));
+              });
+              $("tr.bank_deposit").each(function () {
+
+                  $('#deposit_amount', this).val(Decimal($('#deposit_amount', this).val()));
+              });
          }
          
          $("tbody").on('change', '.ship_bill input', multInputs);
          $("tbody").on('change', '.product_bill input', multInputs);
          $("tbody").on('change', '.bill_payment input', calculateDue);
+         $("tbody").on('change', '.expenses input', formatInputs);
+         $("tbody").on('change', '.bank_deposit input', formatInputs);
 
     }); 
 
@@ -319,7 +402,7 @@
                     <div class="form-group">
                         <label for="bill_id"><strong>Billing ID:</strong></label>
                         <div class="col-md-12">
-                            <input type="text" class="form-control" name="bill_id" value="" />
+                            <input type="text" class="form-control" name="bill_id" value="{{ isset($sale) ? $sale->bill_id : '' }}" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -370,8 +453,9 @@
                   <h4><strong>Billing</strong></h4>
                   <div class="form-group">
                   <div class="row">
+
                     <div class="col-md-11">
-                      <label for="poduct_billing"><strong>Product Billing:</strong></label>
+                      <label for="product_billing"><strong>Product Billing:</strong></label>
                     </div>
                     <div class="col-md-1">
                       <div class="clearfix">
@@ -422,14 +506,16 @@
                     </tbody>
                   </table>
                   </div>
+                  <div class="form-group">
                   <table class="table table-bordered">
                     <tbody>
                       <tr>
-                        <td width="50%"><strong><i>Bill Amount:</i></strong></td>
-                        <td><strong><i><span id="grandTotal">0.00</span></i></strong></td>
+                        <td width="60%"><strong><i>Bill Amount:</i></strong></td>
+                        <td width="40%"><strong><i><span id="grandTotal">0.00</span></i></strong></td>
                       </tr>
                     </tbody>
                   </table>
+                  </div>
                   <div class="row">
                     <div class="col-md-11">
                       <h4><strong>Payment</strong></h4>
@@ -453,19 +539,25 @@
                     </tbody>
                     </table>
                     </div>
-                    <h4 class="text-center"><strong>Dues</strong></h4>
-                  <table class="table table-bordered">
-                    <tbody>
-                      <tr>
-                        <td width="50%"><strong><i>Current Due:</i></strong></td>
-                        <td><strong><i id="current_due">0.00</i></strong></td>
-                      </tr>
-                      <tr>
-                        <td><strong><i>Previous Due:</i></strong></td>
-                        <td><strong><i id="prev_due">0.00</i></strong></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                    <div class="form-group">
+                      <h4><strong>Dues</strong></h4>
+                      <table class="table table-bordered">
+                        <tbody>
+                          <tr>
+                            <td width="60%"><strong><i>Current Due:</i></strong></td>
+                            <td width="40%"><strong><i id="current_due">0.00</i></strong></td>
+                          </tr>
+                          <tr>
+                            <td width="60%"><strong><i>Previous Due:</i></strong></td>
+                            <td width="40%"><strong><i id="prev_due">0.00</i></strong></td>
+                          </tr>
+                          <tr>
+                            <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
+                            <td width="40%"><strong><i id="total_due">0.00</i></strong></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                  </div>
                   <div class="row">
                     <div class="col-md-8">
                       <h4><strong>Bank Deposit</strong></h4>
@@ -493,6 +585,29 @@
                       <!--Bank deposit row will be added here by jQuery-->
                     </tbody>
                     </table>
+                    </div>
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-11">
+                          <h4><strong>Expenses</strong></h4>
+                        </div>
+                        <div class="col-md-1">
+                          <button type="button" id="add_expense_btn" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"></button>
+                        </div>
+                      </div>
+                      <table class="table table-bordered" id="dynamic_field_expenses">
+                        <thead>
+                          <tr>        
+                          <th width="10%">Date</th>
+                          <th width="50%">Purpose</th>
+                          <th width="35%">Amount</th>
+                          <th width="5%">#</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!--jQuery will add input fileds here-->
+                        </tbody>
+                      </table>
                     </div>
                     <br>
                     <div class="form-group">

@@ -90,4 +90,19 @@ class SaleController extends Controller
     {
         //
     }
+
+    public function getTemplate(Request $request, $view)
+    {
+        if ($request->ajax())
+        {
+            $view_data = [
+                'row_id' => $request->input('row_id'),
+                'datetime' => $request->input('datetime'),
+                'product_title' => $request->input('product_title'),
+                'store_name' => $request->input('store_name'),
+            ];
+            return response()->view('includes.tables.' . $view, $view_data)->header('Content-Type', 'html');
+        }
+        return '<p>Invalid Request</p>';
+    }
 }

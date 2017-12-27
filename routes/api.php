@@ -21,6 +21,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 
     Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
     Route::get('/products/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);     
+    Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);     
 
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {
