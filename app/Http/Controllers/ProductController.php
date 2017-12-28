@@ -699,7 +699,8 @@ class ProductController extends Controller
                 'id' => $product->id,
                 'title' => $product->title,
                 'store_name' => $product->store->name,
-                'price' => $product->mrp
+                'price' => $product->mrp,
+                'available_quantity' => $product->available_quantity
             ]);
         }
         dd($product);

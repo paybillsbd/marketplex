@@ -20,8 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], function () {
 
     Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
-    Route::get('/products/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);     
-    Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);     
 
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {
@@ -29,10 +27,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::get('/medias/image/{file_name}', [ 'uses' => 'ProductController@image', 'as' => 'products.medias.image' ]);
 		Route::get('/medias/thumbnail/{file_name}', [ 'uses' => 'ProductController@thumbnail', 'as' => 'products.image.thumbnail' ]);
 	    Route::get('/{product}/quick-view', [ 'uses' => 'ProductController@quickView', 'as' => 'products.quick.view' ]);
+    	Route::get('/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);     
 	});
 
 	// Sale Controller
 	Route::resource('sales', 'SaleController');
+    Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);     
 
 	// Bill controller
 	Route::group([ 'prefix' => 'bills' ], function () {

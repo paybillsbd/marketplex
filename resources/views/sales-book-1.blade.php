@@ -16,8 +16,10 @@
         text-align: center;
         vertical-align: middle;
       }
-      input[type="number"]{
-        text-align: right;
+      input[type="number"], input[class="decimal"], .decimal, .multTotal {
+        direction: RTL;
+        font-weight: bold;
+        font-style: italic;
       }
       textarea{
         height: 5em;
@@ -25,12 +27,6 @@
       
       .btn_remove {
         color:red;
-      }
-      /*Italic bolsd amount input*/
-      .amount, .paid-amount, .deposit-amount, .multTotal{
-          font-weight: bold;
-          font-style: italic;
-          text-align: right;
       }
 
       .ui-autocomplete {
@@ -80,7 +76,6 @@
           onLoad: function(data) {},
           request: function() {
 
-              // alert(serviceUrl);
               $.get(this.serviceUrl, this.payload, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status == 404)
                   return;
@@ -161,7 +156,11 @@
 
             var rowTemplate = 'sales-row-bank-deposit';
             DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
+            DataManager.payload = {
+              row_id: i,
+              datetime: d.toLocaleDateString(),
+              "bank_accounts[]": [ '151035654646001', '151035654646002', '151035654646003' ]
+            };
             DataManager.onLoad = function(data) {
 
                 $('#dynamic_field_bank').append(data);
@@ -180,7 +179,13 @@
 
               var rowTemplate = 'sales-row-product-bill';
               DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString(), product_title: data.title, store_name: data.store_name };
+              DataManager.payload = {
+                row_id: i,
+                datetime: d.toLocaleDateString(),
+                product_title: data.title,
+                store_name: data.store_name,
+                product_available_quantity: data.available_quantity
+              };
               DataManager.onLoad = function(data) {
 
                   $('#product_bill_table').append(data);
@@ -196,7 +201,6 @@
              var button_id = $(this).attr("id");
              $('#row'+button_id+'').remove();
              multInputs();
-             calculateDue();
         }); 
 
         $("tbody").on('change', "#deposit_method", function() {
@@ -230,9 +234,11 @@
               // for each row:
               $("tr.ship_bill").each(function () {
                  // get the values from this row:
-                 var amount = $('#amount', this).val();
-                 var quantity = $('#quantity', this).val();
+                 var amount = $('#bill_amount', this).val();
+                 $('#bill_amount', this).val(Decimal(amount));
+                 var quantity = $('#bill_quantity', this).val();
                  var total = Number(amount) * Number(quantity);
+
                  $('.multTotal',this).text(Decimal(total));
                  grandTotal += total;
               });
@@ -244,12 +250,9 @@
                   $('.multTotal', this).text(Decimal(total));
                   grandTotal += total;
               });
-              var grandTotalDecimal = Decimal(grandTotal);
-              $("#grandTotal").text(grandTotalDecimal);
-              $("#current_due").text(grandTotalDecimal);
-              // $("#prev_due").text(grandTotal);
-              var totalDue = Number($("#prev_due").text()) + grandTotal;
-              $("#total_due").text(Decimal(totalDue));
+              $("#grandTotal").text(Decimal(grandTotal));
+
+              calculateDue();
          }
 
          function calculateDue()
@@ -259,12 +262,13 @@
               // for each row:
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
-                 var amount = $('#paid_amount', this).val();
-                  $('#paid_amount', this).val(Decimal(amount));
-                 totalPaid += Number(amount);
+                 var amount = Number($('#paid_amount', this).val());
+                  $('#paid_amount', this).val(amount);
+                 totalPaid += amount;
               });
 
-              var grandTotalDue = Number(grandTotalBill) - totalPaid;
+              var grandTotalDue = Number(grandTotalBill) - Number(totalPaid);
+
               if (grandTotalBill > 0.0)
               {
                   if (grandTotalDue < 0.0)
@@ -275,30 +279,51 @@
                   {
                       alert("Client has paid full due payment!" );
                   }
-              }
+              }              
               $("#current_due").text(Decimal(grandTotalDue));
-
-              var totalDue = Number($("#prev_due").text()) + grandTotalDue;
+              // $("#prev_due").text(grandTotal);
+              var totalDue = Number($("#prev_due").text()) + Number(grandTotalDue);
               $("#total_due").text(Decimal(totalDue));
          }
 
-         function formatInputs()
-         {            
+         function calculateExpenses()
+         {           
+             var totalExpense = 0.0;
+             var grandTotalBill = Number($("#grandTotal").text());
+             var currentDue = Number($("#current_due").text());
               $("tr.expenses").each(function () {
 
-                  $('#expense_amount', this).val(Decimal($('#expense_amount', this).val()));
+                  var amount = Number($('#expense_amount', this).val());
+                  $('#expense_amount', this).val(Decimal(amount));
+                  totalExpense += amount;
               });
               $("tr.bank_deposit").each(function () {
 
-                  $('#deposit_amount', this).val(Decimal($('#deposit_amount', this).val()));
+                  var amount = Number($('#deposit_amount', this).val());
+                  $('#deposit_amount', this).val(Decimal(amount));
+                  totalExpense += amount;
               });
+
+              if (grandTotalBill == 0.0 && currentDue == 0.0)
+              {
+                  if (totalExpense > 0.0)
+                  {
+                      alert("Warning! You have no sales income from this client!");
+                      return;
+                  }
+              }
+              var totalIncome = grandTotalBill - currentDue;
+              if (grandTotalBill > 0.0 && totalIncome < totalExpense)
+              {
+                  alert("Warning! You have expenses/ deposits more than your 'sales income' from this client!\nTotal Expense: " + Decimal(totalExpense) + "\nTotal Paid:" + Decimal(totalIncome));
+              }
          }
          
          $("tbody").on('change', '.ship_bill input', multInputs);
          $("tbody").on('change', '.product_bill input', multInputs);
          $("tbody").on('change', '.bill_payment input', calculateDue);
-         $("tbody").on('change', '.expenses input', formatInputs);
-         $("tbody").on('change', '.bank_deposit input', formatInputs);
+         $("tbody").on('change', '.expenses input', calculateExpenses);
+         $("tbody").on('change', '.bank_deposit input', calculateExpenses);
 
     }); 
 
@@ -452,34 +477,45 @@
                   </div>
                   <h4><strong>Billing</strong></h4>
                   <div class="form-group">
-                  <div class="row">
+                    <div class="row">
 
-                    <div class="col-md-11">
-                      <label for="product_billing"><strong>Product Billing:</strong></label>
-                    </div>
-                    <div class="col-md-1">
-                      <div class="clearfix">
-                        <button type="button" id="add_product_bill" class="btn btn-info btn-sm float-right">Add</button>
+                      <div class="col-md-11">
+                        <label for="product_billing"><strong>Product Billing:</strong></label>
                       </div>
+                      <div class="col-md-1">
+                        <div class="clearfix">
+                          <button type="button" id="add_product_bill" class="btn btn-info btn-sm float-right">Add</button>
+                        </div>
+                      </div>
+                      
                     </div>
-                    
-                  </div>
-                  <table class="table table-bordered" id="product_bill_table">
-                  <thead>
-                    <tr>
-                    <th width="10%">Date</th>
-                    <th width="20%">Title</th>
-                    <th width="20%">Store</th>
-                    <th width="10%">Quantity</th>
-                    <th width="35%">Total</th>
-                    <th width="5%">#</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                      <!--jQuery will add input fileds here-->
-                  </tbody>
-                  </table>
+                    <table class="table table-bordered" id="product_bill_table">
+                    <thead>
+                      <tr>
+                      <th width="10%">Date</th>
+                      <th width="20%">Title</th>
+                      <th width="20%">Store</th>
+                      <th width="10%">Quantity</th>
+                      <th width="35%">Total</th>
+                      <th width="5%">#</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <!--jQuery will add input fields here-->
+                        @if( isset($sale) )
+                          @foreach( $sale->productbills as $bill )
+                            @include('includes.tables.sales-row-product-bill', [
+                                'row_id' => $row++,
+                                'product_bill_id' => $bill->id,
+                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $bill->created_at),
+                                'product_title' => $bill->title,
+                                'store_name' => $bill->store_name,
+                                'bill_price' => $bill->product->mrp,
+                                'bill_quantity' => $bill->quantity ])
+                          @endforeach
+                        @endif
+                    </tbody>
+                    </table>
                     </div>
                     <div class="form-group">
                     <div class="row">
@@ -503,6 +539,17 @@
                     </thead>
                     <tbody>
                       <!--jQuery will add input fileds here-->
+                        @if( isset($sale) )
+                          @foreach( $sale->shippingbills as $bill )
+                            @include('includes.tables.sales-row-shipping-bill', [
+                                'row_id' => $row++,
+                                'shipping_bill_id' => $bill->id,
+                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $bill->created_at),
+                                'shipping_purpose' => $bill->purpose,
+                                'bill_amount' => $bill->amount,
+                                'bill_quantity' => $bill->quantity ])
+                          @endforeach
+                        @endif
                     </tbody>
                   </table>
                   </div>
@@ -536,6 +583,16 @@
                     </thead>
                     <tbody>
                       <!--Payment row will be added here by jQuery-->
+                        @if( isset($sale) )
+                          @foreach( $sale->billpayments as $payment )
+                            @include('includes.tables.sales-row-paid-bill', [
+                                'row_id' => $row++,
+                                'paid_bill_id' => $bill->id,
+                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $payment->created_at),
+                                'paid_amount' => $payment->amount,
+                                'trans_option' => $payment->method ])
+                          @endforeach
+                        @endif
                     </tbody>
                     </table>
                     </div>
@@ -545,15 +602,15 @@
                         <tbody>
                           <tr>
                             <td width="60%"><strong><i>Current Due:</i></strong></td>
-                            <td width="40%"><strong><i id="current_due">0.00</i></strong></td>
+                            <td width="40%"><strong><i id="current_due" class="decimal">0.00</i></strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Previous Due:</i></strong></td>
-                            <td width="40%"><strong><i id="prev_due">0.00</i></strong></td>
+                            <td width="40%"><strong><i id="prev_due" class="decimal">0.00</i></strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
-                            <td width="40%"><strong><i id="total_due">0.00</i></strong></td>
+                            <td width="40%"><strong><i id="total_due" class="decimal">0.00</i></strong></td>
                           </tr>
                         </tbody>
                       </table>
@@ -583,6 +640,18 @@
                     </thead>
                     <tbody>
                       <!--Bank deposit row will be added here by jQuery-->
+                        @if( isset($sale) )
+                          @foreach( $sale->deposits as $deposit )
+                            @include('includes.tables.sales-row-bank-deposit', [
+                                'row_id' => $row++,
+                                'bank_deposit_id' => $bill->id,
+                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $deposit->created_at),
+                                'deposit_method' => $deposit->method,
+                                'deposit_amount' => $deposit->amount,
+                                'bank_account_no' => $deposit->bank_account_no,
+                                'bank_title' => $deposit->bank_title ])
+                          @endforeach
+                        @endif
                     </tbody>
                     </table>
                     </div>
@@ -606,6 +675,16 @@
                         </thead>
                         <tbody>
                           <!--jQuery will add input fileds here-->
+                        @if( isset($sale) )
+                          @foreach( $sale->expenses as $expense )
+                            @include('includes.tables.sales-row-expense', [
+                                'row_id' => $row++,
+                                'expense_id' => $bill->id,
+                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $expense->created_at),
+                                'expense_purpose' => $expense->purpose,
+                                'expense_amount' => $expense->amount ])
+                          @endforeach
+                        @endif
                         </tbody>
                       </table>
                     </div>

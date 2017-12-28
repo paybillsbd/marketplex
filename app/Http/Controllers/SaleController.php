@@ -30,7 +30,7 @@ class SaleController extends Controller
         //
         // dd(Auth::user()->stores);
         return view('sales-book-1')->withErrors([])
-                                    ->withStores(Auth::user()->stores->pluck('id', 'name'));
+                                   ->withStores(Auth::user()->stores->pluck('id', 'name'));
     }
 
     /**
@@ -65,7 +65,9 @@ class SaleController extends Controller
     public function edit($sale)
     {
         //
-        return view('sales-book-1')->withSale($sale)->withErrors([]);
+        return view('sales-book-1')->withSale($sale)
+                                   ->withRow(0)         // row index
+                                   ->withErrors([]);
     }
 
     /**
@@ -100,6 +102,8 @@ class SaleController extends Controller
                 'datetime' => $request->input('datetime'),
                 'product_title' => $request->input('product_title'),
                 'store_name' => $request->input('store_name'),
+                'bank_accounts' => $request->input('bank_accounts'),
+                'product_available_quantity' => $request->input('product_available_quantity')
             ];
             return response()->view('includes.tables.' . $view, $view_data)->header('Content-Type', 'html');
         }
