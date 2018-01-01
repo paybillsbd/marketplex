@@ -42,6 +42,11 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         //
+        dd($request->only('bill_id', 'client'));
+        dd($request->only('product_bill_id', 'product_id', 'product_quantity'));
+        dd($request->only('shipping_purpose', 'bill_amount', 'bill_quantity'));
+        // dd($request->only('bill_id', 'client', 'product_bill_id', 'product_id', 'product_quantity', 'shipping_purpose', 'bill_amount', 'bill_quantity'));
+        // return redirect()->route('user::sales.index');
     }
 
     /**
@@ -100,6 +105,7 @@ class SaleController extends Controller
             $view_data = [
                 'row_id' => $request->input('row_id'),
                 'datetime' => $request->input('datetime'),
+                'product_id' => $request->input('product_id'),
                 'product_title' => $request->input('product_title'),
                 'store_name' => $request->input('store_name'),
                 'bank_accounts' => $request->input('bank_accounts'),

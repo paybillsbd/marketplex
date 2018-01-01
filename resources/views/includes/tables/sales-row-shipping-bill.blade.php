@@ -9,20 +9,12 @@
 	@endif
 	</td>
 	<td>
-	@if( isset($bill_amount) )
-		<p class="decimal">{{ number_format($bill_amount, 2) }}</p>
-	@else
-		<input 	id="bill_amount" class="decimal form-control" name="bill_amount[]" value="{{ number_format(0.00, 2) }}"
+		<input 	id="bill_amount" class="decimal form-control" name="bill_amount[]" value="{{ number_format( isset($bill_amount) ? $bill_amount : 0.00, 2) }}"
 				type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
-	@endif
 	</td>
 	<td>
-	@if( isset($bill_quantity) )
-		<p class="decimal">{{ $bill_quantity }}</p>
-	@else
-		<input 	id="bill_quantity" class="decimal form-control" name="bill_quantity[]" min="0" value="0"
+		<input 	id="bill_quantity" class="decimal form-control" name="bill_quantity[]" min="0" value="{{ isset($bill_quantity) ? $bill_quantity : 0 }}"
 				type="number" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
-	@endif
 	</td>
 	<td>
 	<strong><i><span class="multTotal">{{ number_format(isset($bill_amount) ? ($bill_quantity * $bill_amount) : 0.00, 2) }}</span></i></strong>

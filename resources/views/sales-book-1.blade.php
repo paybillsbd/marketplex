@@ -177,10 +177,23 @@
 
               priceCollection["row" + i] = data.price;
 
+              // the product already listed in the table
+              if ($("tr.product_bill").find("input:hidden[name='product_id[]'][value='" + data.product_id + "']").length > 0)
+              {
+                  var product_quantity = $("tr.product_bill").find("input[name='product_quantity[]'][data-product-id='" + data.product_id + "']").first();
+                  if (Number(product_quantity.val()) < data.available_quantity)
+                  {
+                      product_quantity.val(Number(product_quantity.val()) + 1);
+                  }
+                  multInputs();
+                  return;
+              }
+
               var rowTemplate = 'sales-row-product-bill';
               DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
               DataManager.payload = {
                 row_id: i,
+                product_id: data.product_id,
                 datetime: d.toLocaleDateString(),
                 product_title: data.title,
                 store_name: data.store_name,
@@ -216,17 +229,17 @@
 
         function Decimal(numberText)
         {
-            if (Number(numberText) == 0.0)
+            var number = Number(numberText);
+            if (number == 0.0)
             {
-                return Number(numberText).toPrecision(3);
+                return number.toPrecision(3);
             }
             if (numberText.toString().indexOf('.') > -1)
             {
-                return Number(numberText);
+                return numberText;
             }
-            return Number(numberText).toPrecision(numberText.toString().length + 2);
-        }
-        
+            return number.toPrecision(numberText.toString().length + 2);
+        }        
 
         function multInputs() {
 
@@ -263,7 +276,7 @@
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
                  var amount = Number($('#paid_amount', this).val());
-                  $('#paid_amount', this).val(amount);
+                  $('#paid_amount', this).val(Decimal(amount));
                  totalPaid += amount;
               });
 
@@ -421,7 +434,9 @@
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
              
-              {{ Form::open(['route' => [ isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? $sale : '' ] ]) }}
+              {{ Form::open(['route' => [ isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? 'sale=' . $sale : '', 'api_token=' . Auth::user()->api_token ] ]) }}
+
+              {!! csrf_field() !!}
 
               <div class="box-body">
                     <div class="form-group">
@@ -507,6 +522,7 @@
                             @include('includes.tables.sales-row-product-bill', [
                                 'row_id' => $row++,
                                 'product_bill_id' => $bill->id,
+                                'product_id' => $bill->product_id,
                                 'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $bill->created_at),
                                 'product_title' => $bill->title,
                                 'store_name' => $bill->store_name,

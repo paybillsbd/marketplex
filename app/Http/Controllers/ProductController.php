@@ -696,7 +696,7 @@ class ProductController extends Controller
         if($request->ajax())
         {
             return response()->json([
-                'id' => $product->id,
+                'product_id' => $product->id,
                 'title' => $product->title,
                 'store_name' => $product->store->name,
                 'price' => $product->mrp,

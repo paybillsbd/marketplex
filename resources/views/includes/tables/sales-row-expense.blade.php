@@ -9,13 +9,9 @@
 	@endif
 	</td>
 	<td>
-	@if( isset($expense_amount) )
-		<p class="decimal">{{ number_format($expense_amount, 2) }} </p>
-	@else
 		<input 	id="expense_amount" class="decimal form-control" name="expense_amount[]"
-				value="{{ number_format(0.00, 2) }}" type="text"
+				value="{{ number_format( isset($expense_amount) ? $expense_amount : 0.00, 2) }}" type="text"
 				onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
-	@endif
 	</td>
 	<td>
 	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove">X</a>
