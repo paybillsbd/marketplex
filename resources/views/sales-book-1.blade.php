@@ -103,6 +103,22 @@
           }
       };
 
+      var ViewContentManager = {
+          // @param: view_name - name of the view to load
+          // @param: payload - the data to bind to the view content
+          // @param: table_id - name of the view to load
+          append: function(view_name, payload, selector) {
+
+              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
+              DataManager.payload = payload;
+              DataManager.onLoad = function(data) {
+
+                  $(selector).append(data);
+              };
+              DataManager.request();
+          }
+      };
+
       $(document).ready(function(){      
         var i=1;  
         var d = new Date(Date.now());
@@ -178,66 +194,68 @@
               priceCollection["row" + i] = data.price;
 
               // the product already listed in the table
-              if ($("tr.product_bill").find("input:hidden[name='product_id[]'][value='" + data.product_id + "']").length > 0)
+              if ($("tr.product_bill").find("input:hidden[value='" + data.product_id + "']").length > 0)
               {
-                  var product_quantity = $("tr.product_bill").find("input[name='product_quantity[]'][data-product-id='" + data.product_id + "']").first();
+                  var product_quantity = $("tr.product_bill").find("input[data-product-id='" + data.product_id + "']").first();
                   if (Number(product_quantity.val()) < data.available_quantity)
                   {
                       product_quantity.val(Number(product_quantity.val()) + 1);
                   }
+                  // calculate pricing after manipulating quantity inputs
                   multInputs();
                   return;
               }
 
-              var rowTemplate = 'sales-row-product-bill';
-              DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.payload = {
+              ViewContentManager.append('sales-row-product-bill', {
                 row_id: i,
                 product_id: data.product_id,
                 datetime: d.toLocaleDateString(),
                 product_title: data.title,
                 store_name: data.store_name,
                 product_available_quantity: data.available_quantity
-              };
-              DataManager.onLoad = function(data) {
-
-                  $('#product_bill_table').append(data);
-              };
-              DataManager.request();
+              }, '#product_bill_table');
           };
           DataManager.request();
 
         });
         
-        $(document).on('click', '.btn_remove', function(e){
+        $(document).on('click', '.btn_remove', function(e) {
+
              e.preventDefault();
              var button_id = $(this).attr("id");
-             $('#row'+button_id+'').remove();
+             $('#row' + button_id).remove();
              multInputs();
         }); 
 
-        $("tbody").on('change', "#deposit_method", function() {
-          var rowId = $(this).attr("row-id");
-          if ($(this).val() == 'Vault'){
-            $("#bank_title[row-id='"+rowId+"'], #bank_ac_no[row-id='"+rowId+"']").hide();
-          }
-          else if ($(this).val() == 'Bank'){
-        	$("#bank_title[row-id='"+rowId+"'], #bank_ac_no[row-id='"+rowId+"']").show();
-          }
-        
+        $("tbody").on('change', ".deposit_method", function() {
+
+              var rowId = $(this).attr("row-id");
+              var bankingFields = $("#deposits\\." + rowId + "\\.bank_title, #deposits\\." + rowId + "\\.bank_ac_no");
+
+              if ($(this).val() == 'vault')
+              {
+                  bankingFields.hide();
+              }
+              else if ($(this).val() == 'bank')
+              {
+            	    bankingFields.show();
+              }        
         });
 
         function Decimal(numberText)
         {
             var number = Number(numberText);
+            // specially take care the pure zero value
             if (number == 0.0)
             {
                 return number.toPrecision(3);
             }
+            // if already formatted to decimal just return it
             if (numberText.toString().indexOf('.') > -1)
             {
                 return numberText;
             }
+            // otherwise ... keep precision minding the length
             return number.toPrecision(numberText.toString().length + 2);
         }        
 
@@ -247,9 +265,10 @@
               // for each row:
               $("tr.ship_bill").each(function () {
                  // get the values from this row:
-                 var amount = $('#bill_amount', this).val();
-                 $('#bill_amount', this).val(Decimal(amount));
-                 var quantity = $('#bill_quantity', this).val();
+                 var billAmmountInput = $('#shipping_bills\\.' + $(this).data('row-id') + '\\.bill_amount', this);
+                 var amount = billAmmountInput.val();
+                 billAmmountInput.val(Decimal(amount));
+                 var quantity = $('#shipping_bills\\.' + $(this).data('row-id') + '\\.bill_quantity', this).val();
                  var total = Number(amount) * Number(quantity);
 
                  $('.multTotal',this).text(Decimal(total));
@@ -257,7 +276,9 @@
               });
               $("tr.product_bill").each(function () {
 
-                  var quantity = $('#product_quantity', this).val();
+                  // must escape the id selector for dot (.) if contains any
+                  // ref: https://stackoverflow.com/questions/605630/how-to-select-html-nodes-by-id-with-jquery-when-the-id-contains-a-dot
+                  var quantity = $('#product_bills\\.' + $(this).data('row-id') + '\\.product_quantity').val();
                   var unitPrice = priceCollection[this.id];
                   var total = Number(unitPrice) * Number(quantity);
                   $('.multTotal', this).text(Decimal(total));
@@ -275,8 +296,9 @@
               // for each row:
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
-                 var amount = Number($('#paid_amount', this).val());
-                  $('#paid_amount', this).val(Decimal(amount));
+                 var amountInput = $('#payments\\.' + $(this).data('row-id') + '\\.paid_amount', this);
+                 var amount = Number(amountInput.val());
+                 amountInput.val(Decimal(amount));
                  totalPaid += amount;
               });
 
@@ -306,14 +328,16 @@
              var currentDue = Number($("#current_due").text());
               $("tr.expenses").each(function () {
 
-                  var amount = Number($('#expense_amount', this).val());
-                  $('#expense_amount', this).val(Decimal(amount));
+                  var expensesAmountInput = $('#expenses\\.' + $(this).data('row-id') + '\\.expense_amount', this);
+                  var amount = Number(expensesAmountInput.val());
+                  expensesAmountInput.val(Decimal(amount));
                   totalExpense += amount;
               });
               $("tr.bank_deposit").each(function () {
 
-                  var amount = Number($('#deposit_amount', this).val());
-                  $('#deposit_amount', this).val(Decimal(amount));
+                  var depositAmountInput = $('#deposits\\.' + $(this).data('row-id') + '\\.deposit_amount', this);
+                  var amount = Number(depositAmountInput.val());
+                  depositAmountInput.val(Decimal(amount));
                   totalExpense += amount;
               });
 
@@ -362,6 +386,154 @@
           DataManager.request();
       });
     </script>
+    <script>
+
+    var FormRequestManager = {
+        id: "#submit-form",
+        _route: '',
+        _data: {},
+        _validationErrors: [],
+        _onValidationError: function(data) {
+            FormRequestManager._hideValidationErrors();
+            var response = data.responseJSON;
+
+            // ref: https://stackoverflow.com/questions/20881213/converting-json-object-into-javascript-array
+            var validationErrors = Object.values(response);
+            var validationErrorFields = Object.keys(response);
+            // console.log(validationErrorFields);
+
+            validationErrors.forEach(function(error, index) {
+                FormRequestManager._showInvalidInput(validationErrorFields[index], error);
+            });
+
+            FormRequestManager._showValidationSummary();
+        },
+        // ref: https://stackoverflow.com/questions/25227544/add-class-to-parent-div-with-specific-input
+        _showInvalidInput: function(inputId, validationText) {
+
+            // ref: https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
+            inputId = inputId.replace(new RegExp('\\.', 'g'), "\\.");
+
+            FormRequestManager._validationErrors.push(validationText);
+            var targetInput = $("#" + inputId);
+            var formGroup = targetInput.closest(".form-group");
+            formGroup.addClass('has-error');
+            var helpBlock = formGroup.find(".help-block").first();
+            console.log(helpBlock.html());
+            helpBlock.removeClass('hidden');
+            helpBlock.find("strong").first().text(validationText);
+            targetInput.focus();
+        },
+        // ref: https://stackoverflow.com/questions/25227544/add-class-to-parent-div-with-specific-input
+        _hideInvalidInput: function(inputId) {
+
+            var targetInput = $("#" + inputId);
+            targetInput.closest(".form-group").removeClass('has-error');
+            var helpBlock = targetInput.closest(".help-block");
+            helpBlock.addClass('hidden');
+            helpBlock.closest("strong").empty();
+        },
+        _hideValidationErrors: function() {
+
+            $( ".form-group" ).removeClass( "has-error" );
+            $( ".help-block" ).addClass( "hidden" );
+            $( ".error-summary" ).addClass( "hidden" );
+            $( ".error-summary" ).find("ul").first().empty();
+            FormRequestManager._validationErrors = [];  
+        },
+        _showValidationSummary: function() {
+
+            var errors = '';
+            FormRequestManager._validationErrors.forEach(function(item, index) {
+                errors += '<li>' + item + '</li>';
+            });
+            $( ".error-summary" ).removeClass( "hidden" );    
+            $( ".error-summary" ).find("ul").first().html(errors);
+        },
+        _reset: function() {
+
+            document.getElementById(FormRequestManager.id).reset();
+        },
+        _onSuccess: function(data) {
+            // success logic
+            if(data.code == 200) // OK
+            {                        
+                alert( "Success! " +  data.message );
+                window.location.href = "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+            }
+            else
+            {
+                FormRequestManager._reset();
+                alert( "Sorry! " +  data.message );
+            }
+            FormRequestManager._hideValidationErrors();
+        },
+        _onError: function(jqXHR, textStatus, errorThrown) {
+
+            FormRequestManager._hideValidationErrors();
+            // alert(jqXHR.status);
+            if (jqXHR.status == 404 || jqXHR.status == 422 || jqXHR.status == 400) 
+              return;
+            var msg = '';
+            if (jqXHR.status === 0) {
+                msg = 'Not connected.\n Verify Network.';
+            } else if (jqXHR.status == 404) {
+                msg = 'Requested page not found. [404]';
+            } else if (jqXHR.status == 401) {
+                msg = errorThrown + '. [' + jqXHR.status + ']';
+            } else if (jqXHR.status == 500) {
+                msg = 'Internal Server Error [500].';
+            } else if (textStatus === 'parsererror') {
+                msg = 'Requested JSON parse failed.';
+            } else if (textStatus === 'timeout') {
+                msg = 'Time out error.';
+            } else if (textStatus === 'abort') {
+                msg = 'Ajax request aborted.';
+            } else {
+                msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
+            }              
+            // Render the errors with js ...
+            alert(msg);
+        },
+        _onSubmit: function(event) {
+                      
+            event.preventDefault();
+            var _this = FormRequestManager;
+            $.ajax({
+                  type: 'post',
+                  url: _this._route,
+                  data: $( ":input" ).serializeArray(), //{ inputs: $( ":input" ).serializeArray(), extra: _this._data },
+                  dataType: 'json',
+                  statusCode: {
+                        422: _this._onValidationError,
+                        400: function(data) {
+                            var response = data.responseJSON;
+                            alert( response.message );
+                        }
+                  },
+                  success: _this._onSuccess,
+                  error: _this._onError 
+            });
+
+        },
+        ready: function(url, data) {
+
+          this._route = url;
+          this._data = data;
+          var _this = this;
+
+          $(this.id).ready(function() {
+                $(_this.id).submit(_this._onSubmit);
+          });
+        }
+    };
+
+    var frm = FormRequestManager;
+    frm.id = '#sale-form';
+    var route = "{{ route(isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
+    frm.ready(route, []);
+
+    </script>
 @endsection
 
 @section('modals')
@@ -380,10 +552,10 @@
           {{ Form::open(['route' => [ 'user::clients.store', '' ] ]) }}
           <div class="modal-body">
               <div class="form-group">
-                <input type="text" name="client_name" class="form-control" placeholder="Client/Company/Business Name" required />
+                <input type="text" id="new_client_name" name="new_client_name" class="form-control" placeholder="Client/Company/Business Name" required />
               </div>
               <div class="form-group">
-                <textarea class="form-control" rows="5" name="client_info" id="client_info" placeholder="Client/Company/Business Info" required></textarea>
+                <textarea class="form-control" rows="5" name="client_detail" id="client_detail" placeholder="Client/Company/Business Detail"></textarea>
               </div>
           </div>
           <div class="modal-footer">
@@ -403,18 +575,21 @@
               <span aria-hidden="true">&times;</span>
               <span class="sr-only">Close</span>
             </button>
-            <h4 class="modal-title">Add Bank</h4>
+            <h4 class="modal-title">Add Bank Account</h4>
           </div>
           {{ Form::open(['route' => [ 'user::clients.store', '' ] ]) }}
           <div class="modal-body">
               <div class="form-group">
-                <input type="text" name="bank_name" class="form-control" placeholder="Bank Name" required />
+                <input type="text" name="new_bank_name" id="new_bank_name" class="form-control" placeholder="Bank Name" required />
               </div>
               <div class="form-group">
-                <input type="text" name="bank_branch" class="form-control" placeholder="Branch Name" required />
+                <input type="text" name="bank_branch_name" id="bank_branch_name" class="form-control" placeholder="Branch Name" required />
               </div>
               <div class="form-group">
-                <textarea class="form-control" rows="5" name="bank_info" id="bank_info" placeholder="Bank Info" required></textarea>
+                <input type="text" name="bank_acc_no" id="bank_acc_no" class="form-control" placeholder="Account No" required />
+              </div>
+              <div class="form-group">
+                <textarea class="form-control" rows="5" name="bank_detail" id="bank_detail" placeholder="Bank Detail"></textarea>
               </div>
           </div>
           <div class="modal-footer">
@@ -433,8 +608,13 @@
       <div class="row padTB"> 
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
-             
-              {{ Form::open(['route' => [ isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? 'sale=' . $sale : '', 'api_token=' . Auth::user()->api_token ] ]) }}
+
+              <div class="error-summary alert alert-danger hidden">
+                  <p>{{ 'Please check your provided inputs!' }}<p/>
+                  <ul></ul>
+              </div>
+
+              <form id="sale-form">
 
               {!! csrf_field() !!}
 
@@ -442,21 +622,20 @@
                     <div class="form-group">
                         <label for="bill_id"><strong>Billing ID:</strong></label>
                         <div class="col-md-12">
-                            <input type="text" class="form-control" name="bill_id" value="{{ isset($sale) ? $sale->bill_id : '' }}" />
+                            <input type="text" class="form-control" id="bill_id" name="bill_id" value="{{ isset($sale) ? $sale->bill_id : '' }}" />
+                            <span class="help-block hidden">
+                                <strong></strong>
+                            </span>
                         </div>
                     </div>
                     <div class="form-group">
-                      <label for="selected_client_name"><strong>Business/Client/Company Name:</strong></label>
+                      <label for="client"><strong>Business/Client/Company Name:</strong></label>
                       <div class="row">
                         <div class="col-md-10">
-
-                          <input type="text" name="client" id="client" class="form-control" value="{{ isset($sale) ? $sale->client_name : '' }}" />
-
-                          @if ($errors->has('client'))
-                              <span class="help-block">
-                                <strong>{{ $errors->first('client') }}</strong>
-                              </span>
-                          @endif
+                          <input  type="text" name="client" id="client" class="form-control" value="{{ isset($sale) ? $sale->client_name : '' }}" />
+                            <span class="help-block hidden">
+                                <strong></strong>
+                            </span>
                         </div>
                         <div class="col-md-2">
                           <div class="clearfix">
@@ -483,7 +662,6 @@
                       <label for="product_name"><strong>Product:</strong></label>
                       <div class="row">
                         <div class="col-md-12">
-                          <input type="hidden" name="product_id" value="{{ 1 }}" />
                           <select class="form-control" id="product_name" name="product_name" data-placeholder="Select a product">
                                 <option value="-1">-- Select --</option>
                           </select>
@@ -636,7 +814,7 @@
                       <h4><strong>Bank Deposit</strong></h4>
                     </div>
                     <div class="col-md-3">
-                        <a href="#" data-toggle="modal" data-target="#add_bank" class="btn btn-info btn-sm float-right">Add Bank</a>
+                        <a href="#" data-toggle="modal" data-target="#add_bank" class="btn btn-info btn-sm float-right">Add Bank Account</a>
                     </div>
                     <div class="col-md-1">
                       <button type="button" id="addBankRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"></button>
@@ -665,7 +843,9 @@
                                 'deposit_method' => $deposit->method,
                                 'deposit_amount' => $deposit->amount,
                                 'bank_account_no' => $deposit->bank_account_no,
-                                'bank_title' => $deposit->bank_title ])
+                                'bank_title' => $deposit->bank_title,
+                                'bank_accounts' => []
+                            ])
                           @endforeach
                         @endif
                     </tbody>
@@ -711,10 +891,9 @@
                         </div>
                     </div>
               </div>
-            <!--</form>-->
-            {{ Form::close() }}
-          </div>
+            </form>
               <!--end of form-->
+          </div>
 
             </div>
           </div>

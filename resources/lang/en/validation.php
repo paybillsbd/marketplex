@@ -100,6 +100,24 @@ return [
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
+        ],       
+        'product_bills.*.product_quantity' => [
+            'min' => 'The product quantity must be at least :min',
+        ],
+        'shipping_bills.*.bill_quantity' => [
+            'min' => 'The shipping item quantity must be at least :min',
+        ],
+        'shipping_bills.*.bill_amount' => [
+            'min' => 'The shipping amount can\'t be 0.00 ' . MarketPlex\Store::currencyIcon(),
+        ],
+        'payments.*.paid_amount' => [
+            'min' => 'The payment amount can\'t be 0.00 ' . MarketPlex\Store::currencyIcon(),
+        ],
+        'deposits.*.deposit_amount' => [
+            'min' => 'The deposit amount can\'t be 0.00 ' . MarketPlex\Store::currencyIcon(),
+        ],
+        'expenses.*.expense_amount' => [
+            'min' => 'The expense amount can\'t be 0.00 ' . MarketPlex\Store::currencyIcon(),
         ],
     ],
 

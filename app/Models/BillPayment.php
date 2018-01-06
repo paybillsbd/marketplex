@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class BillPayment extends Model
 {
     //
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [ 'sale_transaction_id', 'method', 'amount' ];
 
     public static function getPaymentMethodText($method)
     {
