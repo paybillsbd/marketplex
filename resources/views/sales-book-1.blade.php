@@ -225,7 +225,7 @@
              var button_id = $(this).attr("id");
              $('#row' + button_id).remove();
              multInputs();
-        }); 
+        });
 
         $("tbody").on('change', ".deposit_method", function() {
 
@@ -709,9 +709,9 @@
                                 'row_id' => $row++,
                                 'product_bill_id' => $bill->id,
                                 'product_id' => $bill->product_id,
-                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $bill->created_at),
-                                'product_title' => $bill->title,
-                                'store_name' => $bill->store_name,
+                                'datetime' => Carbon\Carbon::parse($bill->created_at)->format('m/d/Y h:m'),
+                                'product_title' => $bill->product->title,
+                                'store_name' => $bill->product->store->name,
                                 'bill_price' => $bill->product->mrp,
                                 'bill_quantity' => $bill->quantity ])
                           @endforeach
@@ -746,7 +746,7 @@
                             @include('includes.tables.sales-row-shipping-bill', [
                                 'row_id' => $row++,
                                 'shipping_bill_id' => $bill->id,
-                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $bill->created_at),
+                                'datetime' => Carbon\Carbon::parse($bill->created_at)->format('m/d/Y h:m'),
                                 'shipping_purpose' => $bill->purpose,
                                 'bill_amount' => $bill->amount,
                                 'bill_quantity' => $bill->quantity ])
@@ -759,8 +759,8 @@
                   <table class="table table-bordered">
                     <tbody>
                       <tr>
-                        <td width="60%"><strong><i>Bill Amount:</i></strong></td>
-                        <td width="40%"><strong><i><span id="grandTotal">0.00</span></i></strong></td>
+                        <td width="60%"><strong><i>Bill Amount ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
+                        <td width="40%"><strong><i><span id="grandTotal">{{ isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00 }}</span></i></strong></td>
                       </tr>
                     </tbody>
                   </table>
@@ -789,8 +789,8 @@
                           @foreach( $sale->billpayments as $payment )
                             @include('includes.tables.sales-row-paid-bill', [
                                 'row_id' => $row++,
-                                'paid_bill_id' => $bill->id,
-                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $payment->created_at),
+                                'paid_bill_id' => $payment->id,
+                                'datetime' => Carbon\Carbon::parse($payment->created_at)->format('m/d/Y h:m'),
                                 'paid_amount' => $payment->amount,
                                 'trans_option' => $payment->method ])
                           @endforeach
@@ -803,16 +803,16 @@
                       <table class="table table-bordered">
                         <tbody>
                           <tr>
-                            <td width="60%"><strong><i>Current Due:</i></strong></td>
-                            <td width="40%"><strong><i id="current_due" class="decimal">0.00</i></strong></td>
+                            <td width="60%"><strong><i>Current Due ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
+                            <td width="40%"><strong><i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
                           </tr>
                           <tr>
-                            <td width="60%"><strong><i>Previous Due:</i></strong></td>
-                            <td width="40%"><strong><i id="prev_due" class="decimal">0.00</i></strong></td>
+                            <td width="60%"><strong><i>Previous Due ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
+                            <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
                           </tr>
                           <tr>
-                            <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
-                            <td width="40%"><strong><i id="total_due" class="decimal">0.00</i></strong></td>
+                            <td width="60%"><strong><i>Total Due ({{ MarketPlex\Store::currencyIcon() }}) (This Client):</i></strong></td>
+                            <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
                           </tr>
                         </tbody>
                       </table>
@@ -846,8 +846,8 @@
                           @foreach( $sale->deposits as $deposit )
                             @include('includes.tables.sales-row-bank-deposit', [
                                 'row_id' => $row++,
-                                'bank_deposit_id' => $bill->id,
-                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $deposit->created_at),
+                                'bank_deposit_id' => $deposit->id,
+                                'datetime' => Carbon\Carbon::parse($deposit->created_at)->format('m/d/Y h:m'),
                                 'deposit_method' => $deposit->method,
                                 'deposit_amount' => $deposit->amount,
                                 'bank_account_no' => $deposit->bank_account_no,
@@ -883,8 +883,8 @@
                           @foreach( $sale->expenses as $expense )
                             @include('includes.tables.sales-row-expense', [
                                 'row_id' => $row++,
-                                'expense_id' => $bill->id,
-                                'datetime' => Carbon\Carbon::createFromFormat('m/d/Y', $expense->created_at),
+                                'expense_id' => $expense->id,
+                                'datetime' => Carbon\Carbon::parse($expense->created_at)->format('m/d/Y h:m'),
                                 'expense_purpose' => $expense->purpose,
                                 'expense_amount' => $expense->amount ])
                           @endforeach
@@ -908,4 +908,3 @@
     </div>
 </div>
 @endsection
-

@@ -25,8 +25,8 @@ class SaleController extends Controller
     public function index()
     {
         //
-        dd(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'));
-        return view('sales-search-view')->withSales(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'))->withErrors([]);
+        // dd(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'));
+        return view('sales-search-view')->withSales(Sale::all())->withErrors([]);
     }
 
     /**
@@ -191,12 +191,12 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($sale)
+    public function edit(Sale $sale)
     {
         //
         return view('sales-book-1')->withSale($sale)
-                                   ->withRow(0)         // row index
-                                   ->withErrors([]);
+                                   ->withRow(0)        // row index
+                                   ->withStores(Auth::user()->stores->pluck('id', 'name'));
     }
 
     /**

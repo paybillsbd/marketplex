@@ -3,7 +3,8 @@
 	<p>{{ $datetime }} <input name="expenses[{{ $row_id }}][expense_id]" type="hidden" value="{{ isset($expense_id) ? $expense_id : -1 }}" /></p></td>
 	<td>
 		<div class="form-group">	
-		<input 	id="expenses.{{ $row_id }}.expense_purpose" type="text" name="expenses[{{ $row_id }}][expense_purpose]" class="form-control" required />
+		<input 	id="expenses.{{ $row_id }}.expense_purpose" type="text" name="expenses[{{ $row_id }}][expense_purpose]" class="form-control"
+				value="{{ isset($expense_purpose) ? $expense_purpose : '' }}" required />
 		</div>
 	</td>
 	<td>

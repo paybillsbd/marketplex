@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 use MarketPlex\Helpers\ImageManager;
 
+use MarketPlex\ProductBill;
+
 class Product extends Model
 {
     // use SoftDeletes;
@@ -70,6 +72,11 @@ class Product extends Model
     public function store()
     {
         return $this->belongsTo('MarketPlex\Store');
+    }
+
+    public function productbill()
+    {
+        return $this->hasOne(ProductBill::class);
     }
 
     /**

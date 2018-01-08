@@ -3,16 +3,11 @@
 namespace MarketPlex;
 
 use Illuminate\Database\Eloquent\Model;
+use MarketPlex\SaleTransaction as Sale;
 
 class SaleTransaction extends Model
 {
     //
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    // protected $hidden = [ 'deleted_at', 'updated_at', 'client_id' ];
     /**
      * The attributes that should be visible in arrays.
      *
@@ -43,5 +38,64 @@ class SaleTransaction extends Model
     public function expenses()
     {
         return $this->hasMany('MarketPlex\Expense');
+    }
+
+    public function getBillAmount()
+    {
+        $totalAmount = 0.0;
+        foreach ($this->productbills as $key => $bill) {
+            $totalAmount += $bill->product->mrp * $bill->quantity;
+        }
+        foreach ($this->shippingbills as $key => $bill) {
+            $totalAmount += $bill->amount * $bill->quantity;
+        }
+        return $totalAmount;
+    }
+
+    public function getBillAmountDecimalFormat()
+    {
+        return number_format($this->getBillAmount(), 2);
+    }
+
+    public function getCurrentDueAmount()
+    {
+        $totalPaidAmount = 0.0;
+        foreach ($this->billpayments as $key => $payment) {
+            $totalPaidAmount += $payment->amount;
+        }
+        return $this->getBillAmount() - $totalPaidAmount;
+    }
+
+    public function getCurrentDueAmountDecimalFormat()
+    {
+        return number_format($this->getCurrentDueAmount(), 2);
+    }
+
+    public function getPreviousDueAmount()
+    {
+        $totalAmountDue = 0.0;
+        foreach (Sale::whereClientName($this->client_name)->where('id', '!=', $this->id)->get() as $key => $sale) {
+            $totalAmountDue += $sale->getCurrentDueAmount();
+        }
+        return $totalAmountDue;
+    }
+
+    public function getPreviousDueAmountDecimalFormat()
+    {
+        return number_format($this->getPreviousDueAmount(), 2);
+    }
+
+    public function getTotalDueAmount()
+    {
+        $totalAmountDue = 0.0;
+        foreach (Sale::whereClientName($this->client_name)->get() as $key => $sale) {
+            $totalAmountDue += $sale->getCurrentDueAmount();
+        }
+        return $totalAmountDue;
+    }
+
+    public function getTotalDueAmountDecimalFormat()
+    {
+        return number_format($this->getTotalDueAmount(), 2);
     }
 }

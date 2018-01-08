@@ -13,9 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
+// testing
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/serialize', function() {
+	return MarketPlex\SaleTransaction::all();
+});
+
+
+// business
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], function () {
 

@@ -13,12 +13,12 @@
 		</div>
 	</td>
 	<td>
-		<div class="form-group">
+		<div class="form-group{{ isset($deposit_method) && $deposit_method == 'vault' ? ' hidden' : '' }}">
 		<p id="deposits.{{ $row_id }}.bank_title"> {{ isset($bank_title) ? $bank_title : '' }} </p>
 		</div>
 	</td>
 	<td>
-		<div class="form-group">			
+		<div class="form-group{{ isset($deposit_method) && $deposit_method == 'vault' ? ' hidden' : '' }}">			
 		<select class="form-control" id="deposits.{{ $row_id }}.bank_ac_no" name="deposits[{{ $row_id }}][bank_ac_no]" row-id="{{ $row_id }}">
 			<option value="" selected>-- Select --</option>
 			@foreach( $bank_accounts as $acc)

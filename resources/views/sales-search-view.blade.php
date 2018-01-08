@@ -143,24 +143,24 @@
                     </tr>
                   </thead>
                   <tbody>
-                  @foreach( $sales as $sale )
-                  <tr>
-                    <td>{{ $sale[ 'created_at' ] }}</td>
-                    <td>{{ $sale[ 'bill_id' ] }}</td>
-                    <td>{{ $sale[ 'client_name' ] }}</td>
-                    <td><strong><i>238.00</i></strong></td>
-                    <td><strong><i>238.00</i></strong></td>
-                    <td>
-                      <div class="clearfix">
-                			  <p class="text-left">
-                          <a  href="{{ route('user::sales.edit', [ 'sale' => 2, 'api_token' => Auth::user()->api_token ]) }}"
-                              class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
-                        </p>
-                      </div>
-                      <!--<a href="#" data-toggle="modal" data-target="" class="btn btn-danger btn-sm">Delete</a>-->
-                    </td>
-                  </tr>  
-                  @endforeach   
+                    @foreach( $sales as $sale )
+                    <tr>
+                      <td>{{ $sale->created_at }}</td>
+                      <td>{{ $sale->bill_id }}</td>
+                      <td>{{ $sale->client_name  }}</td>
+                      <td><strong><i>{{ $sale->getBillAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                      <td><strong><i>{{ $sale->getCurrentDueAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                      <td>
+                        <div class="clearfix">
+                  			  <p class="text-left">  
+                            <a  href="{{ route('user::sales.edit', [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ]) }}"
+                                class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
+                          </p>
+                        </div>
+                        <!--<a href="#" data-toggle="modal" data-target="" class="btn btn-danger btn-sm">Delete</a>-->
+                      </td>
+                    </tr>  
+                    @endforeach   
                   </tbody>
               </table>
 
