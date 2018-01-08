@@ -25,7 +25,8 @@ class SaleController extends Controller
     public function index()
     {
         //
-        return view('sales-search-view')->withErrors([]);
+        dd(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'));
+        return view('sales-search-view')->withSales(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'))->withErrors([]);
     }
 
     /**
@@ -76,75 +77,95 @@ class SaleController extends Controller
         $sale->bill_id = $request->input('bill_id');
         $sale->client_name = $request->input('client');
 
+        $generalResponseData = [
+            // If you want to consider \n as newline you must keep your message inside doluble quote ("")
+            'message' => "Something went wrong while processing your sale information.\nPlease try again or contact your service provider.",
+            'code' => 400
+        ];
+
         if (!$sale->save())
         {
-            return response()->json([
-                'message' => 'Something went wrong while processing your sale information. Please try again or contact your service provider.',
-                'code' => 400
-            ]);
+            return response()->json($generalResponseData, 400);
         }
 
-        $products = [];
+        $generalResponseData[ 'message' ] = "Your sale entries are saved successfully! But...\n" . $generalResponseData[ 'message' ];
+
         $productBills = $request->input('product_bills');
         if (! empty($productBills))
         {
-            $productQuantities = $request->input('product_quantity');
             foreach ($productBills as $key => $value) {
-                $products[] = [ 'sale_transaction_id' => $sale->id, 'product_id' => $value['product_id'], 'quantity' => $value['product_quantity'] ];
+                $p = new Product();
+                $p->sale_transaction_id = $sale->id;
+                $p->product_id = $value['product_id'];
+                $p->quantity = $value['product_quantity'];
+
+                if (! $p->save())
+                {
+                    return response()->json($generalResponseData, 400);
+                }
             }
         }
-        // dd($products);
-        Product::create($products);
-        $shippings = [];
         $shippingBills = $request->input('shipping_purpose');
         if (! empty($shippingBills))
         {
             foreach ($shippingBills as $key => $value) {
-                $shippings[] = [
-                    'sale_transaction_id' => $sale->id, 'purpose' => $value['shipping_purpose'], 'quantity' => $value['bill_quantity'], 'amount' => $value['bill_amount']
-                ];
+
+                $s = new Shipping();
+                $s->sale_transaction_id = $sale->id;
+                $s->purpose = $value[ 'shipping_purpose' ];
+                $s->quantity = $value[ 'bill_quantity' ];
+                $s->amount = $value[ 'bill_amount' ];
+
+                if (! $s->save())
+                {
+                    return response()->json($generalResponseData, 400);
+                }
             }
         }
-        // dd($shippings);
-        Shipping::create($shippings);
         $payments = [];
         $paidAmounts = $request->input('payments');
         if (! empty($paidAmounts))
         {
             foreach ($paidAmounts as $key => $value) {
-                $payments[] = [ 'sale_transaction_id' => $sale->id, 'method' => $value['trans_option'], 'amount' => $value['paid_amount'] ];
+                $p = new Payment();
+                $p->sale_transaction_id = $sale->id;
+                $p->method = $value[ 'trans_option' ];
+                $p->amount = $value[ 'paid_amount' ];
+
+                if (! $p->save())
+                    return response()->json($generalResponseData, 400);
             }
         }
-        Payment::create($payments);
-        $deposits = [];
         $depositAmounts = $request->input('deposits');
         if (! empty($depositAmounts))
         {
             foreach ($depositAmounts as $key => $value) {
-                $deposits[] = [
-                    'sale_transaction_id' => $sale->id,
-                    'method' => $value['deposit_method'],
-                    'bank_title' => '',
-                    'bank_account_no' => $value['bank_ac_no'],
-                    'bank_branch' => '',
-                    'amount' => $value['deposit_amount']
-                ];
+
+                $d = new Deposit();
+                $d->sale_transaction_id = $sale->id;
+                $d->method = $value['deposit_method'];
+                $d->bank_title = '';
+                $d->bank_account_no = $value[ 'bank_ac_no' ];
+                $d->bank_branch = '';
+                $d->amount = $value[ 'deposit_amount' ];
+
+                if (! $d->save())
+                    return response()->json($generalResponseData, 400);
             }
         }
-        Deposit::create($deposits);
-        Log::info(collect($deposits)->toJson());
-        $expenses = [];
         $expenseAmounts = $request->input('expenses');
         if (! empty($expenseAmounts))
         {
             foreach ($expenseAmounts as $key => $value) {
-                $expenses[] = [
-                    'sale_transaction_id' => $sale->id, 'purpose' => $value['expense_purpose'], 'amount' => $value['expense_amount']
-                ];
+                $e = new Expense();
+                $e->sale_transaction_id = $sale->id;
+                $e->purpose = $value['expense_purpose'];
+                $e->amount = $value['expense_amount'];
+
+                if (! $e->save())
+                    return response()->json($generalResponseData, 400);
             }
         }
-        Expense::create($expenses);
-        Log::info(collect($expenses)->toJson());
         if ($request->ajax())
         {
             return response()->json([ 'message' => 'Your sale report is saved. Redirecting to all sales tracking page ...', 'code' => 200 ]);

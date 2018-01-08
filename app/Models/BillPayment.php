@@ -3,16 +3,18 @@
 namespace MarketPlex;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BillPayment extends Model
 {
-    //
+    use SoftDeletes;
+
     /**
-     * The attributes that are mass assignable.
+     * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $fillable = [ 'sale_transaction_id', 'method', 'amount' ];
+    protected $dates = ['deleted_at'];
 
     public static function getPaymentMethodText($method)
     {

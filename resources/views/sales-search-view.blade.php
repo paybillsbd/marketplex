@@ -143,10 +143,11 @@
                     </tr>
                   </thead>
                   <tbody>
+                  @foreach( $sales as $sale )
                   <tr>
-                    <td>12-12-17</td>
-                    <td>info</td>
-                    <td>info</td>
+                    <td>{{ $sale[ 'created_at' ] }}</td>
+                    <td>{{ $sale[ 'bill_id' ] }}</td>
+                    <td>{{ $sale[ 'client_name' ] }}</td>
                     <td><strong><i>238.00</i></strong></td>
                     <td><strong><i>238.00</i></strong></td>
                     <td>
@@ -158,7 +159,8 @@
                       </div>
                       <!--<a href="#" data-toggle="modal" data-target="" class="btn btn-danger btn-sm">Delete</a>-->
                     </td>
-                  </tr>     
+                  </tr>  
+                  @endforeach   
                   </tbody>
               </table>
 

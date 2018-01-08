@@ -471,6 +471,7 @@
         _onError: function(jqXHR, textStatus, errorThrown) {
 
             FormRequestManager._hideValidationErrors();
+            var now = new Date(Date.now());
             // alert(jqXHR.status);
             if (jqXHR.status == 404 || jqXHR.status == 422 || jqXHR.status == 400) 
               return;
@@ -484,16 +485,23 @@
             } else if (jqXHR.status == 500) {
                 msg = 'Internal Server Error [500].';
             } else if (textStatus === 'parsererror') {
-                msg = 'Requested JSON parse failed.';
+                msg = 'Server could not process your submitted data.';
+                console.log('Requested JSON parse failed.');
+                $('body').html(jqXHR.responseText);
             } else if (textStatus === 'timeout') {
                 msg = 'Time out error.';
             } else if (textStatus === 'abort') {
                 msg = 'Ajax request aborted.';
+            } else if (jqXHR.status == 503) {
+                msg = 'Something went wrong: [' + jqXHR.status + '][' + errorThrown + '].\n';
+                $('body').html(jqXHR.responseText);
             } else {
                 msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
+                $('body').html(jqXHR.responseText);
             }              
             // Render the errors with js ...
-            alert(msg);
+            alert(msg + 'The operationas are failed! The issues are logged dated: ' + now.toLocaleDateString()
+                      + '\nfor the assistance of your service provider.');
         },
         _onSubmit: function(event) {
                       
@@ -508,7 +516,7 @@
                         422: _this._onValidationError,
                         400: function(data) {
                             var response = data.responseJSON;
-                            alert( response.message );
+                            alert( response.message == undefined ? 'Unknown error!' : response.message );
                         }
                   },
                   success: _this._onSuccess,
