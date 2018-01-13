@@ -9,7 +9,8 @@
 	<td><p>{{ $store_name }}</p></td>
 	<td>
         <div class="form-group">
-		<input 	id="product_bills.{{ $row_id }}.product_quantity" name="product_bills[{{ $row_id }}][product_quantity]" class="form-control" data-product-id="{{ $product_id }}"
+		<input 	id="product_bills.{{ $row_id }}.product_quantity" name="product_bills[{{ $row_id }}][product_quantity]"
+				class="form-control" data-product-id="{{ $product_id }}"
 				value="{{ isset($bill_quantity) ? $bill_quantity : 0 }}" type="number"
 				min="0" max="{{ isset($product_available_quantity) ? $product_available_quantity : '' }}"
 				onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
@@ -17,5 +18,5 @@
 	</td>
 	<td><strong><i class="multTotal">{{ number_format(isset($bill_price) ? ($bill_price * $bill_quantity) : 0.00, 2) }}</i></strong></td>
 	<td>
-	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove">X</a></td>
+	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove" data-product-id="{{ $product_id }}">X</a></td>
 </tr>

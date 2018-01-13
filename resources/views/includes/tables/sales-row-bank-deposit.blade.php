@@ -6,7 +6,11 @@
 	</td>
 	<td>
 		<div class="form-group">			
-		<select class="form-control deposit_method" id="deposits.{{ $row_id }}.deposit_method" name="deposits[{{ $row_id }}][deposit_method]" row-id="{{ $row_id }}">			
+		<select class="form-control deposit_method" 
+				id="deposits.{{ $row_id }}.deposit_method" name="deposits[{{ $row_id }}][deposit_method]"
+				row-id="{{ $row_id }}"
+				data-toggle="tooltip" data-placement="top"
+				title="{{ isset($deposit_method) ? $deposit_method . ' is selected' : 'Choose one' }}">
 			<option value="bank"{{ !isset($deposit_method) || $deposit_method == 'bank' ? ' selected' : '' }}>Bank</option>
 			<option value="vault"{{ isset($deposit_method) && $deposit_method == 'vault' ? ' selected' : '' }}>Vault</option>
 		</select>
@@ -14,17 +18,40 @@
 	</td>
 	<td>
 		<div class="form-group{{ isset($deposit_method) && $deposit_method == 'vault' ? ' hidden' : '' }}">
-		<p id="deposits.{{ $row_id }}.bank_title"> {{ isset($bank_title) ? $bank_title : '' }} </p>
+		<p id="deposits.{{ $row_id }}.bank_title">			
+			@isset($bank_account_no)
+				@foreach( (is_string($bank_accounts) ? json_decode($bank_accounts) : $bank_accounts) as $acc)
+					@if($bank_account_no == $acc->account_no)
+						{!! $acc->htmlSummary() !!}
+					@endif
+				@endforeach
+			@else
+				<i> {{ 'Select an account' }} </i>
+			@endisset
+		</p>
 		</div>
 	</td>
 	<td>
 		<div class="form-group{{ isset($deposit_method) && $deposit_method == 'vault' ? ' hidden' : '' }}">			
-		<select class="form-control" id="deposits.{{ $row_id }}.bank_ac_no" name="deposits[{{ $row_id }}][bank_ac_no]" row-id="{{ $row_id }}">
-			<option value="" selected>-- Select --</option>
-			@foreach( $bank_accounts as $acc)
-				<option value="{{ $acc }}"{{ isset($bank_account_no) && $bank_account_no == $acc ? ' selected' : '' }}>{{ $acc }}</option>
-			@endforeach
+		<select class="form-control deposit_account"
+				id="deposits.{{ $row_id }}.bank_ac_no" name="deposits[{{ $row_id }}][bank_ac_no]"
+				row-id="{{ $row_id }}"
+				data-toggle="tooltip" data-placement="top"
+				title="{{ isset($bank_account_no) ? $bank_account_no . ' is selected' : 'Choose one' }}">
+		<option value="" {{ isset($bank_account_no) ? '' : 'selected'}}>-- Select --</option>		
+
+		@foreach( (is_string($bank_accounts) ? json_decode($bank_accounts) : $bank_accounts) as $acc)
+			<option value="{{ $acc->id }}"
+			data-toggle="tooltip" data-placement="top"
+			title='{{ "Bank: " . $acc->title . "\nBranch: " . $acc->branch }}'
+			{{ isset($bank_account_no) && $bank_account_no == $acc->account_no ? ' selected' : '' }}>
+			{{ $acc->account_no }}
+			</option>
+		@endforeach
+		
 		</select>
+		{{-- Debug purpose --}}
+		{{-- !is_array($bank_accounts) ? $bank_accounts : collect($bank_accounts) --}}
 		</div>
 	</td>
 	<td>

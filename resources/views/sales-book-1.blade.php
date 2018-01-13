@@ -119,7 +119,7 @@
           }
       };
 
-      $(document).ready(function(){      
+      $(document).ready(function() {      
         var i=1;  
         var d = new Date(Date.now());
         var priceCollection = [];
@@ -168,23 +168,23 @@
         
         $('#addBankRow').click(function(){  
              
-            i++;  
+            i++;
 
-            var rowTemplate = 'sales-row-bank-deposit';
-            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-            DataManager.payload = {
-              row_id: i,
-              datetime: d.toLocaleDateString(),
-              "bank_accounts[]": [ '151035654646001', '151035654646002', '151035654646003' ]
-            };
-            DataManager.onLoad = function(data) {
+            var accountsMgr = DataManager;
+            accountsMgr.serviceUrl = '{{ route("user::banks.index", [ "api_token" => Auth::user()->api_token ]) }}';
+            accountsMgr.onLoad = function(json) {
 
-                $('#dynamic_field_bank').append(data);
+                ViewContentManager.append('sales-row-bank-deposit', {
+                  row_id: i,
+                  datetime: d.toLocaleDateString(),
+                  "bank_accounts": JSON.stringify(json.accounts)
+                }, '#dynamic_field_bank');
+
             };
-            DataManager.request();
+            accountsMgr.request();
         });
 
-        $('#add_product_bill').click(function(){ 
+        $('#add_product_bill').click(function() { 
             
           i++;
 
@@ -221,10 +221,10 @@
         
         $(document).on('click', '.btn_remove', function(e) {
 
-             e.preventDefault();
-             var button_id = $(this).attr("id");
-             $('#row' + button_id).remove();
-             multInputs();
+              e.preventDefault();
+              var button_id = $(this).attr("id");
+              $('#row' + button_id).remove();
+              multInputs();
         });
 
         $("tbody").on('change', ".deposit_method", function() {
@@ -242,6 +242,24 @@
               }        
         });
 
+        $("tbody").on('change', ".deposit_account", function() {
+
+              var rowId = $(this).attr("row-id");
+              var depositAccountInput = $('#deposits\\.' + rowId + '\\.bank_ac_no');
+              var depositDetailLabel = $('#deposits\\.' + rowId + '\\.bank_title');
+
+              // alert( 'Account: ' + depositAccountInput.val() + ', Title: ' + depositDetailLabel.val());
+
+              var accountsMgr = DataManager;
+              accountsMgr.serviceUrl = '/api/v1/settings/banks/' + depositAccountInput.val();
+              accountsMgr.serviceUrl += '?api_token={{ Auth::user()->api_token }}';
+              accountsMgr.onLoad = function(json) {
+                  depositDetailLabel.html(json.summary_html);
+              };
+              accountsMgr.request();      
+              // alert( 'Request sent to: ' + accountsMgr.serviceUrl);
+        });
+
         function Decimal(numberText)
         {
             var number = Number(numberText);
@@ -255,7 +273,7 @@
             {
                 return numberText;
             }
-            // otherwise ... keep precision minding the length
+            // otherwise ... keep precision minding the input length
             return number.toPrecision(numberText.toString().length + 2);
         }        
 
@@ -278,14 +296,33 @@
 
                   // must escape the id selector for dot (.) if contains any
                   // ref: https://stackoverflow.com/questions/605630/how-to-select-html-nodes-by-id-with-jquery-when-the-id-contains-a-dot
-                  var quantity = $('#product_bills\\.' + $(this).data('row-id') + '\\.product_quantity').val();
+                  var productQuantityInput = $('#product_bills\\.' + $(this).data('row-id') + '\\.product_quantity');
+                  var quantity = productQuantityInput.val();
                   var unitPrice = priceCollection[this.id];
-                  var total = Number(unitPrice) * Number(quantity);
-                  $('.multTotal', this).text(Decimal(total));
-                  grandTotal += total;
+
+                  var totalPriceLabel = $('.multTotal', this);
+
+                  if (isNaN(unitPrice))
+                  {
+                      DataManager.serviceUrl = '/api/v1/products/' + $(this).data('product-id') + '/price?api_token={{ Auth::user()->api_token }}';
+                      DataManager.onLoad = function(data) {
+                          var total = Number(data.price) * Number(quantity);
+                          totalPriceLabel.text(Decimal(total));
+                          grandTotal += total;
+
+                          $("#grandTotal").text(Decimal(grandTotal));
+                          calculateDue();
+                      };
+                      DataManager.request();
+                  }
+                  else
+                  {
+                      var total = Number(unitPrice) * Number(quantity);
+                      totalPriceLabel.text(Decimal(total));
+                      grandTotal += total;
+                  }
               });
               $("#grandTotal").text(Decimal(grandTotal));
-
               calculateDue();
          }
 
@@ -335,7 +372,8 @@
               });
               $("tr.bank_deposit").each(function () {
 
-                  var depositAmountInput = $('#deposits\\.' + $(this).data('row-id') + '\\.deposit_amount', this);
+                  var rowId = $(this).data('row-id');
+                  var depositAmountInput = $('#deposits\\.' + rowId + '\\.deposit_amount', this);
                   var amount = Number(depositAmountInput.val());
                   depositAmountInput.val(Decimal(amount));
                   totalExpense += amount;
@@ -390,6 +428,8 @@
 
     var FormRequestManager = {
         id: "#submit-form",
+        _shouldRedirect: true,
+        _redirectUrl: '/home',
         _route: '',
         _data: {},
         _validationErrors: [],
@@ -456,10 +496,13 @@
         },
         _onSuccess: function(data) {
             // success logic
-            if(data.code == 200) // OK
+            if (data.code == 200) // OK
             {                        
                 alert( "Success! " +  data.message );
-                window.location.href = "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+                if (FormRequestManager._shouldRedirect)
+                {
+                  window.location.href = "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+                }
             }
             else
             {
@@ -524,10 +567,12 @@
             });
 
         },
-        ready: function(url, data) {
+        ready: function(url, data, redirectUrl) {
 
           this._route = url;
           this._data = data;
+          this._redirectUrl = redirectUrl;
+          this._shouldRedirect = redirectUrl !== null;
           var _this = this;
 
           $(this.id).ready(function() {
@@ -539,8 +584,17 @@
     var frm = FormRequestManager;
     frm.id = '#sale-form';
     var route = "{{ route(isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
-    frm.ready(route, []);
+    frm.ready(route, [], "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}");
 
+    </script>
+    <script type="text/javascript">
+      $('#add_bank').ready(function() {
+          $(this).modal({ 'show' : ($(this).find('div.has-error').length > 0) });
+      });
+
+      var frmAccount = FormRequestManager;
+      frmAccount.id = '#account-form';
+      frmAccount.ready("{{ route('user::banks.store', [ 'api_token' => Auth::user()->api_token ]) }}", [], null);
     </script>
 @endsection
 
@@ -558,6 +612,7 @@
             <h4 class="modal-title">Add Client</h4>
           </div>
           {{ Form::open(['route' => [ 'user::clients.store', '' ] ]) }}
+          {!! csrf_field() !!}
           <div class="modal-body">
               <div class="form-group">
                 <input type="text" id="new_client_name" name="new_client_name" class="form-control" placeholder="Client/Company/Business Name" required />
@@ -585,10 +640,22 @@
             </button>
             <h4 class="modal-title">Add Bank Account</h4>
           </div>
-          {{ Form::open(['route' => [ 'user::clients.store', '' ] ]) }}
+
+          @component('includes.message.error-summary')
+              <ul></ul>
+          @endcomponent
+
+          <form id="account-form">
+
+          {!! csrf_field() !!}
+
           <div class="modal-body">
               <div class="form-group">
-                <input type="text" name="new_bank_name" id="new_bank_name" class="form-control" placeholder="Bank Name" required />
+                <input  type="text" name="new_bank_name" id="new_bank_name" class="form-control"
+                        placeholder="Bank Name" required />
+                <span class="help-block hidden">
+                    <strong></strong>
+                </span>
               </div>
               <div class="form-group">
                 <input type="text" name="bank_branch_name" id="bank_branch_name" class="form-control" placeholder="Branch Name" required />
@@ -597,14 +664,16 @@
                 <input type="text" name="bank_acc_no" id="bank_acc_no" class="form-control" placeholder="Account No" required />
               </div>
               <div class="form-group">
-                <textarea class="form-control" rows="5" name="bank_detail" id="bank_detail" placeholder="Bank Detail"></textarea>
+                <textarea class="form-control" rows="5" name="bank_detail" id="bank_detail"
+                          placeholder="Bank Detail"></textarea>
               </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
             <button type="sumbit" class="btn btn-info ">Save</button>
           </div>
-          {{ Form::close() }}
+          </form>
+
         </div>
       </div>
     </div>
@@ -616,11 +685,10 @@
       <div class="row padTB"> 
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
-
-              <div class="error-summary alert alert-danger hidden">
-                  <p>{{ 'Please check your provided inputs!' }}<p/>
+              
+              @component('includes.message.error-summary')
                   <ul></ul>
-              </div>
+              @endcomponent
 
               <form id="sale-form">
 
@@ -713,7 +781,9 @@
                                 'product_title' => $bill->product->title,
                                 'store_name' => $bill->product->store->name,
                                 'bill_price' => $bill->product->mrp,
-                                'bill_quantity' => $bill->quantity ])
+                                'bill_quantity' => $bill->quantity,
+                                'product_available_quantity' => $bill->product->available_quantity
+                            ])
                           @endforeach
                         @endif
                     </tbody>
@@ -851,8 +921,7 @@
                                 'deposit_method' => $deposit->method,
                                 'deposit_amount' => $deposit->amount,
                                 'bank_account_no' => $deposit->bank_account_no,
-                                'bank_title' => $deposit->bank_title,
-                                'bank_accounts' => []
+                                'bank_accounts' => MarketPlex\Bank::all()
                             ])
                           @endforeach
                         @endif

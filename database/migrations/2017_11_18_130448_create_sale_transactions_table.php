@@ -17,6 +17,7 @@ class CreateSaleTransactionsTable extends Migration
         Schema::create('sale_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('client_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->string('client_name');
             $table->string('bill_id')->unique()->comment('billing id for a single sales record');
             $table->timestamps();

@@ -41,6 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 
 	// Sale Controller
 	Route::resource('sales', 'SaleController');
+	Route::get('/sales/search', [ 'uses' => 'SaleController@search', 'as' => 'sales.search' ]);
     Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);     
 
 	// Bill controller

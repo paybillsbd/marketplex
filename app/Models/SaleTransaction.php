@@ -4,6 +4,7 @@ namespace MarketPlex;
 
 use Illuminate\Database\Eloquent\Model;
 use MarketPlex\SaleTransaction as Sale;
+use Carbon\Carbon;
 
 class SaleTransaction extends Model
 {
@@ -57,13 +58,23 @@ class SaleTransaction extends Model
         return number_format($this->getBillAmount(), 2);
     }
 
-    public function getCurrentDueAmount()
+    public function getTotalPaidAmount()
     {
         $totalPaidAmount = 0.0;
         foreach ($this->billpayments as $key => $payment) {
             $totalPaidAmount += $payment->amount;
         }
-        return $this->getBillAmount() - $totalPaidAmount;
+        return $totalPaidAmount;
+    }
+
+    public function getTotalPaidAmountDecimalFormat()
+    {
+        return number_format($this->getTotalPaidAmount() , 2);
+    }
+
+    public function getCurrentDueAmount()
+    {
+        return $this->getBillAmount() - $this->getTotalPaidAmount();
     }
 
     public function getCurrentDueAmountDecimalFormat()
@@ -97,5 +108,10 @@ class SaleTransaction extends Model
     public function getTotalDueAmountDecimalFormat()
     {
         return number_format($this->getTotalDueAmount(), 2);
+    }
+
+    public static function getIncomes()
+    {
+        return Sale::whereCreatedAt(Carbon::today())->get();
     }
 }
