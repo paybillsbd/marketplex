@@ -30,23 +30,67 @@
     <!-- Bootstrap Date-Picker Plugin -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <script>
-      $(document).ready(function(){
-        var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
-        var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
-        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-        var options={
-          format: 'dd/mm/yyyy',
-          container: container,
-          todayHighlight: true,
-          autoclose: true,
-        };
-        date_input_from.datepicker(options);
-        date_input_to.datepicker(options);
 
-      $('#search_sales').click(function(e) {
-          e.preventDefault();
-            $('.card_result').show();
-      });
+      var DataManager = {
+          serviceUrl: '/',
+          _onFail: function(jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status == 404)
+                  return;
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 401) {
+                    msg = errorThrown + '. [' + jqXHR.status + ']';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (textStatus === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (textStatus === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (textStatus === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
+                }                
+                // Render the errors with js ...
+                alert(msg);
+          },
+          onLoad: function(data) {},
+          request: function(method, payload) {
+
+              if (method.toString().toLowerCase() === 'post')
+              {
+                  $.post( this.serviceUrl, payload, this.onLoad, "json" ).fail(_onFail);
+              }
+              else if (method.toString().toLowerCase() === 'get')
+              {
+                  $.get( this.serviceUrl, payload, this.onLoad).fail(_onFail);
+              }
+          }
+      };
+
+      $(document).ready(function() {
+          
+          // #### instead using basic HTML5 input datetime-local
+          // var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
+          // var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
+          // var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+          // var options={
+          //   format: 'dd/mm/yyyy',
+          //   container: container,
+          //   todayHighlight: true,
+          //   autoclose: true,
+          // };
+          // date_input_from.datepicker(options);
+          // date_input_to.datepicker(options);
+
+          $('#sales_today').click(function(e) {
+              e.preventDefault();
+              window.location.href = "{{ route('user::payments.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+
+          });
       
       })
     </script>
@@ -65,20 +109,28 @@
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
               <!-- form start -->
-              <form role="form" method="post" action="">
+              <form role="form"
+                    method="post"
+                    action="{{ route('user::sales.search', [ 'api_token' => Auth::user()->api_token ]) }}">
+
                 {{ csrf_field() }}
+
                 <div class="box-body">
                   <div class="row">
                     <div class="col-6">
                       <div class="form-group">
                         <label class="control-label" for="billing_id"><h5><strong>Billing ID</strong></h5></label>
-                        <input type="text" name="bill_id" class="form-control" placeholder="Billing ID"/>
+                        <input  type="text"
+                                id="queries.billing_id" name="queries[billing_id]"
+                                class="form-control" placeholder="Billing ID"/>
                       </div>
                     </div>
                     <div class="col-6">
                       <div class="form-group">
                         <label class="control-label" for="client_name"><h5><strong>Client Name</strong></h5></label>
-                        <input type="text" name="client_name" class="form-control" placeholder="Client Name"/>
+                        <input  type="text"
+                                id="queries.client_name" name="queries[client_name]"
+                                class="form-control" placeholder="Client Name"/>
                       </div>
                     </div>
                   </div>
@@ -86,13 +138,17 @@
                     <div class="col-6">
                       <div class="form-group"> <!-- Date input -->
                         <label class="control-label" for="from_date"><h5><strong>From</strong></h5></label>
-                        <input class="form-control" id="from_date" name="from_date" placeholder="DD/MM/YYYY" type="text"/>
+                        <input  type="date"
+                                class="form-control"
+                                id="queries.from_date" name="queries[from_date]" placeholder="DD/MM/YYYY"/>
                       </div>                    
                     </div>
                     <div class="col-6">
                       <div class="form-group"> <!-- Date input -->
                         <label class="control-label" for="to_date"><h5><strong>To</strong></h5></label>
-                        <input class="form-control" id="to_date" name="to_date" placeholder="DD/MM/YYYY" type="text"/>
+                        <input  type="date"
+                                class="form-control"
+                                id="queries.to_date" name="queries[to_date]" placeholder="DD/MM/YYYY"/>
                       </div>                    
                     </div>
                   </div>
@@ -102,12 +158,14 @@
                 <div class="box-footer text-right"> <!-- Submit button -->
                   <div class="row">
                     <div class="col-md-6"> </div>
-                    <div class="col-md-2"> 
-                          <a  href="{{ route('user::sales.show', [ 'sale' => 2, 'api_token' => Auth::user()->api_token ]) }}"
-                              class="btn btn-info btn-flat btn-sm" role="button">Today's Sales</a></div>
+                    <div class="col-md-2">
+                          <a  href="" id="sales_today" name="sales_today" 
+                              class="btn btn-info btn-flat btn-sm" role="button">Today's Sales</a>
+                    </div>
                     <div class="col-md-2"> 
                           <a  href="{{ route('user::sales.create', [ 'api_token' => Auth::user()->api_token ]) }}"
-                              class="btn btn-info btn-flat btn-sm" role="button">New Sale</a></div>
+                              class="btn btn-info btn-flat btn-sm" role="button">New Sale</a>
+                    </div>
                     <div class="col-md-2">
                       <button class="btn btn-info btn-flat btn-sm" id="search_sales" name="search_sales" type="submit">Search Sales</button>
                     </div>                    

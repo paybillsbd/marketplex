@@ -15,6 +15,16 @@ class SaleTransaction extends Model
      * @var array
      */
     protected $visible = [ 'id', 'bill_id', 'client_name', 'created_at' ];
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     public function productbills()
     {
@@ -110,8 +120,8 @@ class SaleTransaction extends Model
         return number_format($this->getTotalDueAmount(), 2);
     }
 
-    public static function getIncomes()
+    public static function getIncomesToday()
     {
-        return Sale::whereCreatedAt(Carbon::today())->get();
+        return Sale::where('created_at', '=', Carbon::today()->toDateString())->get();
     }
 }

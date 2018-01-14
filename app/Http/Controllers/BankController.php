@@ -75,7 +75,6 @@ class BankController extends Controller
         //
         if (!$bank)
             response()->json([ 'summary_html' => Account::htmlInvalidDataWarning() ]);
-        Log::info("[DEBUG][" . $bank->id . "]");
         return response()->json([ 'summary' => $bank->summary(), 'summary_html' => $bank->htmlSummary() ]);
     }
 

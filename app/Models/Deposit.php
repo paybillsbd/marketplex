@@ -15,4 +15,9 @@ class Deposit extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    public function sale()
+    {
+        return $this->belongsTo('MarketPlex\SaleTransaction');
+    }
 }

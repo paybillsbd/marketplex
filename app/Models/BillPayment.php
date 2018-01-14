@@ -16,6 +16,11 @@ class BillPayment extends Model
      */
     protected $dates = ['deleted_at'];
 
+    public function sale()
+    {
+        return $this->belongsTo('MarketPlex\SaleTransaction');
+    }
+
     public static function getPaymentMethodText($method)
     {
     	switch($method)

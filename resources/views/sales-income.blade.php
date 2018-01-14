@@ -27,22 +27,22 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <script>
       $(document).ready(function(){
-        var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
-        var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
-        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-        var options={
-          format: 'dd/mm/yyyy',
-          container: container,
-          todayHighlight: true,
-          autoclose: true,
-        };
-        date_input_from.datepicker(options);
-        date_input_to.datepicker(options);
-        
-      $('#search_sales_income').click(function(e) {
-      e.preventDefault();
-        $('.card_income_result').show();
-      });
+            // var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
+            // var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
+            // var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            // var options={
+            //   format: 'dd/mm/yyyy',
+            //   container: container,
+            //   todayHighlight: true,
+            //   autoclose: true,
+            // };
+            // date_input_from.datepicker(options);
+            // date_input_to.datepicker(options);
+            
+          $('#search_sales_income').click(function(e) {
+              // e.preventDefault();
+              // $('.card_income_result').show();
+          });
 
       });
     </script>
@@ -61,20 +61,26 @@
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
 
-            <form role="form" method="post" action="">
+            <form role="form"
+                  method="post"
+                  action="{{ route('user::sales.search', [ 'api_token' => Auth::user()->api_token ]) }}">
+
               {{ csrf_field() }}
+              
               <div class="box-body">
                 <div class="row">
                   <div class="col-6">
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="from_date"><h5><strong>From</strong></h5></label>
-                      <input class="form-control" id="from_date" name="from_date" placeholder="DD/MM/YYYY" type="text"/>
+                      <input  class="form-control" value="{{ isset($from_date) ? $from_date : '' }}"
+                              id="queries.from_date" name="queries[from_date]" placeholder="DD/MM/YYYY" type="date"/>
                     </div>                    
                   </div>
                   <div class="col-6">
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="to_date"><h5><strong>To</strong></h5></label>
-                      <input class="form-control" id="to_date" name="to_date" placeholder="DD/MM/YYYY" type="text"/>
+                      <input  class="form-control" value="{{ isset($to_date) ? $to_date : '' }}"
+                              id="queries.to_date" name="queries[to_date]" placeholder="DD/MM/YYYY" type="date"/>
                     </div>                    
                   </div>
                 </div>
@@ -113,21 +119,35 @@
                   </tr>
                 </thead>
                 <tbody>
+                @foreach($incomes as $income)
                 <tr>
-                  <td>12-12-17</td>
-                  <td>Bill info</td>
-                  <td>Client info</td>
-                  <td><strong><i>238.00</i></strong></td>
-                  <td><strong><i>238.00</i></strong></td>
-                  <td><strong><i>238.00</i></strong></td>
+                  <td>{{ $income->created_at }}</td>
+                  <td>{{ $income->bill_id }}</td>
+                  <td>{{ $income->client_name  }}</td>
+                  <td><strong><i>{{ $income->getBillAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                  <td><strong><i>{{ $income->getCurrentDueAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                  <td><strong><i>{{ $income->getTotalPaidAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
+                @endforeach
                 <tr>
                   <td>Total</td>
                   <td></td>
                   <td></td>
-                  <td><strong><i>238.00</i></strong></td>
-                  <td><strong><i>238.00</i></strong></td>
-                  <td><strong><i>238.00</i></strong></td>
+                  <td>
+                  <strong><i>
+                  {{ (isset($total_bill) ? number_format($total_bill, 2) : 0.00) . ' ' . MarketPlex\Store::currencyIcon() }}
+                  </i></strong>
+                  </td>
+                  <td>
+                  <strong><i>
+                  {{ (isset($total_due) ? number_format($total_due, 2) : 0.00) . ' ' . MarketPlex\Store::currencyIcon() }}
+                  </i></strong>
+                  </td>
+                  <td>
+                  <strong><i>
+                  {{ (isset($total_paid) ? number_format($total_paid, 2) : 0.00) . ' ' . MarketPlex\Store::currencyIcon() }}
+                  </i></strong>
+                  </td>
                 </tr>     
                 </tbody>
               </table>
@@ -144,31 +164,34 @@
                   </tr>
                 </thead>
                 <tbody>
+                @foreach($expenses as $expense)
                 <tr>
-                  <td>Purpose info</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td><strong><i>238.00</i></strong></td>
+                  <td colspan="5">{{ $expense->purpose }}</td>
+                  <td>
+                  <strong><i>
+                  {{ number_format($expense->amount, 2) . ' ' . MarketPlex\Store::currencyIcon() }}
+                  </i></strong></td>
                 </tr>
+                @endforeach
                 <tr>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td>Total</td>
-                  <td><strong><i>238.00</i></strong></td>
+                  <td><strong><i>
+                  {{ number_format($expenses->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}
+                  </i></strong></td>
                 </tr>
                 </tbody>
               </table>
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group"> <!-- Date input -->
-                    <strong>Vault total: <i>238.00</i></strong>
+                    <strong>Vault total: <i>{{ number_format($deposits->where('method', 'vault')->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong>
                   </div>                    
                   <div class="form-group"> <!-- Date input -->
-                    <strong>Cash total: <i>138.00</i></strong>
+                    <strong>Cash total: <i>{{ number_format($payments->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong>
                   </div>
                 </div>
               </div>
@@ -184,17 +207,19 @@
                   </tr>
                 </thead>
                 <tbody>
+                @foreach($deposits as $deposit)
                 <tr>
-                  <td>Bank info</td>
-                  <td>Branch info</td>
-                  <td>Account info</td>
-                  <td><strong><i>0.00</i></strong></td>
+                  <td>{{ $deposit->bank_title }}</td>
+                  <td>{{ $deposit->bank_branch }}</td>
+                  <td>{{ $deposit->bank_account_no }}</td>
+                  <td><strong><i>{{ number_format($deposit->amount, 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
+                @endforeach
                 <tr>
                   <td></td>
                   <td></td>
                   <td>Total</td>
-                  <td><strong><i>0.00</i></strong></td>
+                  <td><strong><i>{{ number_format($deposits->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
                 </tbody>
               </table>

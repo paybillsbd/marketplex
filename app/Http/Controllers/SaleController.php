@@ -24,9 +24,12 @@ class SaleController extends Controller
      */
     public function index()
     {
-        //
-        // dd(Sale::all()->pluck('id', 'bill_id', 'client_name', 'created_at'));
-        return view('sales-search-view')->withSales(Sale::all())->withErrors([]);
+        return $this->viewSalesFiltered(Sale::all());
+    }
+
+    private function viewSalesFiltered($sales)
+    {
+        return view('sales-search-view')->withSales($sales);        
     }
 
     /**
@@ -176,13 +179,40 @@ class SaleController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($sale)
+    public function show(Sale $sale)
     {
         //
-        return view('sales-income')->withSale($sale)->withErrors([]);
+        return view('sales-income')->withSale($sale);
+    }
+
+    public function search(Request $request)
+    {
+        if ($request->has('queries')
+                    && is_array($request->input('queries'))
+                    && count($request->input('queries')) == 4)
+        {
+            $queries = $request->input('queries');
+            // dd($request->input('queries'));
+            $nullCount = 0;
+            foreach ($queries as $value)
+            {
+                if (empty($value) && ++$nullCount == count($queries))
+                {
+                    return $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
+                }
+            }
+            $from = date('m/d/Y' . 'h:m', $queries['from_date']);
+            $to = date('m/d/Y' . 'h:m', $queries['to_date']);
+            $sales = Sale::whereClientName($queries['client_name'])
+                    ->orWhere('bill_id', $queries['bill_id'])
+                    ->orWhereBetween('created_at', [ $from, $to ]);
+            return $this->viewSalesFiltered($sales);
+        }
+        return $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
     }
 
     /**
