@@ -21,8 +21,10 @@
 @endsection
 
 @section('footer-scripts')
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+    <!-- <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script> -->
     <!-- Bootstrap Date-Picker Plugin -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <script>
@@ -63,7 +65,7 @@
 
             <form role="form"
                   method="post"
-                  action="{{ route('user::sales.search', [ 'api_token' => Auth::user()->api_token ]) }}">
+                  action="{{ route('user::payments.search', [ 'api_token' => Auth::user()->api_token ]) }}">
 
               {{ csrf_field() }}
               
@@ -85,7 +87,9 @@
                   </div>
                 </div>
                 <div class="form-group text-center"> <!-- Submit button -->
-                  <button class="btn btn-info btn-flat btn-sm" id="search_sales_income" name="search_sales_income" type="submit">Show Sales Income</button>
+                  <button class="btn btn-info btn-flat btn-sm"
+                          data-toggle="tooltip" data-placement="top" title="{{ $help_messages['search_sales_income'] }}"
+                          id="search_sales_income" name="search_sales_income" type="submit">Show Sales Income</button>
                 </div>
               </div>  
             </form>  
@@ -105,9 +109,9 @@
               </div><!-- /.box-header -->
               <div class="box-body table-responsive padTB">
 
-              <h5><strong>Income</strong></h5>
+              <h5><strong>Incomes</strong></h5>
 
-              <table class="table">
+              <table class="table" data-toggle="tooltip" data-placement="top" title="{{ $help_messages['incomes'] }}">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -119,7 +123,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                @foreach($incomes as $income)
+                @forelse($incomes as $income)
                 <tr>
                   <td>{{ $income->created_at }}</td>
                   <td>{{ $income->bill_id }}</td>
@@ -128,7 +132,9 @@
                   <td><strong><i>{{ $income->getCurrentDueAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                   <td><strong><i>{{ $income->getTotalPaidAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
-                @endforeach
+                @empty
+                <tr><td colspan="6"><div class="alert alert-warning }}">{{ $empty_record_messages['incomes'] }}</div></td></tr>
+                @endforelse
                 <tr>
                   <td>Total</td>
                   <td></td>
@@ -155,24 +161,26 @@
               <table class="table">
                 <thead>
                   <tr>
+                    <th>Date</th>
                     <th>Purpose</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                    <th colspan="3"></th>
                     <th>Amount</th>
                   </tr>
                 </thead>
                 <tbody>
-                @foreach($expenses as $expense)
+                @forelse($expenses as $expense)
                 <tr>
-                  <td colspan="5">{{ $expense->purpose }}</td>
+                  <td>{{ $expense->created_at }}</td>
+                  <td colspan="4">{{ $expense->purpose }}</td>
                   <td>
                   <strong><i>
                   {{ number_format($expense->amount, 2) . ' ' . MarketPlex\Store::currencyIcon() }}
-                  </i></strong></td>
+                  </i></strong>
+                  </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr><td colspan="6"><div class="alert alert-warning }}">{{ $empty_record_messages['expenses'] }}</div></td></tr>
+                @endforelse
                 <tr>
                   <td></td>
                   <td></td>
@@ -188,7 +196,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group"> <!-- Date input -->
-                    <strong>Vault total: <i>{{ number_format($deposits->where('method', 'vault')->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong>
+                    <strong>Vault total: <i>{{ number_format($vault_deposits->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong>
                   </div>                    
                   <div class="form-group"> <!-- Date input -->
                     <strong>Cash total: <i>{{ number_format($payments->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong>
@@ -200,6 +208,7 @@
               <table class="table">
                 <thead>
                   <tr>
+                    <th>Date</th>
                     <th>Bank</th>
                     <th>Branch</th>
                     <th>Account</th>
@@ -207,19 +216,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                @foreach($deposits as $deposit)
+                @forelse($bank_deposits as $deposit)
                 <tr>
+                  <td>{{ $deposit->created_at }}</td>
                   <td>{{ $deposit->bank_title }}</td>
                   <td>{{ $deposit->bank_branch }}</td>
                   <td>{{ $deposit->bank_account_no }}</td>
                   <td><strong><i>{{ number_format($deposit->amount, 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
-                @endforeach
+                @empty
+                <tr><td colspan="5"><div class="alert alert-warning }}">{{ $empty_record_messages['deposits'] }}</div></td></tr>
+                @endforelse
                 <tr>
                   <td></td>
                   <td></td>
+                  <td></td>
                   <td>Total</td>
-                  <td><strong><i>{{ number_format($deposits->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                  <td><strong><i>{{ number_format($bank_deposits->sum('amount'), 2) . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
                 </tbody>
               </table>

@@ -29,7 +29,8 @@ class SaleController extends Controller
 
     private function viewSalesFiltered($sales)
     {
-        return view('sales-search-view')->withSales($sales);        
+        return view('sales-search-view')->withSales($sales)
+                                        ->withRouteQueryToday(route('user::payments.index', [ 'api_token' => Auth::user()->api_token ]));       
     }
 
     /**
@@ -147,9 +148,9 @@ class SaleController extends Controller
                 $d = new Deposit();
                 $d->sale_transaction_id = $sale->id;
                 $d->method = $value['deposit_method'];
-                $d->bank_title = '';
+                $d->bank_title = $value[ 'bank_title' ];
                 $d->bank_account_no = $value[ 'bank_ac_no' ];
-                $d->bank_branch = '';
+                $d->bank_branch = $value[ 'bank_branch' ];
                 $d->amount = $value[ 'deposit_amount' ];
 
                 if (! $d->save())

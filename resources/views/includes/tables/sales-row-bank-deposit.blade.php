@@ -23,6 +23,10 @@
 				@foreach( (is_string($bank_accounts) ? json_decode($bank_accounts) : $bank_accounts) as $acc)
 					@if($bank_account_no == $acc->account_no)
 						{!! $acc->htmlSummary() !!}
+						<input 	type="hidden"
+								name="deposits[{{ $row_id }}][bank_title]" value="{{ $acc->bank_title }}" />
+						<input 	type="hidden"
+								name="deposits[{{ $row_id }}][bank_branch]" value="{{ $acc->bank_branch }}" />
 					@endif
 				@endforeach
 			@else

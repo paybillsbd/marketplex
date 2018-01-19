@@ -50,6 +50,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::resource('products', 'ProductBillController');
 		Route::resource('shippings', 'ShippingBillController');
 		Route::resource('payments', 'BillPaymentController');
+		Route::post('/payments/search', [ 'uses' => 'BillPaymentController@search', 'as' => 'payments.search' ]);
 	});
 	// Expense controller
 	Route::resource('deposites', 'DepositController');

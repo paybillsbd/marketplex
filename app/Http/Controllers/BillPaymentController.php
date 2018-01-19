@@ -2,6 +2,7 @@
 
 namespace MarketPlex\Http\Controllers;
 
+use Validator;
 use MarketPlex\BillPayment;
 use Illuminate\Http\Request;
 use MarketPlex\SaleTransaction as Sale;
@@ -10,54 +11,63 @@ use MarketPlex\Deposit;
 
 class BillPaymentController extends Controller
 {
+
+    private $emptyRecordTableMessages = [
+        'incomes' => 'No incomes to show from your date queries.',
+        'expenses' => 'No expenses to show from your date queries.',
+        'deposits' => 'No bank deposits to show from your date queries.',
+    ];
+
+    private $helpMessages = [
+        'incomes' => 'All sales bill record made by the duration you provided in date queries',
+        'search_sales_income' => 'Search sales incomes between a duration'
+    ];
+
+    private function viewWithFiltered($dateFrom, $dateTo)
+    {
+        $onDate = $dateFrom === $dateTo;
+        $dateQuery = $onDate ? $dateFrom : [ $dateFrom, $dateTo ];
+        $dateScope = $onDate ? 'On' : 'Between';
+        $incomes = Sale::{ 'Incomes' . $dateScope}($dateQuery)->get();
+        return view('sales-income')
+                    ->withIncomes($incomes)
+                    ->withFromDate($dateFrom)
+                    ->withToDate($dateTo)
+                    ->withTotalBill($incomes->sum(function($income) { return $income->getBillAmount(); }))
+                    ->withTotalDue($incomes->sum(function($income) { return $income->getCurrentDueAmount(); }))
+                    ->withTotalPaid($incomes->sum(function($income) { return $income->getTotalPaidAmount(); }))
+                    ->withExpenses(Expense::{'Sales' . $dateScope}($dateQuery)->get())
+                    ->withVaultDeposits(Deposit::{'Sales' . $dateScope}($dateQuery)->ToVault()->get())
+                    ->withBankDeposits(Deposit::{'Sales' . $dateScope}($dateQuery)->ToBank()->get())
+                    ->withPayments(BillPayment::{'Sales' . $dateScope}($dateQuery)->CashReceived()->get())
+                    ->withEmptyRecordMessages($this->emptyRecordTableMessages)
+                    ->withHelpMessages($this->helpMessages);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $todayDate = \Carbon\Carbon::today()->toDateString();
-        // $todayDate = \Carbon\Carbon::createFromFormat('m/d/Y', '01/07/2018')->toDateString();
-        $incomes = Sale::getIncomesToday();
-        // $incomes = Sale::whereDate('created_at', '=', $todayDate)->get();
+        $dateToday = \Carbon\Carbon::today()->toDateString();
+        // $dateToday = \Carbon\Carbon::createFromFormat('m/d/Y', '01/07/2018')->toDateString();
+        return $this->viewWithFiltered($dateToday, $dateToday);
+    }
 
-        $totalBill = 0;
-        $totalDue = 0;
-        $totalPaid = 0;
-        $expenses = collect([]);
-        $deposits = collect([]);
-        $payments = collect([]);
-        foreach ($incomes as $income)
-        {
-            $totalBill += $income->getBillAmount();
-            $totalDue += $income->getCurrentDueAmount();
-            $totalPaid += $income->getTotalPaidAmount();
+    public function search(Request $request)
+    {
+        $this->validate($request, [
+            'queries.*' => 'required|date',
+        ], [
+            'queries.from_date' => 'Please provide a valid date input for start date',
+            'queries.to_date' => 'Please provide a valid date input for end date'
+        ]);
 
-            foreach (Expense::with('sale')->get() as $value) {
-                $expenses->push($value);
-            }
-            foreach (Deposit::with('sale')->get() as $value) {
-                $deposits->push($value);
-            }
-            foreach (BillPayment::with('sale')->get() as $value) {
-                $payments->push($value);
-            }
-        }
-        // dd($deposits);
-        return view('sales-income')->withIncomes($incomes)
-                                   ->withFromDate($todayDate)
-                                   ->withToDate($todayDate)
-                                   ->withTotalBill($totalPaid)
-                                   ->withTotalDue($totalDue)
-                                   ->withTotalPaid($totalPaid)
-                                   ->withExpenses($expenses)
-                                   ->withDeposits($deposits)
-                                   ->withPayments($payments->whereIn('method', [
-                                                            'by_cash_hand2hand',
-                                                            'by_cash_cheque_deposit',
-                                                            'by_cash_electronic_trans']));
+        $dateRange = $request->input('queries');
+        return $this->viewWithFiltered($dateRange['from_date'], $dateRange['to_date']);
     }
 
     /**

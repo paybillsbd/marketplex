@@ -88,7 +88,7 @@
 
           $('#sales_today').click(function(e) {
               e.preventDefault();
-              window.location.href = "{{ route('user::payments.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+              window.location.href = "{{ isset($route_query_today) ? $route_query_today : ''  }}";
 
           });
       

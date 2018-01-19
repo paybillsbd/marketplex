@@ -5,9 +5,12 @@ namespace MarketPlex;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use MarketPlex\Traits\DateScope;
+
 class BillPayment extends Model
 {
     use SoftDeletes;
+    use DateScope;
 
     /**
      * The attributes that should be mutated to dates.
@@ -19,6 +22,15 @@ class BillPayment extends Model
     public function sale()
     {
         return $this->belongsTo('MarketPlex\SaleTransaction');
+    }
+
+    public function scopeCashReceived($query)
+    {
+        return $query->whereIn('method', [
+            'by_cash_hand2hand',
+            'by_cash_cheque_deposit',
+            'by_cash_electronic_trans'
+        ]);
     }
 
     public static function getPaymentMethodText($method)

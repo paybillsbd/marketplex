@@ -53,14 +53,11 @@ class SaleTransaction extends Model
 
     public function getBillAmount()
     {
-        $totalAmount = 0.0;
-        foreach ($this->productbills as $key => $bill) {
-            $totalAmount += $bill->product->mrp * $bill->quantity;
-        }
-        foreach ($this->shippingbills as $key => $bill) {
-            $totalAmount += $bill->amount * $bill->quantity;
-        }
-        return $totalAmount;
+        return $this->productbills->map(function ($bill, $key) {
+            return $bill->product->mrp * $bill->quantity;
+        })->sum() + $this->shippingbills->map(function ($bill, $key) {
+            return $bill->amount * $bill->quantity;
+        })->sum();
     }
 
     public function getBillAmountDecimalFormat()
@@ -70,11 +67,7 @@ class SaleTransaction extends Model
 
     public function getTotalPaidAmount()
     {
-        $totalPaidAmount = 0.0;
-        foreach ($this->billpayments as $key => $payment) {
-            $totalPaidAmount += $payment->amount;
-        }
-        return $totalPaidAmount;
+        return $this->billpayments->sum('amount');
     }
 
     public function getTotalPaidAmountDecimalFormat()
@@ -94,11 +87,8 @@ class SaleTransaction extends Model
 
     public function getPreviousDueAmount()
     {
-        $totalAmountDue = 0.0;
-        foreach (Sale::whereClientName($this->client_name)->where('id', '!=', $this->id)->get() as $key => $sale) {
-            $totalAmountDue += $sale->getCurrentDueAmount();
-        }
-        return $totalAmountDue;
+        return Sale::others()->sameClient()->get()
+                             ->sum(function($sale) { return $sale->getCurrentDueAmount(); });
     }
 
     public function getPreviousDueAmountDecimalFormat()
@@ -108,11 +98,8 @@ class SaleTransaction extends Model
 
     public function getTotalDueAmount()
     {
-        $totalAmountDue = 0.0;
-        foreach (Sale::whereClientName($this->client_name)->get() as $key => $sale) {
-            $totalAmountDue += $sale->getCurrentDueAmount();
-        }
-        return $totalAmountDue;
+        return Sale::sameClient()->get()
+                                 ->sum(function($sale) { return $sale->getCurrentDueAmount(); });
     }
 
     public function getTotalDueAmountDecimalFormat()
@@ -120,8 +107,28 @@ class SaleTransaction extends Model
         return number_format($this->getTotalDueAmount(), 2);
     }
 
-    public static function getIncomesToday()
+    public function scopeIncomesToday($query)
     {
-        return Sale::where('created_at', '=', Carbon::today()->toDateString())->get();
+        return $this->scopeIncomesOn($query, Carbon::today()->toDateString());
+    }
+
+    public function scopeIncomesOn($query, $when)
+    {
+        return $query->whereDate('created_at', '=', $when);
+    }
+
+    public function scopeIncomesBetween($query, array $during)
+    {
+        return $query->whereBetween('created_at', $during);
+    }
+
+    public function scopeOthers($query)
+    {
+        return $query->where('id', '!=', $this->id);
+    }
+
+    public function scopeSameClient($query)
+    {
+        return $query->whereClientName($this->client_name);
     }
 }

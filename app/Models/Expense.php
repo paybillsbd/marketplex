@@ -5,9 +5,12 @@ namespace MarketPlex;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use MarketPlex\Traits\DateScope;
+
 class Expense extends Model
 {
     use SoftDeletes;
+    use DateScope;
 
     /**
      * The attributes that should be mutated to dates.
@@ -22,11 +25,6 @@ class Expense extends Model
      * @var array
      */
     protected $visible = [ 'id', 'purpose', 'amount', 'created_at' ];
-
-    public function scopeSale($query, $sale)
-    {
-        return $query->where('sale_transaction_id', $sale->id);
-    }
 
     public function sale()
     {
