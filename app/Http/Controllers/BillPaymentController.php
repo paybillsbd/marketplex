@@ -11,7 +11,6 @@ use MarketPlex\Deposit;
 
 class BillPaymentController extends Controller
 {
-
     private $emptyRecordTableMessages = [
         'incomes' => 'No incomes to show from your date queries.',
         'expenses' => 'No expenses to show from your date queries.',

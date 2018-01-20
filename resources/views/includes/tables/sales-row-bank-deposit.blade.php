@@ -65,5 +65,5 @@
 				value="{{ number_format(isset($deposit_amount) ? $deposit_amount : 0.00, 2) }}" required />
 		</div>
 	</td>
-	<td><a href="" name="remove" id="{{ $row_id }}" class="btn_remove">X</a></td>
+	<td><a href="" name="remove" id="{{ $row_id }}" class="btn_remove fa fa-close fa-2x" data-toggle="tooltip" data-placement="top" title="Remove this entry"></a></td>
 </tr>

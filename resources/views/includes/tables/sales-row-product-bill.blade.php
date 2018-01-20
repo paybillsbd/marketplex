@@ -18,5 +18,6 @@
 	</td>
 	<td><strong><i class="multTotal">{{ number_format(isset($bill_price) ? ($bill_price * $bill_quantity) : 0.00, 2) }}</i></strong></td>
 	<td>
-	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove" data-product-id="{{ $product_id }}">X</a></td>
+	<a 	href="" name="remove" id="{{ $row_id }}" class="btn_remove fa fa-close fa-2x" data-product-id="{{ $product_id }}"
+		data-toggle="tooltip" data-placement="top" title="Remove this entry"></a></td>
 </tr>

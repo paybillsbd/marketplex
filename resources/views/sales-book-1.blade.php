@@ -753,7 +753,8 @@
                       </div>
                       <div class="col-md-1">
                         <div class="clearfix">
-                          <button type="button" id="add_product_bill" class="btn btn-info btn-sm float-right">Add</button>
+                          <button type="button" id="add_product_bill" class="btn btn-info btn-sm float-right"
+                                  data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_product'] }}">Add</button>
                         </div>
                       </div>
                       
@@ -772,7 +773,7 @@
                     <tbody>
                         <!--jQuery will add input fields here-->
                         @if( isset($sale) )
-                          @foreach( $sale->productbills as $bill )
+                          @forelse( $sale->productbills as $bill )
                             @include('includes.tables.sales-row-product-bill', [
                                 'row_id' => $row++,
                                 'product_bill_id' => $bill->id,
@@ -784,7 +785,15 @@
                                 'bill_quantity' => $bill->quantity,
                                 'product_available_quantity' => $bill->product->available_quantity
                             ])
-                          @endforeach
+                          @empty
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
+                          @endforelse
+                        @else
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
                         @endif
                     </tbody>
                     </table>
@@ -795,7 +804,8 @@
                         <label for="shipping_billing"><strong>Shipping Billing:</strong></label>
                       </div>
                       <div class="col-md-1">
-                        <button type="button" id="addBillingRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"></button>
+                        <button type="button" id="addBillingRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"
+                                data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_shipping'] }}"></button>
                       </div>
                     </div>
                     <table class="table table-bordered" id="dynamic_field_shipping">
@@ -812,7 +822,7 @@
                     <tbody>
                       <!--jQuery will add input fileds here-->
                         @if( isset($sale) )
-                          @foreach( $sale->shippingbills as $bill )
+                          @forelse( $sale->shippingbills as $bill )
                             @include('includes.tables.sales-row-shipping-bill', [
                                 'row_id' => $row++,
                                 'shipping_bill_id' => $bill->id,
@@ -820,7 +830,15 @@
                                 'shipping_purpose' => $bill->purpose,
                                 'bill_amount' => $bill->amount,
                                 'bill_quantity' => $bill->quantity ])
-                          @endforeach
+                          @empty
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
+                          @endforelse
+                        @else
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
                         @endif
                     </tbody>
                   </table>
@@ -840,7 +858,8 @@
                       <h4><strong>Payment</strong></h4>
                     </div>
                     <div class="col-md-1">
-                      <button type="button" id="addPayRow" class="btn btn-info btn-submit-fix fa fa-plus fa-1x float-right"></button>
+                      <button type="button" id="addPayRow" class="btn btn-info btn-submit-fix fa fa-plus fa-1x float-right"
+                              data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_paid_bill'] }}"></button>
                     </div>
                   </div>
                     <div class="form-group">
@@ -856,14 +875,22 @@
                     <tbody>
                       <!--Payment row will be added here by jQuery-->
                         @if( isset($sale) )
-                          @foreach( $sale->billpayments as $payment )
+                          @forelse( $sale->billpayments as $payment )
                             @include('includes.tables.sales-row-paid-bill', [
                                 'row_id' => $row++,
                                 'paid_bill_id' => $payment->id,
                                 'datetime' => Carbon\Carbon::parse($payment->created_at)->format('m/d/Y h:m'),
                                 'paid_amount' => $payment->amount,
                                 'trans_option' => $payment->method ])
-                          @endforeach
+                          @empty
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
+                          @endforelse
+                        @else
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
                         @endif
                     </tbody>
                     </table>
@@ -873,16 +900,19 @@
                       <table class="table table-bordered">
                         <tbody>
                           <tr>
-                            <td width="60%"><strong><i>Current Due ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
-                            <td width="40%"><strong><i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
+                            <td width="60%"><strong><i>Current Due:</i></strong></td>
+                            <td width="40%"><strong><i id="current_due" class="decimal">
+                            {{ (isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 ) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                           <tr>
-                            <td width="60%"><strong><i>Previous Due ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
-                            <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
+                            <td width="60%"><strong><i>Previous Due:</i></strong></td>
+                            <td width="40%"><strong><i id="prev_due" class="decimal">
+                            {{ (isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                           <tr>
-                            <td width="60%"><strong><i>Total Due ({{ MarketPlex\Store::currencyIcon() }}) (This Client):</i></strong></td>
-                            <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00 }}</i></strong></td>
+                            <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
+                            <td width="40%"><strong><i id="total_due" class="decimal">
+                            {{ (isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                         </tbody>
                       </table>
@@ -895,7 +925,8 @@
                         <a href="#" data-toggle="modal" data-target="#add_bank" class="btn btn-info btn-sm float-right">Add Bank Account</a>
                     </div>
                     <div class="col-md-1">
-                      <button type="button" id="addBankRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"></button>
+                      <button type="button" id="addBankRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"
+                              data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_deposit'] }}"></button>
                     </div>
                   </div>
                     <div class="form-group">
@@ -913,7 +944,7 @@
                     <tbody>
                       <!--Bank deposit row will be added here by jQuery-->
                         @if( isset($sale) )
-                          @foreach( $sale->deposits as $deposit )
+                          @forelse( $sale->deposits as $deposit )
                             @include('includes.tables.sales-row-bank-deposit', [
                                 'row_id' => $row++,
                                 'bank_deposit_id' => $deposit->id,
@@ -923,7 +954,15 @@
                                 'bank_account_no' => $deposit->bank_account_no,
                                 'bank_accounts' => MarketPlex\Bank::all()
                             ])
-                          @endforeach
+                          @empty
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
+                          @endforelse
+                        @else
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
                         @endif
                     </tbody>
                     </table>
@@ -934,7 +973,8 @@
                           <h4><strong>Expenses</strong></h4>
                         </div>
                         <div class="col-md-1">
-                          <button type="button" id="add_expense_btn" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"></button>
+                          <button type="button" id="add_expense_btn" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"
+                                  data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_expense'] }}"></button>
                         </div>
                       </div>
                       <table class="table table-bordered" id="dynamic_field_expenses">
@@ -949,14 +989,22 @@
                         <tbody>
                           <!--jQuery will add input fileds here-->
                         @if( isset($sale) )
-                          @foreach( $sale->expenses as $expense )
+                          @forelse( $sale->expenses as $expense )
                             @include('includes.tables.sales-row-expense', [
                                 'row_id' => $row++,
                                 'expense_id' => $expense->id,
                                 'datetime' => Carbon\Carbon::parse($expense->created_at)->format('m/d/Y h:m'),
                                 'expense_purpose' => $expense->purpose,
                                 'expense_amount' => $expense->amount ])
-                          @endforeach
+                          @empty
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
+                          @endforelse
+                        @else
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
+                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @endcomponent
                         @endif
                         </tbody>
                       </table>
@@ -964,7 +1012,8 @@
                     <br>
                     <div class="form-group">
                         <div class="col-md-12 text-center">
-                            <button type="submit" class="btn btn-info btn-lg btn-block btn-submit-fix">Save</button>
+                            <button type="submit" class="btn btn-info btn-lg btn-block btn-submit-fix"
+                                    data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['save_sale'] }}">Save</button>
                         </div>
                     </div>
               </div>

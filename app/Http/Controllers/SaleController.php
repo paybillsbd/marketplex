@@ -17,6 +17,24 @@ use MarketPlex\Expense;
 
 class SaleController extends Controller
 {
+    private $messages = [
+        'empty_table' => [
+            'sale_product' => 'Added products for sale will show up here ...',
+            'product_shipping' => 'Added shipping cost notes will show up here ...',
+            'bill_payment' => 'Customers paid bill will show up here ...',
+            'deposit' => 'Added deposits will show up here ...',
+            'expense' => 'Added expenses will show up here ...',
+        ],
+        'help' => [
+            'save_sale' => 'Save your sold products entry records.',
+            'add_product' => 'Add your ordered products from above selected store and product list.',
+            'add_shipping' => 'Add your shipping costs.',
+            'add_paid_bill' => 'Add your customer\'s paid bills.',
+            'add_deposit' => 'Add your deposited amounts.',
+            'add_expense' => 'Add your expenses from this incomes.',
+        ]
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -33,6 +51,12 @@ class SaleController extends Controller
                                         ->withRouteQueryToday(route('user::payments.index', [ 'api_token' => Auth::user()->api_token ]));       
     }
 
+    private function viewSalesEntryForm()
+    {
+        return view('sales-book-1')->withStores(Auth::user()->stores->pluck('id', 'name'))
+                                   ->withMessages($this->messages);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -40,7 +64,7 @@ class SaleController extends Controller
      */
     public function create()
     {
-        return view('sales-book-1')->withStores(Auth::user()->stores->pluck('id', 'name'));
+        return $this->viewSalesEntryForm();
     }
 
     /**
@@ -224,10 +248,12 @@ class SaleController extends Controller
      */
     public function edit(Sale $sale)
     {
-        //
-        return view('sales-book-1')->withSale($sale)
-                                   ->withRow(0)        // row index
-                                   ->withStores(Auth::user()->stores->pluck('id', 'name'));
+        return $this->viewSalesEntryForm()->withSale($sale)
+                                          ->withRow(  $sale->productbills->count()
+                                                    + $sale->shippingbills->count()
+                                                    + $sale->billpayments->count()
+                                                    + $sale->deposits->count()
+                                                    + $sale->expenses->count());        // row index
     }
 
     /**

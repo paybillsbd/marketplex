@@ -24,6 +24,6 @@
 	<strong><i><span class="multTotal">{{ number_format(isset($bill_amount) ? ($bill_quantity * $bill_amount) : 0.00, 2) }}</span></i></strong>
 	</td>
 	<td>
-	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove">X</a>
+	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove fa fa-close fa-2x" data-toggle="tooltip" data-placement="top" title="Remove this entry"></a>
 	</td>
 </tr>

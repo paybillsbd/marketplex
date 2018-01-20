@@ -133,7 +133,7 @@
                   <td><strong><i>{{ $income->getTotalPaidAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                 </tr>
                 @empty
-                <tr><td colspan="6"><div class="alert alert-warning }}">{{ $empty_record_messages['incomes'] }}</div></td></tr>
+                <tr><td colspan="6"><div class="alert alert-warning">{{ $empty_record_messages['incomes'] }}</div></td></tr>
                 @endforelse
                 <tr>
                   <td>Total</td>

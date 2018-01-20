@@ -15,6 +15,6 @@
 		</div>
 	</td>
 	<td>
-	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove">X</a>
+	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove fa fa-close fa-2x" data-toggle="tooltip" data-placement="top" title="Remove this entry"></a>
 	</td>
 </tr>
