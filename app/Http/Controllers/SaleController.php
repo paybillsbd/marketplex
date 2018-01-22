@@ -17,24 +17,6 @@ use MarketPlex\Expense;
 
 class SaleController extends Controller
 {
-    private $messages = [
-        'empty_table' => [
-            'sale_product' => 'Added products for sale will show up here ...',
-            'product_shipping' => 'Added shipping cost notes will show up here ...',
-            'bill_payment' => 'Customers paid bill will show up here ...',
-            'deposit' => 'Added deposits will show up here ...',
-            'expense' => 'Added expenses will show up here ...',
-        ],
-        'help' => [
-            'save_sale' => 'Save your sold products entry records.',
-            'add_product' => 'Add your ordered products from above selected store and product list.',
-            'add_shipping' => 'Add your shipping costs.',
-            'add_paid_bill' => 'Add your customer\'s paid bills.',
-            'add_deposit' => 'Add your deposited amounts.',
-            'add_expense' => 'Add your expenses from this incomes.',
-        ]
-    ];
-
     /**
      * Display a listing of the resource.
      *
@@ -54,7 +36,7 @@ class SaleController extends Controller
     private function viewSalesEntryForm()
     {
         return view('sales-book-1')->withStores(Auth::user()->stores->pluck('id', 'name'))
-                                   ->withMessages($this->messages);
+                                   ->withMessages(Sale::messages());
     }
 
     /**
@@ -216,28 +198,29 @@ class SaleController extends Controller
 
     public function search(Request $request)
     {
-        if ($request->has('queries')
-                    && is_array($request->input('queries'))
-                    && count($request->input('queries')) == 4)
+        $this->validate($request, [
+            'queries' => 'present|array',
+            'queries.client_name' => 'present',
+            'queries.billing_id' => 'present',
+            'queries.from_date' => 'required_with:queries.to_date',
+            'queries.to_date' => 'required_with:queries.from_date',
+        ]);
+
+        $queries = $request->input('queries');
+        if (Sale::expectedQueries($queries))
         {
-            $queries = $request->input('queries');
-            // dd($request->input('queries'));
-            $nullCount = 0;
-            foreach ($queries as $value)
+            if (Sale::nothingSearched($queries))
             {
-                if (empty($value) && ++$nullCount == count($queries))
-                {
-                    return $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
-                }
+                return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
+                    : $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
             }
-            $from = date('m/d/Y' . 'h:m', $queries['from_date']);
-            $to = date('m/d/Y' . 'h:m', $queries['to_date']);
-            $sales = Sale::whereClientName($queries['client_name'])
-                    ->orWhere('bill_id', $queries['bill_id'])
-                    ->orWhereBetween('created_at', [ $from, $to ]);
-            return $this->viewSalesFiltered($sales);
+            $sales = Sale::search($queries)->get();
+            // dd($sales);
+            return $request->ajax() ? response()->json([ 'sales' => $sales, 'code' => 200 ])
+                : $this->viewSalesFiltered($sales);
         }
-        return $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
+        return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
+            : $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
     }
 
     /**
@@ -249,11 +232,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         return $this->viewSalesEntryForm()->withSale($sale)
-                                          ->withRow(  $sale->productbills->count()
-                                                    + $sale->shippingbills->count()
-                                                    + $sale->billpayments->count()
-                                                    + $sale->deposits->count()
-                                                    + $sale->expenses->count());        // row index
+                                          ->withRow($sale->nextRowIndex());        // row index
     }
 
     /**

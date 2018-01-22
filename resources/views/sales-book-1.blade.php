@@ -497,8 +497,11 @@
         _onSuccess: function(data) {
             // success logic
             if (data.code == 200) // OK
-            {                        
-                alert( "Success! " +  data.message );
+            {
+                if (data.message !== undefined)                    
+                {
+                    alert( "Success! " +  data.message );
+                }
                 if (FormRequestManager._shouldRedirect)
                 {
                   window.location.href = "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}";
@@ -787,12 +790,12 @@
                             ])
                           @empty
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
                     </tbody>
@@ -832,12 +835,12 @@
                                 'bill_quantity' => $bill->quantity ])
                           @empty
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
                     </tbody>
@@ -847,8 +850,11 @@
                   <table class="table table-bordered">
                     <tbody>
                       <tr>
-                        <td width="60%"><strong><i>Bill Amount ({{ MarketPlex\Store::currencyIcon() }}):</i></strong></td>
-                        <td width="40%"><strong><i><span id="grandTotal">{{ isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00 }}</span></i></strong></td>
+                        <td width="60%"><strong><i>Bill Amount:</i></strong></td>
+                        <td width="40%"><strong><i>
+                        <span id="grandTotal">
+                        {{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}
+                        </span></i></strong></td>
                       </tr>
                     </tbody>
                   </table>
@@ -884,12 +890,12 @@
                                 'trans_option' => $payment->method ])
                           @empty
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
                     </tbody>
@@ -955,13 +961,13 @@
                                 'bank_accounts' => MarketPlex\Bank::all()
                             ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])                               
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
                     </tbody>
@@ -998,12 +1004,12 @@
                                 'expense_amount' => $expense->amount ])
                           @empty
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
                             @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
-                                <tr><td colspan="6"><div class="alert alert-warning">No records added yet</div></td></tr>
+                                <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
                         </tbody>

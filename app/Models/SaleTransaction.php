@@ -51,6 +51,47 @@ class SaleTransaction extends Model
         return $this->hasMany('MarketPlex\Expense');
     }
 
+    public function nextRowIndex()
+    {
+        return $this->productbills->count()
+            + $this->shippingbills->count()
+            + $this->billpayments->count()
+            + $this->deposits->count()
+            + $this->expenses->count();
+    }
+
+    public static function expectedQueries(array $queries)
+    {
+        return is_array($queries) && count($queries) == 4;
+    }
+
+    // If any query is found to search - returns false
+    // otherwise returns true
+    public static function nothingSearched(array $queries)
+    {        
+        $nullCount = 0;
+        foreach ($queries as $value)
+        {
+            if (empty($value) && ++$nullCount == count($queries))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function getBillAmountByBillId($bill_id)
+    {
+        $sale = Sale::whereBillId($bill_id)->first();
+        return !$sale ? 0.00 : $sale->getBillAmount();
+    }
+
+    public static function getCurrentDueAmountByBillId($bill_id)
+    {
+        $sale = Sale::whereBillId($bill_id)->first();
+        return !$sale ? 0.00 : $sale->getCurrentDueAmount();
+    }
+
     public function getBillAmount()
     {
         return $this->productbills->map(function ($bill, $key) {
@@ -130,5 +171,39 @@ class SaleTransaction extends Model
     public function scopeSameClient($query)
     {
         return $query->whereClientName($this->client_name);
+    }
+
+    public function scopeSearch($query, array $searchInputs)
+    {
+        $from = Carbon::parse($searchInputs['from_date'])->format('Y-m-d');
+        $to = Carbon::parse($searchInputs['to_date'])->format('Y-m-d');
+        $sales = $query->where('client_name', 'like', '%' . $searchInputs['client_name'] . '%');
+        $salesByBillID = $query->where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%');
+        $salesByDate = $query->whereBetween('created_at', [ $from, $to ]);
+
+        $sales = empty($searchInputs['client_name']) ? $salesByBillID->union($sales) : $salesByBillID;
+        $sales = empty($searchInputs['billing_id']) ? $salesByDate->union($sales) : $salesByDate;
+        return $sales->orderBy('created_at', 'desc');
+    }
+
+    public static function messages()
+    {
+        return [
+            'empty_table' => [
+                'sale_product' => 'Added products for sale will show up here ...',
+                'product_shipping' => 'Added shipping cost notes will show up here ...',
+                'bill_payment' => 'Customers paid bill will show up here ...',
+                'deposit' => 'Added deposits will show up here ...',
+                'expense' => 'Added expenses will show up here ...',
+            ],
+            'help' => [
+                'save_sale' => 'Save your sold products entry records.',
+                'add_product' => 'Add your ordered products from above selected store and product list.',
+                'add_shipping' => 'Add your shipping costs.',
+                'add_paid_bill' => 'Add your customer\'s paid bills.',
+                'add_deposit' => 'Add your deposited amounts.',
+                'add_expense' => 'Add your expenses from this incomes.',
+            ]
+        ];
     }
 }
