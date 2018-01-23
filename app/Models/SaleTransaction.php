@@ -5,6 +5,7 @@ namespace MarketPlex;
 use Illuminate\Database\Eloquent\Model;
 use MarketPlex\SaleTransaction as Sale;
 use Carbon\Carbon;
+use Log;
 
 class SaleTransaction extends Model
 {
@@ -177,13 +178,10 @@ class SaleTransaction extends Model
     {
         $from = Carbon::parse($searchInputs['from_date'])->format('Y-m-d');
         $to = Carbon::parse($searchInputs['to_date'])->format('Y-m-d');
-        $sales = $query->where('client_name', 'like', '%' . $searchInputs['client_name'] . '%');
-        $salesByBillID = $query->where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%');
-        $salesByDate = $query->whereBetween('created_at', [ $from, $to ]);
-
-        $sales = empty($searchInputs['client_name']) ? $salesByBillID->union($sales) : $salesByBillID;
-        $sales = empty($searchInputs['billing_id']) ? $salesByDate->union($sales) : $salesByDate;
-        return $sales->orderBy('created_at', 'desc');
+        $ofClient = $query->where('client_name', 'like', '%' . $searchInputs['client_name'] . '%');
+        $ofBill = $query->where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%');
+        $ofDate = $query->whereBetween('created_at', [ $from, $to ]);
+        return $ofClient->orderBy('created_at', 'desc');
     }
 
     public static function messages()

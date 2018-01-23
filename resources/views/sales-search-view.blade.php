@@ -165,7 +165,7 @@
                   alert( "Sorry! " +  data.message );
               }
               FormRequestManager._hideValidationErrors();
-          },
+          },  
           _onError: function(jqXHR, textStatus, errorThrown) {
 
               FormRequestManager._hideValidationErrors();
@@ -198,7 +198,7 @@
                   $('body').html(jqXHR.responseText);
               }              
               // Render the errors with js ...
-              alert(msg + 'The operationas are failed! The issues are logged dated: ' + now.toLocaleDateString()
+              alert(msg + 'The operations are failed! The issues are logged dated: ' + now.toLocaleDateString()
                         + '\nfor the assistance of your service provider.');
           },
           _onSubmit: function(event) {
