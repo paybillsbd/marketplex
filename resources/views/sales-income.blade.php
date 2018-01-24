@@ -27,6 +27,8 @@
     <!-- <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script> -->
     <!-- Bootstrap Date-Picker Plugin -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+    <script type="text/javascript" src="/vendor/request-clients/data-request-clients.js"></script>
     <script>
       $(document).ready(function(){
             // var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
@@ -40,13 +42,8 @@
             // };
             // date_input_from.datepicker(options);
             // date_input_to.datepicker(options);
-            
-          $('#search_sales_income').click(function(e) {
-              // e.preventDefault();
-              // $('.card_income_result').show();
-          });
-
       });
+
     </script>
 @endsection
 
@@ -55,15 +52,17 @@
 @endsection
 
 @section('content')
-@include('includes.message.message') 
-
 <div class="box box-info">    
     <div class="box-body">
       <div class="row padTB"> 
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
 
-            <form role="form"
+            @component('includes.message.error-summary')
+                <ul></ul>
+            @endcomponent
+
+            <form id="search-sale-form" role="form"
                   method="post"
                   action="{{ route('user::payments.search', [ 'api_token' => Auth::user()->api_token ]) }}">
 
@@ -75,14 +74,20 @@
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="from_date"><h5><strong>From</strong></h5></label>
                       <input  class="form-control" value="{{ isset($from_date) ? $from_date : '' }}"
-                              id="queries.from_date" name="queries[from_date]" placeholder="DD/MM/YYYY" type="date"/>
+                              id="queries.from_date" name="queries[from_date]" type="date" required/>
+                      <span class="help-block hidden">
+                          <strong></strong>
+                      </span>
                     </div>                    
                   </div>
                   <div class="col-6">
                     <div class="form-group"> <!-- Date input -->
                       <label class="control-label" for="to_date"><h5><strong>To</strong></h5></label>
                       <input  class="form-control" value="{{ isset($to_date) ? $to_date : '' }}"
-                              id="queries.to_date" name="queries[to_date]" placeholder="DD/MM/YYYY" type="date"/>
+                              id="queries.to_date" name="queries[to_date]" type="date" required/>
+                      <span class="help-block hidden">
+                          <strong></strong>
+                      </span>
                     </div>                    
                   </div>
                 </div>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use MarketPlex\SaleTransaction as Sale;
 use MarketPlex\Expense;
 use MarketPlex\Deposit;
+use Carbon\Carbon;
 
 class BillPaymentController extends Controller
 {
@@ -24,6 +25,8 @@ class BillPaymentController extends Controller
 
     private function viewWithFiltered($dateFrom, $dateTo)
     {
+        $dateFrom = Carbon::parse($dateFrom)->format('Y-m-d');
+        $dateTo = Carbon::parse($dateTo)->format('Y-m-d');
         $onDate = $dateFrom === $dateTo;
         $dateQuery = $onDate ? $dateFrom : [ $dateFrom, $dateTo ];
         $dateScope = $onDate ? 'On' : 'Between';
@@ -58,13 +61,6 @@ class BillPaymentController extends Controller
 
     public function search(Request $request)
     {
-        $this->validate($request, [
-            'queries.*' => 'required|date',
-        ], [
-            'queries.from_date' => 'Please provide a valid date input for start date',
-            'queries.to_date' => 'Please provide a valid date input for end date'
-        ]);
-
         $dateRange = $request->input('queries');
         return $this->viewWithFiltered($dateRange['from_date'], $dateRange['to_date']);
     }

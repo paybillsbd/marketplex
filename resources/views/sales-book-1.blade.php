@@ -177,6 +177,7 @@
                 ViewContentManager.append('sales-row-bank-deposit', {
                   row_id: i,
                   datetime: d.toLocaleDateString(),
+                  deposit_method: 'bank',
                   "bank_accounts": JSON.stringify(json.accounts)
                 }, '#dynamic_field_bank');
 
@@ -231,6 +232,8 @@
 
               var rowId = $(this).attr("row-id");
               var bankingFields = $("#deposits\\." + rowId + "\\.bank_title, #deposits\\." + rowId + "\\.bank_ac_no");
+              
+              $(this).attr('title', $(this).val() + ' is selected');
 
               if ($(this).val() == 'vault')
               {
@@ -239,42 +242,49 @@
               else if ($(this).val() == 'bank')
               {
             	    bankingFields.show();
+                  alert(bankingFields[0].text());
               }        
         });
 
         $("tbody").on('change', ".deposit_account", function() {
 
               var rowId = $(this).attr("row-id");
-              var depositAccountInput = $('#deposits\\.' + rowId + '\\.bank_ac_no');
               var depositDetailLabel = $('#deposits\\.' + rowId + '\\.bank_title');
-
-              // alert( 'Account: ' + depositAccountInput.val() + ', Title: ' + depositDetailLabel.val());
+              var _this = $(this);
 
               var accountsMgr = DataManager;
-              accountsMgr.serviceUrl = '/api/v1/settings/banks/' + depositAccountInput.val();
+              accountsMgr.serviceUrl = '/api/v1/settings/banks/' + $(this).val();
               accountsMgr.serviceUrl += '?api_token={{ Auth::user()->api_token }}';
               accountsMgr.onLoad = function(json) {
                   depositDetailLabel.html(json.summary_html);
+                  _this.attr('title', json.account_no + ' is selected');
               };
               accountsMgr.request();      
               // alert( 'Request sent to: ' + accountsMgr.serviceUrl);
         });
 
+        // cross browser string trimming
+        String.prototype.trimmed = function(){
+            return this.replace(
+                /^(\s|&nbsp;|<br\s*\/?>)+?|(\s|&nbsp;|<br\s*\/?>)+?$/ig, ' '
+            ).trim();
+        }
+
         function Decimal(numberText)
         {
-            var number = Number(numberText);
+            var number = Number(numberText.trimmed());
             // specially take care the pure zero value
             if (number == 0.0)
             {
                 return number.toPrecision(3);
             }
             // if already formatted to decimal just return it
-            if (numberText.toString().indexOf('.') > -1)
+            if (numberText.toString().trimmed().indexOf('.') > -1)
             {
                 return numberText;
             }
             // otherwise ... keep precision minding the input length
-            return number.toPrecision(numberText.toString().length + 2);
+            return number.toPrecision(numberText.toString().trimmed().length + 2);
         }        
 
         function multInputs() {
@@ -329,12 +339,12 @@
          function calculateDue()
          {
              var totalPaid = 0.0;
-             var grandTotalBill = $("#grandTotal").text();
+             var grandTotalBill = $("#grandTotal").text().trimmed();
               // for each row:
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
                  var amountInput = $('#payments\\.' + $(this).data('row-id') + '\\.paid_amount', this);
-                 var amount = Number(amountInput.val());
+                 var amount = Number(amountInput.val().trimmed());
                  amountInput.val(Decimal(amount));
                  totalPaid += amount;
               });
@@ -354,19 +364,20 @@
               }              
               $("#current_due").text(Decimal(grandTotalDue));
               // $("#prev_due").text(grandTotal);
-              var totalDue = Number($("#prev_due").text()) + Number(grandTotalDue);
+              var totalDue = Number($("#prev_due").text().trimmed()) + Number(grandTotalDue);
+              alert((isNaN(totalDue) ? 'Yes' : 'No') + ' > ' + $("#prev_due").text());
               $("#total_due").text(Decimal(totalDue));
          }
 
          function calculateExpenses()
          {           
              var totalExpense = 0.0;
-             var grandTotalBill = Number($("#grandTotal").text());
-             var currentDue = Number($("#current_due").text());
+             var grandTotalBill = Number($("#grandTotal").text().trimmed());
+             var currentDue = Number($("#current_due").text().trimmed());
               $("tr.expenses").each(function () {
 
                   var expensesAmountInput = $('#expenses\\.' + $(this).data('row-id') + '\\.expense_amount', this);
-                  var amount = Number(expensesAmountInput.val());
+                  var amount = Number(expensesAmountInput.val().trimmed());
                   expensesAmountInput.val(Decimal(amount));
                   totalExpense += amount;
               });
@@ -374,7 +385,7 @@
 
                   var rowId = $(this).data('row-id');
                   var depositAmountInput = $('#deposits\\.' + rowId + '\\.deposit_amount', this);
-                  var amount = Number(depositAmountInput.val());
+                  var amount = Number(depositAmountInput.val().trimmed());
                   depositAmountInput.val(Decimal(amount));
                   totalExpense += amount;
               });
@@ -852,9 +863,8 @@
                       <tr>
                         <td width="60%"><strong><i>Bill Amount:</i></strong></td>
                         <td width="40%"><strong><i>
-                        <span id="grandTotal">
-                        {{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}
-                        </span></i></strong></td>
+                        <span id="grandTotal">{{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00) }}</span>
+                        {{ ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                       </tr>
                     </tbody>
                   </table>
@@ -907,18 +917,19 @@
                         <tbody>
                           <tr>
                             <td width="60%"><strong><i>Current Due:</i></strong></td>
-                            <td width="40%"><strong><i id="current_due" class="decimal">
-                            {{ (isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 ) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                            <td width="40%"><strong>
+                            <i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 }}</i>
+                            {{' ' . MarketPlex\Store::currencyIcon() }}</strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Previous Due:</i></strong></td>
-                            <td width="40%"><strong><i id="prev_due" class="decimal">
-                            {{ (isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                            <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00 }}</i>
+                            {{' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
-                            <td width="40%"><strong><i id="total_due" class="decimal">
-                            {{ (isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00) . MarketPlex\Store::currencyIcon() }}</i></strong></td>
+                            <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00 }}</i>
+                            {{' ' . MarketPlex\Store::currencyIcon() }}</strong></td>
                           </tr>
                         </tbody>
                       </table>
