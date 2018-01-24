@@ -70,6 +70,13 @@
 
     <script>
 
+      // cross browser string trimming
+      String.prototype.trimmed = function(){
+          return this.replace(
+              /^(\s|&nbsp;|<br\s*\/?>)+?|(\s|&nbsp;|<br\s*\/?>)+?$/ig, ' '
+          ).trim();
+      }
+
       var DataManager = {
           serviceUrl: '',
           payload: {},
@@ -242,7 +249,6 @@
               else if ($(this).val() == 'bank')
               {
             	    bankingFields.show();
-                  alert(bankingFields[0].text());
               }        
         });
 
@@ -259,32 +265,30 @@
                   depositDetailLabel.html(json.summary_html);
                   _this.attr('title', json.account_no + ' is selected');
               };
-              accountsMgr.request();      
-              // alert( 'Request sent to: ' + accountsMgr.serviceUrl);
+              accountsMgr.request();
         });
 
-        // cross browser string trimming
-        String.prototype.trimmed = function(){
-            return this.replace(
-                /^(\s|&nbsp;|<br\s*\/?>)+?|(\s|&nbsp;|<br\s*\/?>)+?$/ig, ' '
-            ).trim();
+        function NumberText(numberTextTrimmed)
+        {
+            return numberTextTrimmed.indexOf(',') > -1 ? numberTextTrimmed.replace(/,/g, '') : numberTextTrimmed;
         }
 
         function Decimal(numberText)
         {
-            var number = Number(numberText.trimmed());
+            var rawNumberText = NumberText(numberText.toString().trimmed());
+            var number = Number(NumberText(numberText.trimmed()));
             // specially take care the pure zero value
             if (number == 0.0)
             {
                 return number.toPrecision(3);
             }
             // if already formatted to decimal just return it
-            if (numberText.toString().trimmed().indexOf('.') > -1)
+            if (rawNumberText.indexOf('.') > -1)
             {
                 return numberText;
             }
             // otherwise ... keep precision minding the input length
-            return number.toPrecision(numberText.toString().trimmed().length + 2);
+            return number.toPrecision(rawNumberText.length + 2);
         }        
 
         function multInputs() {
@@ -294,10 +298,9 @@
               $("tr.ship_bill").each(function () {
                  // get the values from this row:
                  var billAmmountInput = $('#shipping_bills\\.' + $(this).data('row-id') + '\\.bill_amount', this);
-                 var amount = billAmmountInput.val();
-                 billAmmountInput.val(Decimal(amount));
+                 billAmmountInput.val(Decimal(billAmmountInput.val()));
                  var quantity = $('#shipping_bills\\.' + $(this).data('row-id') + '\\.bill_quantity', this).val();
-                 var total = Number(amount) * Number(quantity);
+                 var total = Number(NumberText(billAmmountInput.val().trimmed())) * Number(quantity);
 
                  $('.multTotal',this).text(Decimal(total));
                  grandTotal += total;
@@ -339,18 +342,15 @@
          function calculateDue()
          {
              var totalPaid = 0.0;
-             var grandTotalBill = $("#grandTotal").text().trimmed();
+             var grandTotalBill = Number(NumberText($("#grandTotal").text().trimmed()));
               // for each row:
               $("tr.bill_payment").each(function () {
                  // get the values from this row:
                  var amountInput = $('#payments\\.' + $(this).data('row-id') + '\\.paid_amount', this);
-                 var amount = Number(amountInput.val().trimmed());
-                 amountInput.val(Decimal(amount));
-                 totalPaid += amount;
+                 amountInput.val(Decimal(amountInput.val()));
+                 totalPaid += Number(NumberText(amountInput.val()));
               });
-
-              var grandTotalDue = Number(grandTotalBill) - Number(totalPaid);
-
+              var grandTotalDue = grandTotalBill - totalPaid;
               if (grandTotalBill > 0.0)
               {
                   if (grandTotalDue < 0.0)
@@ -362,32 +362,29 @@
                       alert("Client has paid full due payment!" );
                   }
               }              
-              $("#current_due").text(Decimal(grandTotalDue));
+              $("#current_due").text(Decimal(grandTotalDue.toString()));
               // $("#prev_due").text(grandTotal);
-              var totalDue = Number($("#prev_due").text().trimmed()) + Number(grandTotalDue);
-              alert((isNaN(totalDue) ? 'Yes' : 'No') + ' > ' + $("#prev_due").text());
-              $("#total_due").text(Decimal(totalDue));
+              var totalDue = Number(NumberText($("#prev_due").text().trimmed())) + grandTotalDue;
+              $("#total_due").text(Decimal(totalDue.toString()));
          }
 
          function calculateExpenses()
          {           
              var totalExpense = 0.0;
-             var grandTotalBill = Number($("#grandTotal").text().trimmed());
-             var currentDue = Number($("#current_due").text().trimmed());
+             var grandTotalBill = Number(NumberText($("#grandTotal").text().trimmed()));
+             var currentDue = Number(NumberText($("#current_due").text().trimmed()));
               $("tr.expenses").each(function () {
 
                   var expensesAmountInput = $('#expenses\\.' + $(this).data('row-id') + '\\.expense_amount', this);
-                  var amount = Number(expensesAmountInput.val().trimmed());
-                  expensesAmountInput.val(Decimal(amount));
-                  totalExpense += amount;
+                  expensesAmountInput.val(Decimal(expensesAmountInput.val()));
+                  totalExpense += Number(NumberText(expensesAmountInput.val().trimmed()));
               });
               $("tr.bank_deposit").each(function () {
 
                   var rowId = $(this).data('row-id');
                   var depositAmountInput = $('#deposits\\.' + rowId + '\\.deposit_amount', this);
-                  var amount = Number(depositAmountInput.val().trimmed());
-                  depositAmountInput.val(Decimal(amount));
-                  totalExpense += amount;
+                  depositAmountInput.val(Decimal(depositAmountInput.val()));
+                  totalExpense += Number(NumberText(depositAmountInput.val().trimmed()));
               });
 
               if (grandTotalBill == 0.0 && currentDue == 0.0)
@@ -401,7 +398,7 @@
               var totalIncome = grandTotalBill - currentDue;
               if (grandTotalBill > 0.0 && totalIncome < totalExpense)
               {
-                  alert("Warning! You have expenses/ deposits more than your 'sales income' from this client!\nTotal Expense: " + Decimal(totalExpense) + "\nTotal Paid:" + Decimal(totalIncome));
+                  alert("Warning! You have expenses/ deposits more than your 'sales income' from this client!\nTotal Expense: " + Decimal(totalExpense.toString()) + "\nTotal Paid:" + Decimal(totalIncome.toString()));
               }
          }
          
