@@ -154,6 +154,7 @@
       };
 
       $(document).ready(function() {      
+        
         var i=1;  
         var d = new Date(Date.now());
         var priceCollection = [];
@@ -293,8 +294,8 @@
 
         function Decimal(numberText)
         {
-            var rawNumberText = NumberText(numberText.toString().trimmed());
-            var number = Number(NumberText(numberText.trimmed()));
+            var rawNumberText = NumberText(isNaN(numberText) ? numberText.trimmed() : numberText.toString().trimmed());
+            var number = Number(rawNumberText);
             // specially take care the pure zero value
             if (number == 0.0)
             {
@@ -303,7 +304,7 @@
             // if already formatted to decimal just return it
             if (rawNumberText.indexOf('.') > -1)
             {
-                return numberText;
+                return rawNumberText;
             }
             // otherwise ... keep precision minding the input length
             return number.toPrecision(rawNumberText.length + 2);
@@ -311,7 +312,7 @@
 
         function multInputs() {
 
-             var grandTotal = 0.0;
+             var grandTotal = Number('{{ isset($sale) ? $sale->getBillAmount() : 0.00 }}');
               // for each row:
               $("tr.ship_bill").each(function () {
                  // get the values from this row:
@@ -319,7 +320,6 @@
                  billAmmountInput.val(Decimal(billAmmountInput.val()));
                  var quantity = $('#shipping_bills\\.' + $(this).data('row-id') + '\\.bill_quantity', this).val();
                  var total = Number(NumberText(billAmmountInput.val().trimmed())) * Number(quantity);
-
                  $('.multTotal',this).text(Decimal(total));
                  grandTotal += total;
               });
@@ -880,7 +880,7 @@
                       <tr>
                         <td width="60%"><strong><i>Bill Amount:</i></strong></td>
                         <td width="40%"><strong><i>
-                        <span id="grandTotal">{{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : 0.00) }}</span>
+                        <span id="grandTotal">{{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : number_format(0.00, 2)) }}</span>
                         {{ ' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                       </tr>
                     </tbody>
@@ -936,17 +936,17 @@
                           <tr>
                             <td width="60%"><strong><i>Current Due:</i></strong></td>
                             <td width="40%"><strong>
-                            <i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : 0.00 }}</i>
+                            <i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
                             {{' ' . MarketPlex\Store::currencyIcon() }}</strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Previous Due:</i></strong></td>
-                            <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : 0.00 }}</i>
+                            <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
                             {{' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                           <tr>
                             <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
-                            <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : 0.00 }}</i>
+                            <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
                             {{' ' . MarketPlex\Store::currencyIcon() }}</strong></td>
                           </tr>
                         </tbody>
