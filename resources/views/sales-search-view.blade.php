@@ -297,8 +297,6 @@
 
           if (json.sales !== undefined)
           {
-              // alert(JSON.stringify(json.sales));
-
               ViewContentManager.replace('sales-row-search-result', {
                 sales: JSON.stringify(json.sales)
               }, '#search-result-table > tbody');   

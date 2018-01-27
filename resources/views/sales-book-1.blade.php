@@ -120,7 +120,14 @@
               DataManager.payload = payload;
               DataManager.onLoad = function(data) {
 
-                  $(selector).append(data);
+                  if ($(selector).find('div.empty-row').length === 1 )
+                  {
+                      $(selector + ' > tbody').html(data); 
+                  }
+                  else
+                  {
+                      $(selector).append(data);
+                  }
               };
               DataManager.request();
           }
@@ -133,44 +140,26 @@
 
         $('#addBillingRow').click(function(){  
             
-            i++; 
+            i++;
 
-            var rowTemplate = 'sales-row-shipping-bill';
-            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
-            DataManager.onLoad = function(data) {
-
-                $('#dynamic_field_shipping').append(data);
-            };
-            DataManager.request(); 
+            ViewContentManager.append('sales-row-shipping-bill',
+              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_shipping');
         });   
 
         $('#addPayRow').click(function(){  
              
-            i++;  
+            i++; 
 
-            var rowTemplate = 'sales-row-paid-bill';
-            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
-            DataManager.onLoad = function(data) {
-
-                $('#dynamic_field_pay').append(data);
-            };
-            DataManager.request();
+            ViewContentManager.append('sales-row-paid-bill',
+              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_pay');
         });  
 
         $('#add_expense_btn').click(function(){  
              
             i++;  
 
-            var rowTemplate = 'sales-row-expense';
-            DataManager.serviceUrl = '/api/v1/templates/' + rowTemplate + '?api_token={{ Auth::user()->api_token }}';
-            DataManager.payload = { row_id: i,  datetime: d.toLocaleDateString() };
-            DataManager.onLoad = function(data) {
-
-                $('#dynamic_field_expenses').append(data);
-            };
-            DataManager.request();
+            ViewContentManager.append('sales-row-expense',
+              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_expenses');
         });
         
         $('#addBankRow').click(function(){  
@@ -196,7 +185,8 @@
             
           i++;
 
-          DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val() + '/price?api_token={{ Auth::user()->api_token }}';
+          DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val();
+          DataManager.serviceUrl += '/price?api_token={{ Auth::user()->api_token }}';
           DataManager.onLoad = function(data) {
 
               priceCollection["row" + i] = data.price;
@@ -231,6 +221,15 @@
 
               e.preventDefault();
               var button_id = $(this).attr("id");
+              
+              var tableElement = $('#row' + button_id).closest('table');
+
+              ViewContentManager.append('empty-table-message', {
+                colspan: 6,
+                level: 'info',
+                message: tableElement.data('empty-message'),
+              }, '#' + tableElement.attr('id'));
+
               $('#row' + button_id).remove();
               multInputs();
         });
@@ -770,7 +769,8 @@
                       </div>
                       
                     </div>
-                    <table class="table table-bordered" id="product_bill_table">
+                    <table  class="table table-bordered" id="product_bill_table"
+                            data-empty-message="{{ $messages['empty_table']['sale_product'] }}">
                     <thead>
                       <tr>
                       <th width="10%">Date</th>
@@ -797,12 +797,12 @@
                                 'product_available_quantity' => $bill->product->available_quantity
                             ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
@@ -819,7 +819,8 @@
                                 data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_shipping'] }}"></button>
                       </div>
                     </div>
-                    <table class="table table-bordered" id="dynamic_field_shipping">
+                    <table  class="table table-bordered" id="dynamic_field_shipping"
+                            data-empty-message="{{ $messages['empty_table']['product_shipping'] }}">
                     <thead>
                       <tr>        
                       <th width="10%">Date</th>
@@ -842,12 +843,12 @@
                                 'bill_amount' => $bill->amount,
                                 'bill_quantity' => $bill->quantity ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
@@ -876,7 +877,8 @@
                     </div>
                   </div>
                     <div class="form-group">
-                    <table class="table table-bordered" id="dynamic_field_pay">
+                    <table  class="table table-bordered" id="dynamic_field_pay"
+                            data-empty-message="{{ $messages['empty_table']['bill_payment'] }}">
                     <thead>
                       <tr>
                       <th width="10%">Date</th>       
@@ -896,12 +898,12 @@
                                 'paid_amount' => $payment->amount,
                                 'trans_option' => $payment->method ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
@@ -944,7 +946,8 @@
                     </div>
                   </div>
                     <div class="form-group">
-                    <table class="table table-bordered" id="dynamic_field_bank">
+                    <table  class="table table-bordered" id="dynamic_field_bank"
+                            data-empty-message="{{ $messages['empty_table']['deposit'] }}">
                     <thead>
                       <tr>  
                       <th width="10%">Date</th>
@@ -969,12 +972,12 @@
                                 'bank_accounts' => MarketPlex\Bank::all()
                             ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])                               
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])                               
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['deposit'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
@@ -991,7 +994,8 @@
                                   data-toggle="tooltip" data-placement="top" title="{{ $messages['help']['add_expense'] }}"></button>
                         </div>
                       </div>
-                      <table class="table table-bordered" id="dynamic_field_expenses">
+                      <table  class="table table-bordered" id="dynamic_field_expenses"
+                              data-empty-message="{{ $messages['empty_table']['expense'] }}">
                         <thead>
                           <tr>        
                           <th width="10%">Date</th>
@@ -1011,12 +1015,12 @@
                                 'expense_purpose' => $expense->purpose,
                                 'expense_amount' => $expense->amount ])
                           @empty
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                           @endforelse
                         @else
-                            @component('includes.message.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
+                            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['expense'] ])
                                 <div class="alert alert-warning">No records added yet</div>
                             @endcomponent
                         @endif
