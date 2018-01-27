@@ -111,16 +111,23 @@
       };
 
       var ViewContentManager = {
+
+          _setUp: function(view_name, payload) {
+
+              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
+              DataManager.payload = payload;
+
+          },
           // @param: view_name - name of the view to load
           // @param: payload - the data to bind to the view content
           // @param: table_id - name of the view to load
           append: function(view_name, payload, selector) {
 
-              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.payload = payload;
+              this._setUp(view_name, payload);
+
               DataManager.onLoad = function(data) {
 
-                  if ($(selector).find('div.empty-row').length === 1 )
+                  if ( $(selector).find('div.empty-row').length === 1 )
                   {
                       $(selector + ' > tbody').html(data); 
                   }
@@ -130,6 +137,19 @@
                   }
               };
               DataManager.request();
+          },
+          appendEmpty: function(view_name, payload, selector) {
+
+              this._setUp(view_name, payload);
+
+              DataManager.onLoad = function(data) {
+
+                  if ( $(selector).find('a.btn_remove').length === 0 )
+                  {
+                      $(selector).append(data);
+                  }
+              };
+              DataManager.request();              
           }
       };
 
@@ -220,17 +240,16 @@
         $(document).on('click', '.btn_remove', function(e) {
 
               e.preventDefault();
-              var button_id = $(this).attr("id");
-              
-              var tableElement = $('#row' + button_id).closest('table');
+              var tableRowElement = $('#row' + $(this).attr("id"));              
+              var tableElement = tableRowElement.closest('table');
 
-              ViewContentManager.append('empty-table-message', {
+              ViewContentManager.appendEmpty('empty-table-message', {
                 colspan: 6,
                 level: 'info',
                 message: tableElement.data('empty-message'),
               }, '#' + tableElement.attr('id'));
 
-              $('#row' + button_id).remove();
+              tableRowElement.remove();
               multInputs();
         });
 
