@@ -726,11 +726,13 @@
               <div class="box-body">
                     <div class="form-group">
                         <label for="bill_id"><strong>Billing ID:</strong></label>
-                        <div class="col-md-12">
-                            <input type="text" class="form-control" id="bill_id" name="bill_id" value="{{ isset($sale) ? $sale->bill_id : '' }}" />
-                            <span class="help-block hidden">
-                                <strong></strong>
-                            </span>
+                        <div class="row">
+                          <div class="col-md-12">
+                              <input type="text" class="form-control" id="bill_id" name="bill_id" value="{{ isset($sale) ? $sale->bill_id : $bill_id }}" {{ isset($sale) ? 'disabled' : '' }}/>
+                              <span class="help-block hidden">
+                                  <strong></strong>
+                              </span>
+                          </div>
                         </div>
                     </div>
                     <div class="form-group">

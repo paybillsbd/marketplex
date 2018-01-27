@@ -36,7 +36,8 @@ class SaleController extends Controller
     private function viewSalesEntryForm()
     {
         return view('sales-book-1')->withStores(Auth::user()->stores->pluck('id', 'name'))
-                                   ->withMessages(Sale::messages());
+                                   ->withMessages(Sale::messages())
+                                   ->withBillId(Sale::generateBillId());
     }
 
     /**
@@ -59,7 +60,7 @@ class SaleController extends Controller
     {
         // to see custom validation messages: resources/lang/en/validation.php
         $this->validate($request,[
-            'bill_id' => 'required|max:100',
+            'bill_id' => 'required|unique:sale_transactions,bill_id|max:100',
             'client' => 'required|max:300',
             'product_bills.*.product_id' => 'present|required',
             'product_bills.*.product_quantity' => 'present|required|numeric|min:1',

@@ -182,6 +182,13 @@ class SaleTransaction extends Model
         $ofBill = $query->where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%');
         $ofDate = $query->whereBetween('created_at', [ $from, $to ]);
         return $ofClient->orderBy('created_at', 'desc');
+    }    
+
+    public static function generateBillId()
+    {
+        $faker = \Faker\Factory::create('en_GB');
+        $faker->addProvider(new \Faker\Provider\Base($faker));
+        return strtoupper($faker->unique()->bothify(Carbon::today()->format('Y-m-d') . '-##??##??##??##??##??##??##??'));
     }
 
     public static function messages()
