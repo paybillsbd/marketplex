@@ -155,44 +155,36 @@
 
       $(document).ready(function() {      
         
-        var i=1;  
+        var i = $('tr').length + 2;  
         var d = new Date(Date.now());
         var priceCollection = [];
 
-        $('#addBillingRow').click(function(){  
-            
-            i++;
+        $('#addBillingRow').click(function(){
 
             ViewContentManager.append('sales-row-shipping-bill',
-              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_shipping');
+              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_shipping');
         });   
 
-        $('#addPayRow').click(function(){  
-             
-            i++; 
+        $('#addPayRow').click(function(){
 
             ViewContentManager.append('sales-row-paid-bill',
-              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_pay');
+              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_pay');
         });  
 
         $('#add_expense_btn').click(function(){  
              
-            i++;  
-
             ViewContentManager.append('sales-row-expense',
-              { row_id: i,  datetime: d.toLocaleDateString() }, '#dynamic_field_expenses');
+              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_expenses');
         });
         
         $('#addBankRow').click(function(){  
              
-            i++;
-
             var accountsMgr = DataManager;
             accountsMgr.serviceUrl = '{{ route("user::banks.index", [ "api_token" => Auth::user()->api_token ]) }}';
             accountsMgr.onLoad = function(json) {
 
                 ViewContentManager.append('sales-row-bank-deposit', {
-                  row_id: i,
+                  row_id: i++,
                   datetime: d.toLocaleDateString(),
                   deposit_method: 'bank',
                   "bank_accounts": JSON.stringify(json.accounts)
@@ -202,9 +194,7 @@
             accountsMgr.request();
         });
 
-        $('#add_product_bill').click(function() { 
-            
-          i++;
+        $('#add_product_bill').click(function() {
 
           DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val();
           DataManager.serviceUrl += '/price?api_token={{ Auth::user()->api_token }}';
@@ -226,7 +216,7 @@
               }
 
               ViewContentManager.append('sales-row-product-bill', {
-                row_id: i,
+                row_id: i++,
                 product_id: data.product_id,
                 datetime: d.toLocaleDateString(),
                 product_title: data.title,
@@ -312,7 +302,7 @@
 
         function multInputs() {
 
-             var grandTotal = Number('{{ isset($sale) ? $sale->getBillAmount() : 0.00 }}');
+             var grandTotal = 0.0;
               // for each row:
               $("tr.ship_bill").each(function () {
                  // get the values from this row:
@@ -457,8 +447,10 @@
         _shouldRedirect: true,
         _redirectUrl: '/home',
         _route: '',
+        _method: 'post',
         _data: {},
         _validationErrors: [],
+        _onFail: function(errorCode, jsonResp) {},
         _onValidationError: function(data) {
             FormRequestManager._hideValidationErrors();
             var response = data.responseJSON;
@@ -530,13 +522,14 @@
                 }
                 if (FormRequestManager._shouldRedirect)
                 {
-                  window.location.href = "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}";
+                    window.location.href = FormRequestManager._redirectUrl;
                 }
             }
             else
             {
+                alert( "Sorry! " +  (data.message !== undefined ? data.message : 'Something went wrong...') );
                 FormRequestManager._reset();
-                alert( "Sorry! " +  data.message );
+                FormRequestManager._onFail(data.code, data);
             }
             FormRequestManager._hideValidationErrors();
         },
@@ -545,7 +538,8 @@
             FormRequestManager._hideValidationErrors();
             var now = new Date(Date.now());
             // alert(jqXHR.status);
-            if (jqXHR.status == 404 || jqXHR.status == 422 || jqXHR.status == 400) 
+            // alert(errorThrown);
+              if (jqXHR.status == 404 || jqXHR.status == 422 || jqXHR.status == 400) 
               return;
             var msg = '';
             if (jqXHR.status === 0) {
@@ -558,8 +552,8 @@
                 msg = 'Internal Server Error [500].';
             } else if (textStatus === 'parsererror') {
                 msg = 'Server could not process your submitted data.';
-                console.log('Requested JSON parse failed.');
-                $('body').html(jqXHR.responseText);
+                console.log('Requested JSON parse failed: ' + errorThrown + '\nPlease check your ajax send request method (e.g. post/get/put/delete) are set as defined in routes');
+                // $('body').html(jqXHR.responseText);
             } else if (textStatus === 'timeout') {
                 msg = 'Time out error.';
             } else if (textStatus === 'abort') {
@@ -580,15 +574,17 @@
             event.preventDefault();
             var _this = FormRequestManager;
             $.ajax({
-                  type: 'post',
+                  type: _this._method,
                   url: _this._route,
-                  data: $( ":input" ).serializeArray(), //{ inputs: $( ":input" ).serializeArray(), extra: _this._data },
+                  data: $(_this.id + " :input" ).serializeArray(),
                   dataType: 'json',
                   statusCode: {
                         422: _this._onValidationError,
                         400: function(data) {
                             var response = data.responseJSON;
                             alert( response.message == undefined ? 'Unknown error!' : response.message );
+
+                            _this._onFail(response.code, response);
                         }
                   },
                   success: _this._onSuccess,
@@ -596,34 +592,35 @@
             });
 
         },
-        ready: function(url, data, redirectUrl) {
+        ready: function(url, data, redirectUrl, create = true) {
 
           this._route = url;
           this._data = data;
           this._redirectUrl = redirectUrl;
           this._shouldRedirect = redirectUrl !== null;
+          this._method = create ? 'post' : 'put';
           var _this = this;
 
           $(this.id).ready(function() {
-                $(_this.id).submit(_this._onSubmit);
+              $(_this.id).submit(_this._onSubmit);
           });
         }
     };
 
     var frm = FormRequestManager;
     frm.id = '#sale-form';
-    var route = "{{ route(isset($sale) ? 'user::sales.update' : 'user::sales.store', isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
-    frm.ready(route, [], "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}");
+    var route = "{{ route( (isset($sale) ? 'user::sales.update' : 'user::sales.store'), isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
+    frm.ready(route, [], "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}", "{{ !isset($sale) }}");
 
     </script>
     <script type="text/javascript">
       $('#add_bank').ready(function() {
           $(this).modal({ 'show' : ($(this).find('div.has-error').length > 0) });
-      });
 
-      var frmAccount = FormRequestManager;
-      frmAccount.id = '#account-form';
-      frmAccount.ready("{{ route('user::banks.store', [ 'api_token' => Auth::user()->api_token ]) }}", [], null);
+          // var frmAccount = FormRequestManager;
+          // frmAccount.id = '#account-form';
+          // frmAccount.ready("{{ route('user::banks.store', [ 'api_token' => Auth::user()->api_token ]) }}", [], null);
+      });
     </script>
 @endsection
 

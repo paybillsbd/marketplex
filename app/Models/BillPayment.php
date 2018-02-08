@@ -47,4 +47,23 @@ class BillPayment extends Model
     			return 'By Cheque (hand to hand)';
     	}
     }
+
+    public static function saveManyPayments(array $billPayments, $sale)
+    {
+        $payments = collect([]);
+        $ids = collect([]);
+        foreach ($billPayments as $value)
+        {
+            $p = BillPayment::find($value['paid_bill_id']) ?: new BillPayment();
+            $p->method = $value[ 'trans_option' ];
+            $p->amount = $value[ 'paid_amount' ];
+            $payments->push($p);
+
+            if ($value['paid_bill_id'] != -1)
+                $ids->push($value['paid_bill_id']);
+        }
+        $paidAmounts = $sale->billpayments();
+        $removed = $paidAmounts->whereNotIn('id', $ids)->delete();
+        return $paidAmounts->saveMany($payments) || $removed;
+    }
 }

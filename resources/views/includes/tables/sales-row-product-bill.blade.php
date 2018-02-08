@@ -1,4 +1,4 @@
-<tr id="row{{ $row_id }}" class="product_bill" data-row-id="{{ $row_id }}">
+<tr id="row{{ $row_id }}" class="product_bill" data-row-id="{{ $row_id }}" data-product-id="{{ $product_id }}">
 	<td>
 	<p>
 	{{ $datetime }}

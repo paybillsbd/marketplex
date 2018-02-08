@@ -61,6 +61,19 @@ class SaleTransaction extends Model
             + $this->expenses->count();
     }
 
+    public function saveTransaction(array $inputs)
+    {
+        if (empty($inputs))
+            return false;
+        $this->client_id = 1;
+        if (array_has($inputs, 'bill_id'))
+        {
+            $this->bill_id = $inputs['bill_id'];
+        }
+        $this->client_name = $inputs['client'];
+        return $this->save();
+    }
+
     public static function expectedQueries(array $queries)
     {
         return is_array($queries) && count($queries) == 4;
