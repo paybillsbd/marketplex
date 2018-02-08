@@ -270,8 +270,9 @@
               var accountsMgr = DataManager;
               accountsMgr.serviceUrl = '/api/v1/settings/banks/' + $(this).val();
               accountsMgr.serviceUrl += '?api_token={{ Auth::user()->api_token }}';
+              accountsMgr.payload = { row: rowId };
               accountsMgr.onLoad = function(json) {
-                  depositDetailLabel.html(json.summary_html);
+                  depositDetailLabel.html(json.summary_html + json.hidden_inputs);
                   _this.attr('title', json.account_no + ' is selected');
               };
               accountsMgr.request();
@@ -573,10 +574,11 @@
                       
             event.preventDefault();
             var _this = FormRequestManager;
+            // alert(JSON.stringify($(_this.id + " :input" ).serializeArray()));
             $.ajax({
                   type: _this._method,
                   url: _this._route,
-                  data: $(_this.id + " :input" ).serializeArray(),
+                  data: $(_this.id + " :input, " + _this.id + ":input:hidden" ).serializeArray(),
                   dataType: 'json',
                   statusCode: {
                         422: _this._onValidationError,
@@ -590,7 +592,6 @@
                   success: _this._onSuccess,
                   error: _this._onError 
             });
-
         },
         ready: function(url, data, redirectUrl, create = true) {
 

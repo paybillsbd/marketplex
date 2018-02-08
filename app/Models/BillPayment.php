@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DateScope;
+use MarketPlex\Traits\TextInputParser;
 
 class BillPayment extends Model
 {
     use SoftDeletes;
     use DateScope;
+    use TextInputParser;
 
     /**
      * The attributes that should be mutated to dates.
@@ -56,7 +58,7 @@ class BillPayment extends Model
         {
             $p = BillPayment::find($value['paid_bill_id']) ?: new BillPayment();
             $p->method = $value[ 'trans_option' ];
-            $p->amount = $value[ 'paid_amount' ];
+            $p->amount = self::toFloat($value[ 'paid_amount' ]);
             $payments->push($p);
 
             if ($value['paid_bill_id'] != -1)

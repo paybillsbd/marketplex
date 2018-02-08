@@ -26,6 +26,14 @@ class Bank extends Model
         return nl2br($this->summary());
     }
 
+    public function hiddenInputFields($row)
+    {
+        return '<input  type="hidden"
+                                name="deposits[' . $row . '][bank_title]" value="' . $this->title . '" />
+                <input  type="hidden"
+                        name="deposits[' . $row . '][bank_branch]" value="' . $this->branch . '" />';
+    }
+
     public static function invalidDataWarning()
     {
         return 'Invalid account';

@@ -70,7 +70,7 @@ class BankController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Account $bank)
+    public function show(Request $request, Account $bank)
     {
         //
         if (!$bank)
@@ -78,7 +78,8 @@ class BankController extends Controller
         return response()->json([
             'summary' => $bank->summary(),
             'summary_html' => $bank->htmlSummary(),
-            'account_no' => $bank->account_no
+            'account_no' => $bank->account_no,
+            'hidden_inputs' => $bank->hiddenInputFields($request->input('row')),
         ]);
     }
 

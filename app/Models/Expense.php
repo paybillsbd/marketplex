@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DateScope;
+use MarketPlex\Traits\TextInputParser;
 
 class Expense extends Model
 {
     use SoftDeletes;
     use DateScope;
+    use TextInputParser;
 
     /**
      * The attributes that should be mutated to dates.
@@ -39,7 +41,7 @@ class Expense extends Model
         {
             $e = Expense::find($value['expense_id']) ?: new Expense();
             $e->purpose = $value['expense_purpose'];
-            $e->amount = $value['expense_amount'];
+            $e->amount = self::toFloat($value['expense_amount']);
             $expenses->push($d);
 
             if ($value['expense_id'] != -1)

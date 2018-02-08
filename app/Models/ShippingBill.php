@@ -5,9 +5,12 @@ namespace MarketPlex;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use MarketPlex\Traits\TextInputParser;
+
 class ShippingBill extends Model
 {
     use SoftDeletes;
+    use TextInputParser;
 
     /**
      * The attributes that should be mutated to dates.
@@ -32,7 +35,7 @@ class ShippingBill extends Model
             $s = ShippingBill::find($value['shipping_bill_id']) ?: new ShippingBill();
             $s->purpose = $value[ 'shipping_purpose' ];
             $s->quantity = $value[ 'bill_quantity' ];
-            $s->amount = $value[ 'bill_amount' ];
+            $s->amount = self::toFloat($value[ 'bill_amount' ]);
             $bills->push($s);
 
             if ($value['shipping_bill_id'] != -1)
