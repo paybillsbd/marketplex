@@ -13,10 +13,12 @@ class BankController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        return response()->json([ 'accounts' => Account::all() ]);
+        if ($request->ajax())
+            return response()->json([ 'accounts' => Account::all() ]);
+        return view('add-bank-account');
     }
 
     /**
@@ -27,6 +29,7 @@ class BankController extends Controller
     public function create()
     {
         //
+        return view('add-bank-account');
     }
 
     /**
@@ -41,7 +44,7 @@ class BankController extends Controller
         $this->validate($request,[
             'new_bank_name' => 'required|max:150',
             'bank_branch_name' => 'required|max:100',
-            'bank_acc_no' => 'required|max:30|unique:banks',
+            'bank_acc_no' => 'required|max:30|unique:banks,account_no',
             // 'bank_detail' => 'max:400'
         ]);
 

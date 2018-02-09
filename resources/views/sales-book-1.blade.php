@@ -53,6 +53,8 @@
     <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
 
+    <script type="text/javascript" src="/vendor/request-clients/data-request-clients.js"></script>
+
     <script type="text/javascript">
       $(document).ready(function(){  
 
@@ -77,82 +79,6 @@
           ).trim();
       }
 
-      var DataManager = {
-          serviceUrl: '',
-          payload: {},
-          onLoad: function(data) {},
-          request: function() {
-
-              $.get(this.serviceUrl, this.payload, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status == 404)
-                  return;
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connected.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 401) {
-                    msg = errorThrown + '. [' + jqXHR.status + ']';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (textStatus === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (textStatus === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (textStatus === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
-                }                
-                // Render the errors with js ...
-                alert(msg);
-              });
-          }
-      };
-
-      var ViewContentManager = {
-
-          _setUp: function(view_name, payload) {
-
-              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.payload = payload;
-
-          },
-          // @param: view_name - name of the view to load
-          // @param: payload - the data to bind to the view content
-          // @param: table_id - name of the view to load
-          append: function(view_name, payload, selector) {
-
-              this._setUp(view_name, payload);
-
-              DataManager.onLoad = function(data) {
-
-                  if ( $(selector).find('div.empty-row').length === 1 )
-                  {
-                      $(selector + ' > tbody').html(data); 
-                  }
-                  else
-                  {
-                      $(selector).append(data);
-                  }
-              };
-              DataManager.request();
-          },
-          appendEmpty: function(view_name, payload, selector) {
-
-              this._setUp(view_name, payload);
-
-              DataManager.onLoad = function(data) {
-
-                  if ( $(selector).find('a.btn_remove').length === 0 )
-                  {
-                      $(selector).append(data);
-                  }
-              };
-              DataManager.request();              
-          }
-      };
-
       $(document).ready(function() {      
         
         var i = $('tr').length + 2;  
@@ -160,20 +86,26 @@
 
         $('#addBillingRow').click(function(){
 
-            ViewContentManager.append('sales-row-shipping-bill',
-              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_shipping');
+            ViewContentManager.append('sales-row-shipping-bill', {
+                row_id: i++,
+                datetime: d.toLocaleDateString(),
+                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_shipping');
         });   
 
         $('#addPayRow').click(function(){
 
-            ViewContentManager.append('sales-row-paid-bill',
-              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_pay');
+            ViewContentManager.append('sales-row-paid-bill', {
+                row_id: i++,
+                datetime: d.toLocaleDateString(),
+                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_pay');
         });  
 
         $('#add_expense_btn').click(function(){  
              
-            ViewContentManager.append('sales-row-expense',
-              { row_id: i++,  datetime: d.toLocaleDateString() }, '#dynamic_field_expenses');
+            ViewContentManager.append('sales-row-expense', {
+                row_id: i++,
+                datetime: d.toLocaleDateString(),
+                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_expenses');
         });
         
         $('#addBankRow').click(function(){  
@@ -185,6 +117,7 @@
                 ViewContentManager.append('sales-row-bank-deposit', {
                   row_id: i++,
                   datetime: d.toLocaleDateString(),
+                  api_token: "{{ Auth::user()->api_token }}",
                   deposit_method: 'bank',
                   "bank_accounts": JSON.stringify(json.accounts)
                 }, '#dynamic_field_bank');
@@ -216,6 +149,7 @@
                 row_id: i++,
                 product_id: data.product_id,
                 datetime: d.toLocaleDateString(),
+                api_token: "{{ Auth::user()->api_token }}",
                 product_title: data.title,
                 store_name: data.store_name,
                 product_available_quantity: data.available_quantity
@@ -450,200 +384,13 @@
       });
     </script>
     <script>
-
-    var FormRequestManager = {
-        id: "#submit-form",
-        errorBoardName: 'error-board',
-        _errorBoardSelector: function() {
-            return '.error-summary[data-name="' + window.form.errorBoardName + '"]';
-        },
-        _shouldRedirect: true,
-        _redirectUrl: '/home',
-        _route: '',
-        _method: 'post',
-        _data: {},
-        _validationErrors: [],
-        _onFail: function(errorCode, jsonResp) {},
-        _onValidationError: function(data) {
-
-            var _this = window.form;
-            _this._hideValidationErrors();
-            var response = data.responseJSON;
-
-            // ref: https://stackoverflow.com/questions/20881213/converting-json-object-into-javascript-array
-            var validationErrors = Object.values(response);
-            var validationErrorFields = Object.keys(response);
-            // console.log(validationErrorFields);
-
-            validationErrors.forEach(function(error, index) {
-                _this._showInvalidInput(validationErrorFields[index], error);
-            });
-
-            _this._showValidationSummary();
-        },
-        // ref: https://stackoverflow.com/questions/25227544/add-class-to-parent-div-with-specific-input
-        _showInvalidInput: function(inputId, validationText) {
-
-            // ref: https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
-            inputId = inputId.replace(new RegExp('\\.', 'g'), "\\.");
-
-            window.form._validationErrors.push(validationText);
-
-            var targetInput = $("#" + inputId);
-            var formGroup = targetInput.closest(".form-group");
-            formGroup.addClass('has-error');
-            var helpBlock = formGroup.find(".help-block").first();
-            console.log(helpBlock.html());
-            helpBlock.removeClass('hidden');
-            helpBlock.find("strong").first().text(validationText);
-            targetInput.focus();
-        },
-        // ref: https://stackoverflow.com/questions/25227544/add-class-to-parent-div-with-specific-input
-        _hideInvalidInput: function(inputId) {
-
-            var targetInput = $("#" + inputId);
-            targetInput.closest(".form-group").removeClass('has-error');
-            var helpBlock = targetInput.closest(".help-block");
-            helpBlock.addClass('hidden');
-            helpBlock.closest("strong").empty();
-        },
-        _hideValidationErrors: function() {
-
-            var _this = window.form;
-
-            $( ".form-group" ).removeClass( "has-error" );
-            $( ".help-block" ).addClass( "hidden" );
-            $( _this._errorBoardSelector() ).addClass( "hidden" );
-            $( _this._errorBoardSelector() ).find("ul").first().empty();
-            _this._validationErrors = [];  
-        },
-        _showValidationSummary: function() {
-
-            var errors = '';
-            var _this = window.form;
-            _this._validationErrors.forEach(function(item, index) {
-                errors += '<li>' + item + '</li>';
-            });
-            $( _this._errorBoardSelector() ).removeClass( "hidden" );    
-            $( _this._errorBoardSelector() ).find("ul").first().html(errors);
-        },
-        _reset: function() {
-
-            document.getElementById(FormRequestManager.id).reset();
-        },
-        _onSuccess: function(data) {
-            var _this = window.form;
-            // success logic
-            if (data.code == 200) // OK
-            {
-                if (data.message !== undefined)                    
-                {
-                    alert( "Success! " +  data.message );
-                }
-                if (_this._shouldRedirect)
-                {
-                    window.location.href = _this._redirectUrl;
-                }
-            }
-            else
-            {
-                alert( "Sorry! " + (data.message !== undefined ? data.message : 'Something went wrong...') );
-                _this._reset();
-                _this._onFail(data.code, data);
-            }
-            _this._hideValidationErrors();
-        },
-        _onError: function(jqXHR, textStatus, errorThrown) {
-
-            window.form._hideValidationErrors();
-            var now = new Date(Date.now());
-            // alert(jqXHR.status);
-            // alert(errorThrown);
-              if (jqXHR.status == 404 || jqXHR.status == 422 || jqXHR.status == 400) 
-              return;
-            var msg = '';
-            if (jqXHR.status === 0) {
-                msg = 'Not connected.\n Verify Network.';
-            } else if (jqXHR.status == 404) {
-                msg = 'Requested page not found. [404]';
-            } else if (jqXHR.status == 401) {
-                msg = errorThrown + '. [' + jqXHR.status + ']';
-            } else if (jqXHR.status == 500) {
-                msg = 'Internal Server Error [500].';
-            } else if (textStatus === 'parsererror') {
-                msg = 'Server could not process your submitted data.';
-                console.log('Requested JSON parse failed: ' + errorThrown + '\nPlease check your ajax send request method (e.g. post/get/put/delete) are set as defined in routes');
-                // $('body').html(jqXHR.responseText);
-            } else if (textStatus === 'timeout') {
-                msg = 'Time out error.';
-            } else if (textStatus === 'abort') {
-                msg = 'Ajax request aborted.';
-            } else if (jqXHR.status == 503) {
-                msg = 'Something went wrong: [' + jqXHR.status + '][' + errorThrown + '].\n';
-                $('body').html(jqXHR.responseText);
-            } else {
-                msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
-                $('body').html(jqXHR.responseText);
-            }              
-            // Render the errors with js ...
-            alert(msg + 'The operations are failed! The issues are logged dated: ' + now.toLocaleDateString()
-                      + '\nfor the assistance of your service provider.');
-        },
-        _onSubmit: function(event) {
-                      
-            event.preventDefault();
-            var _this = window.form;
-            // alert(_this._route);
-            // alert(JSON.stringify($(_this.id + " :input" ).serializeArray()));
-            $.ajax({
-                  type: _this._method,
-                  url: _this._route,
-                  data: $(_this.id + " :input, " + _this.id + ":input:hidden" ).serializeArray(),
-                  dataType: 'json',
-                  statusCode: {
-                        422: _this._onValidationError,
-                        400: function(data) {
-                            var response = data.responseJSON;
-                            alert( response.message == undefined ? 'Unknown error!' : response.message );
-
-                            _this._onFail(response.code, response);
-                        }
-                  },
-                  success: _this._onSuccess,
-                  error: _this._onError 
-            });
-        },
-        ready: function(url, data, redirectUrl, create = true) {
-
-          this._route = url;
-          this._data = data;
-          this._redirectUrl = redirectUrl;
-          this._shouldRedirect = redirectUrl !== null;
-          this._method = create ? 'post' : 'put';
-          var _this = this;
-
-          $(this.id).ready(function() {
-              $(_this.id).submit(_this._onSubmit);
-          });
-        }
-    };
-
-    frm = FormRequestManager;
+    var frm = new FormRequestManager('sales');
     frm.errorBoardName = 'sales';
     frm.id = '#sale-form';
     var route = "{{ route( (isset($sale) ? 'user::sales.update' : 'user::sales.store'), isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
     frm.ready(route, [], "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}", "{{ !isset($sale) }}");
     window.form = frm;
 
-    </script>
-    <script type="text/javascript">
-      $('#add_bank').ready(function() {
-          $(this).modal({ 'show' : ($(this).find('div.has-error').length > 0) });
-
-          // var frmAccount = FormRequestManager;
-          // frmAccount.id = '#account-form';
-          // frmAccount.ready("{{ route('user::banks.store', [ 'api_token' => Auth::user()->api_token ]) }}", [], null);
-      });
     </script>
 @endsection
 
@@ -675,54 +422,6 @@
             <button type="sumbit" class="btn btn-info">Save</button>
           </div>
           {{ Form::close() }}
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="add_bank" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">
-              <span aria-hidden="true">&times;</span>
-              <span class="sr-only">Close</span>
-            </button>
-            <h4 class="modal-title">Add Bank Account</h4>
-          </div>
-
-          @component('includes.message.error-summary')
-              <ul></ul>
-          @endcomponent
-
-          <form id="account-form">
-
-          {!! csrf_field() !!}
-
-          <div class="modal-body">
-              <div class="form-group">
-                <input  type="text" name="new_bank_name" id="new_bank_name" class="form-control"
-                        placeholder="Bank Name" required />
-                <span class="help-block hidden">
-                    <strong></strong>
-                </span>
-              </div>
-              <div class="form-group">
-                <input type="text" name="bank_branch_name" id="bank_branch_name" class="form-control" placeholder="Branch Name" required />
-              </div>
-              <div class="form-group">
-                <input type="text" name="bank_acc_no" id="bank_acc_no" class="form-control" placeholder="Account No" required />
-              </div>
-              <div class="form-group">
-                <textarea class="form-control" rows="5" name="bank_detail" id="bank_detail"
-                          placeholder="Bank Detail"></textarea>
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
-            <button type="sumbit" class="btn btn-info ">Save</button>
-          </div>
-          </form>
-
         </div>
       </div>
     </div>
@@ -979,7 +678,7 @@
                       <h4><strong>Bank Deposit</strong></h4>
                     </div>
                     <div class="col-md-3">
-                        <a href="#" data-toggle="modal" data-target="#add_bank" class="btn btn-info btn-sm float-right">Add Bank Account</a>
+                        <a href="{{ route('user::banks.create', [ 'api_token' => Auth::user()->api_token ]) }}" class="btn btn-info btn-sm float-right">Add Bank Account</a>
                     </div>
                     <div class="col-md-1">
                       <button type="button" id="addBankRow" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"

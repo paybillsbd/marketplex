@@ -27,8 +27,6 @@
     <!-- <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script> -->
     <!-- Bootstrap Date-Picker Plugin -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-
-    <script type="text/javascript" src="/vendor/request-clients/data-request-clients.js"></script>
     <script>
       $(document).ready(function(){
             // var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
