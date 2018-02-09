@@ -47,16 +47,12 @@ class ProductBill extends Model
                     new ProductBill() : ProductBill::find($value['product_bill_id']);
             
             $p->product_id = $value['product_id'];
-                   
-            Log::info('quantity/' . ($p->quantity));
-            Log::info('product_bill_id/' . ($value['product_bill_id']));
 
             $added = $p->quantity < $value['product_quantity'];
             $removed = $p->quantity > $value['product_quantity'];
             $product = Product::find($p->product_id);
             if ($product)
             {
-                Log::info($p->product_id . '/' . ($value['product_quantity'] - $p->quantity));
                 if ($added)
                 {
                     $product->available_quantity -= ($value['product_quantity'] - $p->quantity);

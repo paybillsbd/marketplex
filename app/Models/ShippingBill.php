@@ -5,11 +5,15 @@ namespace MarketPlex;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use MarketPlex\Traits\DataIntegrityScope;
 use MarketPlex\Traits\TextInputParser;
+
+use Log;
 
 class ShippingBill extends Model
 {
     use SoftDeletes;
+    use DataIntegrityScope;
     use TextInputParser;
 
     /**
@@ -32,7 +36,8 @@ class ShippingBill extends Model
         $ids = collect([]);
         foreach ($shippingBills as $value)
         {
-            $s = ShippingBill::find($value['shipping_bill_id']) ?: new ShippingBill();
+            $s = $value['shipping_bill_id'] == -1 ?
+                    new ShippingBill() : ShippingBill::find($value['shipping_bill_id']);
             $s->purpose = $value[ 'shipping_purpose' ];
             $s->quantity = $value[ 'bill_quantity' ];
             $s->amount = self::toFloat($value[ 'bill_amount' ]);
@@ -42,7 +47,7 @@ class ShippingBill extends Model
                 $ids->push($value['shipping_bill_id']);
         }
         $shippings = $sale->shippingbills();
-        $removed = $shippings->whereNotIn('id', $ids)->delete();
+        $removed = $shippings->RemoveCrossed($shippingBills, $ids->toArray());
         return $shippings->saveMany($bills) || $removed;
     }
 }

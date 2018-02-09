@@ -72,7 +72,7 @@ class SaleController extends Controller
         }
         $generalResponseData[ 'sold_products' ] = $productBills;
 
-        $shippingBills = $request->input('shipping_purpose')?:[];
+        $shippingBills = $request->input('shipping_bills')?:[];
         if (! Shipping::saveManyBills($shippingBills, $sale))
         {
             return response()->json($generalResponseData, 400);

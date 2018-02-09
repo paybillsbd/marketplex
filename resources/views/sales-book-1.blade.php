@@ -453,6 +453,10 @@
 
     var FormRequestManager = {
         id: "#submit-form",
+        errorBoardName: 'error-board',
+        _errorBoardSelector: function() {
+            return '.error-summary[data-name="' + window.form.errorBoardName + '"]';
+        },
         _shouldRedirect: true,
         _redirectUrl: '/home',
         _route: '',
@@ -461,7 +465,9 @@
         _validationErrors: [],
         _onFail: function(errorCode, jsonResp) {},
         _onValidationError: function(data) {
-            FormRequestManager._hideValidationErrors();
+
+            var _this = window.form;
+            _this._hideValidationErrors();
             var response = data.responseJSON;
 
             // ref: https://stackoverflow.com/questions/20881213/converting-json-object-into-javascript-array
@@ -470,10 +476,10 @@
             // console.log(validationErrorFields);
 
             validationErrors.forEach(function(error, index) {
-                FormRequestManager._showInvalidInput(validationErrorFields[index], error);
+                _this._showInvalidInput(validationErrorFields[index], error);
             });
 
-            FormRequestManager._showValidationSummary();
+            _this._showValidationSummary();
         },
         // ref: https://stackoverflow.com/questions/25227544/add-class-to-parent-div-with-specific-input
         _showInvalidInput: function(inputId, validationText) {
@@ -481,7 +487,8 @@
             // ref: https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
             inputId = inputId.replace(new RegExp('\\.', 'g'), "\\.");
 
-            FormRequestManager._validationErrors.push(validationText);
+            window.form._validationErrors.push(validationText);
+
             var targetInput = $("#" + inputId);
             var formGroup = targetInput.closest(".form-group");
             formGroup.addClass('has-error');
@@ -502,26 +509,30 @@
         },
         _hideValidationErrors: function() {
 
+            var _this = window.form;
+
             $( ".form-group" ).removeClass( "has-error" );
             $( ".help-block" ).addClass( "hidden" );
-            $( ".error-summary" ).addClass( "hidden" );
-            $( ".error-summary" ).find("ul").first().empty();
-            FormRequestManager._validationErrors = [];  
+            $( _this._errorBoardSelector() ).addClass( "hidden" );
+            $( _this._errorBoardSelector() ).find("ul").first().empty();
+            _this._validationErrors = [];  
         },
         _showValidationSummary: function() {
 
             var errors = '';
-            FormRequestManager._validationErrors.forEach(function(item, index) {
+            var _this = window.form;
+            _this._validationErrors.forEach(function(item, index) {
                 errors += '<li>' + item + '</li>';
             });
-            $( ".error-summary" ).removeClass( "hidden" );    
-            $( ".error-summary" ).find("ul").first().html(errors);
+            $( _this._errorBoardSelector() ).removeClass( "hidden" );    
+            $( _this._errorBoardSelector() ).find("ul").first().html(errors);
         },
         _reset: function() {
 
             document.getElementById(FormRequestManager.id).reset();
         },
         _onSuccess: function(data) {
+            var _this = window.form;
             // success logic
             if (data.code == 200) // OK
             {
@@ -529,22 +540,22 @@
                 {
                     alert( "Success! " +  data.message );
                 }
-                if (FormRequestManager._shouldRedirect)
+                if (_this._shouldRedirect)
                 {
-                    window.location.href = FormRequestManager._redirectUrl;
+                    window.location.href = _this._redirectUrl;
                 }
             }
             else
             {
-                alert( "Sorry! " +  (data.message !== undefined ? data.message : 'Something went wrong...') );
-                FormRequestManager._reset();
-                FormRequestManager._onFail(data.code, data);
+                alert( "Sorry! " + (data.message !== undefined ? data.message : 'Something went wrong...') );
+                _this._reset();
+                _this._onFail(data.code, data);
             }
-            FormRequestManager._hideValidationErrors();
+            _this._hideValidationErrors();
         },
         _onError: function(jqXHR, textStatus, errorThrown) {
 
-            FormRequestManager._hideValidationErrors();
+            window.form._hideValidationErrors();
             var now = new Date(Date.now());
             // alert(jqXHR.status);
             // alert(errorThrown);
@@ -581,7 +592,8 @@
         _onSubmit: function(event) {
                       
             event.preventDefault();
-            var _this = FormRequestManager;
+            var _this = window.form;
+            // alert(_this._route);
             // alert(JSON.stringify($(_this.id + " :input" ).serializeArray()));
             $.ajax({
                   type: _this._method,
@@ -616,10 +628,12 @@
         }
     };
 
-    var frm = FormRequestManager;
+    frm = FormRequestManager;
+    frm.errorBoardName = 'sales';
     frm.id = '#sale-form';
     var route = "{{ route( (isset($sale) ? 'user::sales.update' : 'user::sales.store'), isset($sale) ? [ 'sale' => $sale, 'api_token' => Auth::user()->api_token ] : [ 'api_token' => Auth::user()->api_token ]) }}";
     frm.ready(route, [], "{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}", "{{ !isset($sale) }}");
+    window.form = frm;
 
     </script>
     <script type="text/javascript">
@@ -721,7 +735,7 @@
           <div class="col-lg-6 col-lg-offset-3">
             <div class="box box-noborder">
               
-              @component('includes.message.error-summary')
+              @component('includes.message.error-summary', [ 'name' => 'sales' ])
                   <ul></ul>
               @endcomponent
 
