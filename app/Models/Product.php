@@ -54,7 +54,7 @@ class Product extends Model
         'special_specs' => 'json'
     ];
 
-    const MAX_AVAILABLE_QUANTITY = 15;
+    const MAX_AVAILABLE_QUANTITY = 100;
     const MIN_AVAILABLE_QUANTITY = 1;
 
     const IMAGE_DISPLAY_TYPES = [

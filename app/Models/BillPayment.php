@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DateScope;
+use MarketPlex\Traits\DataIntegrityScope;
 use MarketPlex\Traits\TextInputParser;
 
 class BillPayment extends Model
 {
     use SoftDeletes;
     use DateScope;
+    use DataIntegrityScope;
     use TextInputParser;
 
     /**
@@ -65,7 +67,7 @@ class BillPayment extends Model
                 $ids->push($value['paid_bill_id']);
         }
         $paidAmounts = $sale->billpayments();
-        $removed = $paidAmounts->whereNotIn('id', $ids)->delete();
+        $removed = $paidAmounts->RemoveCrossed($billPayments, $ids->toArray());
         return $paidAmounts->saveMany($payments) || $removed;
     }
 }

@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DateScope;
+use MarketPlex\Traits\DataIntegrityScope;
 use MarketPlex\Traits\TextInputParser;
 
 class Expense extends Model
 {
     use SoftDeletes;
     use DateScope;
+    use DataIntegrityScope;
     use TextInputParser;
 
     /**
@@ -42,13 +44,13 @@ class Expense extends Model
             $e = Expense::find($value['expense_id']) ?: new Expense();
             $e->purpose = $value['expense_purpose'];
             $e->amount = self::toFloat($value['expense_amount']);
-            $expenses->push($d);
+            $expenses->push($e);
 
             if ($value['expense_id'] != -1)
                 $ids->push($value['expense_id']);
         }
         $saleExpenses = $sale->expenses();
-        $removed = $saleExpenses->whereNotIn('id', $ids)->delete();
+        $removed = $saleExpenses->RemoveCrossed($expenseAmounts, $ids->toArray());
         return $saleExpenses->saveMany($expenses) || $removed;
     }
 }

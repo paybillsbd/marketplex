@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DateScope;
+use MarketPlex\Traits\DataIntegrityScope;
 use MarketPlex\Traits\TextInputParser;
 use Log;
 
@@ -13,6 +14,7 @@ class Deposit extends Model
 {
     use SoftDeletes;
     use DateScope;
+    use DataIntegrityScope;
     use TextInputParser;
 
     /**
@@ -46,10 +48,11 @@ class Deposit extends Model
             $d = Deposit::find($value['bank_deposit_id']) ?: new Deposit();
             $d->method = $value['deposit_method'];
             $d->bank_title = $value[ 'bank_title' ];
-            $bank_account = Bank::find($value[ 'bank_ac_no' ]);
-            Log::info($bank_account->account_no);
-            $d->bank_account_no = $bank_account ? $bank_account->account_no : '';
             $d->bank_branch = $value[ 'bank_branch' ];
+
+            $bank_account = Bank::find($value[ 'bank_ac_no' ]);
+            $d->bank_account_no = $bank_account ? $bank_account->account_no : '';
+
             $d->amount = self::toFloat($value[ 'deposit_amount' ]);
             $deposits->push($d);
 
@@ -57,7 +60,7 @@ class Deposit extends Model
                 $ids->push($value['bank_deposit_id']);
         }
         $saleDeposits = $sale->deposits();
-        $removed = $saleDeposits->whereNotIn('id', $ids)->delete();
+        $removed = $saleDeposits->RemoveCrossed($depositAmounts, $ids->toArray());
         return $saleDeposits->saveMany($deposits) || $removed;
     }
 }

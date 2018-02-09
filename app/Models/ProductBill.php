@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use MarketPlex\Product;
 use Auth;
+use Log;
 
 class ProductBill extends Model
 {
     use SoftDeletes;
-
     /**
      * The attributes that should be mutated to dates.
      *
@@ -43,22 +43,27 @@ class ProductBill extends Model
         $products = collect([]);
         foreach ($productBills as $value)
         {
-            $p = ProductBill::find($value['product_bill_id']) ?: new ProductBill();
+            $p = $value['product_bill_id'] == -1 ?
+                    new ProductBill() : ProductBill::find($value['product_bill_id']);
             
             $p->product_id = $value['product_id'];
+                   
+            Log::info('quantity/' . ($p->quantity));
+            Log::info('product_bill_id/' . ($value['product_bill_id']));
 
             $added = $p->quantity < $value['product_quantity'];
             $removed = $p->quantity > $value['product_quantity'];
             $product = Product::find($p->product_id);
             if ($product)
             {
+                Log::info($p->product_id . '/' . ($value['product_quantity'] - $p->quantity));
                 if ($added)
                 {
-                    $product->available_quantity -= $p->quantity;
+                    $product->available_quantity -= ($value['product_quantity'] - $p->quantity);
                 }
                 if ($removed)
                 {
-                    $product->available_quantity += $p->quantity;   
+                    $product->available_quantity += ($p->quantity - $value['product_quantity']);   
                 }
                 $products->push($product);
             }
@@ -71,14 +76,18 @@ class ProductBill extends Model
         }
         $billedProducts = $sale->productbills();
         $removingProducts = $billedProducts->whereNotIn('id', $ids);
+        $removingProductCollection = $removingProducts->get();
         $removed = $removingProducts->delete();
         if ($removed)
         {
-            Auth::user()->products()->saveMany($removingProducts->map(function ($billedProduct, $key) {
+            $removed = Auth::user()->products()
+                                   ->saveMany($removingProductCollection
+                                                ->map(function ($billedProduct, $key)
+            {
                 $p = Product::find($billedProduct->product_id);
                 if ($p)
                 {
-                    $product->available_quantity += $billedProduct->quantity;
+                    $p->available_quantity += $billedProduct->quantity;
                 }
                 return $p;
             })->all() );
@@ -86,7 +95,7 @@ class ProductBill extends Model
         $saved = $billedProducts->saveMany($bills);
         if ($saved)
         {
-            Auth::user()->products()->saveMany($products);
+            $saved = Auth::user()->products()->saveMany($products);
         }
         return $saved || $removed;
     }

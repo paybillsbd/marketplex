@@ -66,29 +66,29 @@ class SaleController extends Controller
         $generalResponseData[ 'message' ] = "Your sale entries are saved successfully! But...\n" . $generalResponseData[ 'message' ];
 
         $productBills = $request->input('product_bills');
-        if (! empty($productBills) && ! Product::saveManyBills($productBills, $sale))
+        if (empty($productBills) || ! Product::saveManyBills($productBills, $sale))
         {
             return response()->json($generalResponseData, 400);
         }
         $generalResponseData[ 'sold_products' ] = $productBills;
 
-        $shippingBills = $request->input('shipping_purpose');
-        if (! empty($shippingBills) && ! Shipping::saveManyBills($shippingBills, $sale))
+        $shippingBills = $request->input('shipping_purpose')?:[];
+        if (! Shipping::saveManyBills($shippingBills, $sale))
         {
             return response()->json($generalResponseData, 400);
         }
-        $paidAmounts = $request->input('payments');
-        if (! empty($paidAmounts) && ! Payment::saveManyPayments($paidAmounts, $sale))
+        $paidAmounts = $request->input('payments')?:[];
+        if (! Payment::saveManyPayments($paidAmounts, $sale))
         {
             return response()->json($generalResponseData, 400);
         }
-        $depositAmounts = $request->input('deposits');
-        if (! empty($depositAmounts) && ! Deposit::saveManyDeposits($depositAmounts, $sale))
+        $depositAmounts = $request->input('deposits')?:[];
+        if (! Deposit::saveManyDeposits($depositAmounts, $sale))
         {
             return response()->json($generalResponseData, 400);
         }
-        $expenseAmounts = $request->input('expenses');
-        if (! empty($expenseAmounts) && ! Expense::saveManyExpenses($expenseAmounts, $sale))
+        $expenseAmounts = $request->input('expenses')?:[];
+        if (! Expense::saveManyExpenses($expenseAmounts, $sale))
         {
             return response()->json($generalResponseData, 400);
         }

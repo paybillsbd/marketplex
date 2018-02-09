@@ -157,7 +157,6 @@
         
         var i = $('tr').length + 2;  
         var d = new Date(Date.now());
-        var priceCollection = [];
 
         $('#addBillingRow').click(function(){
 
@@ -199,8 +198,6 @@
           DataManager.serviceUrl = '/api/v1/products/' + $('#product_name').val();
           DataManager.serviceUrl += '/price?api_token={{ Auth::user()->api_token }}';
           DataManager.onLoad = function(data) {
-
-              priceCollection["row" + i] = data.price;
 
               // the product already listed in the table
               if ($("tr.product_bill").find("input:hidden[value='" + data.product_id + "']").length > 0)
@@ -314,38 +311,48 @@
                  $('.multTotal',this).text(Decimal(total));
                  grandTotal += total;
               });
+              var reqCount = 0;
               $("tr.product_bill").each(function () {
 
                   // must escape the id selector for dot (.) if contains any
                   // ref: https://stackoverflow.com/questions/605630/how-to-select-html-nodes-by-id-with-jquery-when-the-id-contains-a-dot
                   var productQuantityInput = $('#product_bills\\.' + $(this).data('row-id') + '\\.product_quantity');
                   var quantity = productQuantityInput.val();
-                  var unitPrice = priceCollection[this.id];
-
                   var totalPriceLabel = $('.multTotal', this);
-
-                  if (isNaN(unitPrice))
-                  {
-                      DataManager.serviceUrl = '/api/v1/products/' + $(this).data('product-id') + '/price?api_token={{ Auth::user()->api_token }}';
-                      DataManager.onLoad = function(data) {
-                          var total = Number(data.price) * Number(quantity);
-                          totalPriceLabel.text(Decimal(total));
-                          grandTotal += total;
-
-                          $("#grandTotal").text(Decimal(grandTotal));
-                          calculateDue();
-                      };
-                      DataManager.request();
-                  }
-                  else
-                  {
-                      var total = Number(unitPrice) * Number(quantity);
+                  
+                  DataManager.serviceUrl = '/api/v1/products/' + $(this).data('product-id') + '/price?api_token={{ Auth::user()->api_token }}';
+                  DataManager.onLoad = function(data) {
+                      var total = Number(data.price) * Number(quantity);
                       totalPriceLabel.text(Decimal(total));
                       grandTotal += total;
-                  }
+
+                      ++reqCount;
+                  };
+                  DataManager.request();
               });
-              $("#grandTotal").text(Decimal(grandTotal));
-              calculateDue();
+
+              wait(function() { return $("tr.product_bill").length == reqCount; },
+                function() {
+                    $("#grandTotal").text(Decimal(grandTotal));
+                    calculateDue();
+              });
+         }
+
+         // conditionCallback: a callback that returns a boolean logic which is a break condition
+         // taskCallback: a callback that should be called when condition is met
+         function wait(conditionCallback, taskCallback, milliseconds = 300)
+         {
+              var timer = setTimeout(function()
+              {
+                  if (conditionCallback())
+                  {
+                      clearTimeout(timer);
+                      if (taskCallback !== null)
+                      {
+                          taskCallback();
+                      }
+                  }
+              }, milliseconds);
          }
 
          function calculateDue()
@@ -360,6 +367,7 @@
                  totalPaid += Number(NumberText(amountInput.val()));
               });
               var grandTotalDue = grandTotalBill - totalPaid;
+              // alert('Bill:' + grandTotalBill + 'Paid:' + totalPaid);
               if (grandTotalBill > 0.0)
               {
                   if (grandTotalDue < 0.0)
