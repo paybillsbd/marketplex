@@ -19,12 +19,20 @@
   </i></strong></td>
   <td>
     <div class="clearfix">
-		  <p class="text-left">  
-        <a  href="{{ route('user::sales.edit', [ 
-                'sale' => is_string($sales) ? $sale->id : $sale,
-                'api_token' => Auth::user()->api_token
-            ]) }}"
-            class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
+		  <p class="text-left">
+        <div class="row">
+          <div class="col-md-3"> 
+            <a  href="{{ route('user::sales.edit', [ 
+                    'sale' => is_string($sales) ? $sale->id : $sale,
+                    'api_token' => Auth::user()->api_token
+                ]) }}" class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
+          </div>
+          <div class="col-md-4"> 
+            <a  href="#" class="show-invoice btn btn-info btn-flat btn-xs"
+                data-sale="{{ $sale->id }}"
+                role="button">Invoice</a>
+          </div>
+        </div>
       </p>
     </div>
     <!--<a href="#" data-toggle="modal" data-target="" class="btn btn-danger btn-sm">Delete</a>-->

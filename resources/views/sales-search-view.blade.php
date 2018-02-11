@@ -20,57 +20,18 @@
         vertical-align: middle;
       }
     </style>
+
 @endsection
 
 @section('footer-scripts')
 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!--     <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script> -->
 
-    <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bootstrap Date-Picker Plugin -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <script>
-
-      var DataManager = {
-          serviceUrl: '/',
-          _onFail: function(jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status == 404)
-                  return;
-                var msg = '';
-                if (jqXHR.status === 0) {
-                    msg = 'Not connected.\n Verify Network.';
-                } else if (jqXHR.status == 404) {
-                    msg = 'Requested page not found. [404]';
-                } else if (jqXHR.status == 401) {
-                    msg = errorThrown + '. [' + jqXHR.status + ']';
-                } else if (jqXHR.status == 500) {
-                    msg = 'Internal Server Error [500].';
-                } else if (textStatus === 'parsererror') {
-                    msg = 'Requested JSON parse failed.';
-                } else if (textStatus === 'timeout') {
-                    msg = 'Time out error.';
-                } else if (textStatus === 'abort') {
-                    msg = 'Ajax request aborted.';
-                } else {
-                    msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
-                }                
-                // Render the errors with js ...
-                alert(msg);
-          },
-          onLoad: function(data) {},
-          request: function(method, payload) {
-
-              if (method.toString().toLowerCase() === 'post')
-              {
-                  $.post( this.serviceUrl, payload, this.onLoad, "json" ).fail(_onFail);
-              }
-              else if (method.toString().toLowerCase() === 'get')
-              {
-                  $.get( this.serviceUrl, payload, this.onLoad).fail(_onFail);
-              }
-          }
-      };
-
       var FormRequestManager = {
           id: "#submit-form",
           _shouldRedirect: true,
@@ -185,7 +146,7 @@
               } else if (textStatus === 'parsererror') {
                   msg = 'Server could not process your submitted data.';
                   console.log('Requested JSON parse failed.');
-                  $('body').html(jqXHR.responseText);
+                  // $('body').html(jqXHR.responseText);
               } else if (textStatus === 'timeout') {
                   msg = 'Time out error.';
               } else if (textStatus === 'abort') {
@@ -239,7 +200,47 @@
             this._onJsonReceived = onJsonReceived;
             this.ready(url, data, redirectUrl);
           }
+      };  
+
+      var DataManager = {
+              _onFail: function (jqXHR, textStatus, errorThrown) {
+              // if (jqXHR.status == 404)
+              //   return;
+              var msg = '';
+              if (jqXHR.status === 0) {
+                  msg = 'Not connected.\n Verify Network.';
+              } else if (jqXHR.status == 404) {
+                  msg = 'Requested page not found. [404]';
+              } else if (jqXHR.status == 401) {
+                  msg = errorThrown + '. [' + jqXHR.status + ']';
+              } else if (jqXHR.status == 500) {
+                  msg = 'Internal Server Error [500].';
+              } else if (textStatus === 'parsererror') {
+                  msg = 'Requested JSON parse failed.';
+              } else if (textStatus === 'timeout') {
+                  msg = 'Time out error.';
+              } else if (textStatus === 'abort') {
+                  msg = 'Ajax request aborted.';
+              } else {
+                  msg = 'Uncaught Error: [' + jqXHR.status + '][ ' + textStatus + ' ][' + errorThrown + '].\n' + jqXHR.responseText;
+              }                
+              // Render the errors with js ...
+              alert(msg);
+          },
+          onLoad: function(data) {},
+          request: function(method, url, payload, onLoad) {
+
+              if (method.toString().toLowerCase() === 'post')
+              {
+                  $.post( url, payload, onLoad, "json" ).fail(_onFail);
+              }
+              else if (method.toString().toLowerCase() === 'get')
+              {
+                  $.get( url, payload, onLoad).fail(_onFail);
+              }
+          }
       };
+
 
       var ViewContentManager = {
           // @param: view_name - name of the view to load
@@ -247,26 +248,35 @@
           // @param: table_id - id of the table to update
           append: function(view_name, payload, selector) {
 
-              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.onLoad = function(data) {
+              DataManager.request('get', '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}', payload, function(data) {
 
                   $(selector).append(data);
-              };
-              DataManager.request('get', payload);
+              });
           },
           // @param: view_name - name of the view to replace
           // @param: payload - the data to bind to the view content
           // @param: table_id - id of the table to update
           replace: function(view_name, payload, selector) {
 
-              DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
-              DataManager.onLoad = function(data) {
+              DataManager.request('get', '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}', payload, function(data) {
 
                   $(selector).html(data);
-              };
-              DataManager.request('get', payload);
+              });
           }
       };
+
+      var frmSearchSale = FormRequestManager;
+      frmSearchSale.id = '#search-sale-form';
+      var route = "{{ route('user::sales.search', [ 'api_token' => Auth::user()->api_token ]) }}";
+      frmSearchSale.requestJSON(route, [], null, function(json) {
+
+          if (json.sales !== undefined)
+          {
+              ViewContentManager.replace('sales-row-search-result', {
+                sales: JSON.stringify(json.sales)
+              }, '#search-result-table > tbody');   
+          }
+      });
 
       $(document).ready(function() {
           
@@ -287,25 +297,40 @@
               e.preventDefault();
               window.location.href = "{{ isset($route_query_today) ? $route_query_today : ''  }}";
 
+          });
+          $('.show-invoice').click(function(e) {
+              e.preventDefault();
+
+              $('#invoice_modal').modal({ show: true });
+              $('#invoice-viewer').html('');
+              var iframe = $('<iframe>');
+              iframe.attr('src', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=0&api_token={{ Auth::user()->api_token }}");
+              $('#invoice-viewer').append(iframe);
           });   
       })
-
-      var frmSearchSale = FormRequestManager;
-      frmSearchSale.id = '#search-sale-form';
-      var route = "{{ route('user::sales.search', [ 'api_token' => Auth::user()->api_token ]) }}";
-      frmSearchSale.requestJSON(route, [], null, function(json) {
-
-          if (json.sales !== undefined)
-          {
-              ViewContentManager.replace('sales-row-search-result', {
-                sales: JSON.stringify(json.sales)
-              }, '#search-result-table > tbody');   
-          }
-      });
     </script>
 @endsection
 
 @section('modals')
+    <div class="modal fade" id="invoice_modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">Sales Invoice</h4>
+          </div>
+          <div class="modal-body">
+            <div id="invoice-viewer"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
 @endsection
 
 @section('content')

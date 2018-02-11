@@ -15,6 +15,8 @@ use MarketPlex\BillPayment as Payment;
 use MarketPlex\Deposit;
 use MarketPlex\Expense;
 
+use PDF;
+
 class SaleController extends Controller
 {
     /**
@@ -243,5 +245,12 @@ class SaleController extends Controller
             return response()->view('includes.tables.' . $view, $request->all())->header('Content-Type', 'html');
         }
         return '<p>Invalid Request</p>';
+    }
+
+    public function downloadInvoice(Request $request, Sale $sale)
+    {   
+        $data = [];
+        $pdf = PDF::loadView('invoices.invoice-sales-general', $data)->setPaper('a4', 'portrait')->setWarnings(false);
+        return $request->query('download') ? $pdf->download('invoice-sales-general.pdf') : $pdf->stream();
     }
 }

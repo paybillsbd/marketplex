@@ -21,8 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/serialize', function() {
 	return MarketPlex\SaleTransaction::all();
-});
-
+});   
 
 // business
 
@@ -42,7 +41,8 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 	// Sale Controller
 	Route::resource('sales', 'SaleController');
 	Route::post('/sales/search', [ 'uses' => 'SaleController@search', 'as' => 'sales.search' ]);
-    Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);     
+    Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);  
+	Route::get('/sales/{sale}/invoice', [ 'uses' => 'SaleController@downloadInvoice', 'as' => 'sales.invoice' ]);     
 
 	// Bill controller
 	Route::group([ 'prefix' => 'bills' ], function () {
@@ -53,7 +53,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::post('/payments/search', [ 'uses' => 'BillPaymentController@search', 'as' => 'payments.search' ]);
 	});
 	// Expense controller
-	Route::resource('deposites', 'DepositController');
+	Route::resource('deposits', 'DepositController');
 	Route::resource('expenses', 'ExpenseController');
 
 	// Settings controller
