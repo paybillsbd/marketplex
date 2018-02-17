@@ -189,6 +189,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         return $this->viewSalesEntryForm()->withSale($sale)
+                                          ->withDues(Sale::where('client_name', 'like', '%' . $sale->client_name . '%')->get())
                                           ->withRow($sale->nextRowIndex());        // row index
     }
 

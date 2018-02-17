@@ -34,7 +34,7 @@
 					@endif
 				@endforeach
 			@else
-				<i> {{ ! $invoice ? 'Select an account' : '---' }} </i>
+				<i> {{ isset($invoice) && $invoice ? '---' : 'Select an account' }} </i>
 			@endisset
 		</p>
 		</div>

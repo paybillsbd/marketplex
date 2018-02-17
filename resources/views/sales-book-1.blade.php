@@ -425,6 +425,59 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="show_other_dues" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">Show all dues of <i id="client_name">{{ isset($sale) ? $sale->client_name : '' }}</i></h4>
+          </div>
+          <table id="search-result-table" class="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bill ID</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody>
+              @forelse( (isset($dues) ? $dues : []) as $sale )
+              <tr>
+                <td>{{ $sale->created_at }}</td>
+                <td><a  href="{{ route('user::sales.edit', [ 
+                          'sale' => $sale,
+                          'api_token' => Auth::user()->api_token
+                      ]) }}">{{ $sale->bill_id }}</a></td>
+                <td><strong><i>
+                {{ $sale->getCurrentDueAmountDecimalFormat() . ' ' . MarketPlex\Store::currencyIcon() }}
+                </i></strong></td>
+              </tr>
+              @empty
+
+                  @component('includes.tables.empty-table-message', [ 'colspan' => 6 ])
+                     <div class="alert alert-info text-center">No due records found from your this client ...</div>
+                  @endcomponent
+
+              @endforelse
+              <tr>
+                <td colspan="2" style="text-align:right;">Total Due:</td>
+                <td><i><strong>
+                {{
+                    (isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : number_format(0.00, 2) ) . ' ' . MarketPlex\Store::currencyIcon()
+                }}</strong></i></td>
+              </tr>
+              </tbody>
+          </table>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
 @endsection
 
 @section('content') 
@@ -466,6 +519,9 @@
                         <div class="col-md-2">
                           <div class="clearfix">
                             <!-- <a href="#" data-toggle="modal" data-target="#add_client" class="btn btn-info btn-sm float-right">Add</a> -->
+                            @if (isset($sale))
+                            <a href="#" data-toggle="modal" data-target="#show_other_dues" class="btn btn-info btn-sm float-right">View all dues</a>
+                            @endif
                           </div>
                         </div>
                       </div>

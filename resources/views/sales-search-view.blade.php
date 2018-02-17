@@ -459,7 +459,7 @@
                       <th>Bill ID</th>
                       <th>Client/Company</th>
                       <th>Total Bill</th>
-                      <th>Total Due</th>
+                      <th>Due</th>
                       <th>Action</th>
                     </tr>
                   </thead>
