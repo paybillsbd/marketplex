@@ -609,7 +609,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-11">
-                      <h4><strong>Payment</strong></h4>
+                      <h4><strong>Payment:</strong></h4>
                     </div>
                     <div class="col-md-1">
                       <button type="button" id="addPayRow" class="btn btn-info btn-submit-fix fa fa-plus fa-1x float-right"
@@ -651,7 +651,7 @@
                     </table>
                     </div>
                     <div class="form-group">
-                      <h4><strong>Dues</strong></h4>
+                      <h4><strong>Dues:</strong></h4>
                       <table class="table table-bordered">
                         <tbody>
                           <tr>
@@ -666,7 +666,7 @@
                             {{' ' . MarketPlex\Store::currencyIcon() }}</i></strong></td>
                           </tr>
                           <tr>
-                            <td width="60%"><strong><i>Total Due (This Client):</i></strong></td>
+                            <td width="60%"><strong><i>Total Due ( {{ isset($sale) ? $sale->client_name : 'This Client' }}):</i></strong></td>
                             <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
                             {{' ' . MarketPlex\Store::currencyIcon() }}</strong></td>
                           </tr>
@@ -675,7 +675,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-8">
-                      <h4><strong>Bank Deposit</strong></h4>
+                      <h4><strong>Bank Deposit:</strong></h4>
                     </div>
                     <div class="col-md-3">
                         <a href="{{ route('user::banks.create', [ 'api_token' => Auth::user()->api_token ]) }}" class="btn btn-info btn-sm float-right">Add Bank Account</a>
@@ -727,7 +727,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-md-11">
-                          <h4><strong>Expenses</strong></h4>
+                          <h4><strong>Expenses:</strong></h4>
                         </div>
                         <div class="col-md-1">
                           <button type="button" id="add_expense_btn" class="btn btn-info btn-sm fa fa-plus fa-1x float-right"

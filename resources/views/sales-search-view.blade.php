@@ -19,6 +19,18 @@
         text-align: center;
         vertical-align: middle;
       }
+      .modal-dialog {
+          width: 560px;
+          height:900px !important;
+      }
+      .modal-body {
+        max-height: calc(100vh - 143px);
+        overflow-y: auto;
+      }
+      .modal-content {
+          /* 80% of window height */
+          height: 60%;
+      }
     </style>
 
 @endsection
@@ -302,10 +314,12 @@
               e.preventDefault();
 
               $('#invoice_modal').modal({ show: true });
-              $('#invoice-viewer').html('');
+              $('#invoice-viewer').empty();
               var iframe = $('<iframe>');
               iframe.attr('src', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=0&api_token={{ Auth::user()->api_token }}");
               $('#invoice-viewer').append(iframe);
+              $('#invoice-print').attr('href', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=0&api_token={{ Auth::user()->api_token }}");
+              $('#invoice-download').attr('href', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=1&api_token={{ Auth::user()->api_token }}");
           });   
       })
     </script>
@@ -316,11 +330,21 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
+            <a  type="button" id="invoice-print" href="#"
+                data-toggle="tooltip" data-placement="top" title="Print Invoice">
+              <span aria-hidden="true">
+              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">print</i></span>
+            </a>
+            <a  type="button" id="invoice-download" href="#"
+                data-toggle="tooltip" data-placement="top" title="Download Invoice">
+              <span aria-hidden="true">
+              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">file_download</i></span>
+            </a>
             <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only">Close</span>
             </button>
-            <h4 class="modal-title">Sales Invoice</h4>
+            <h4 class="modal-title">Invoice Viewer</h4>
           </div>
           <div class="modal-body">
             <div id="invoice-viewer"></div>

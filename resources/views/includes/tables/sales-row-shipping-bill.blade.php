@@ -7,11 +7,15 @@
 		</div>
 	</td>
 	<td>
+		@isset($invoice)
+		<i>{{ number_format( isset($bill_amount) ? $bill_amount : 0.00, 2) }}</i>
+		@else
         <div class="form-group">
 		<input 	id="shipping_bills.{{ $row_id }}.bill_amount" class="decimal form-control"
 				name="shipping_bills[{{ $row_id }}][bill_amount]" value="{{ number_format( isset($bill_amount) ? $bill_amount : 0.00, 2) }}"
 				type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
 		</div>
+		@endisset
 	</td>
 	<td>
         <div class="form-group">
@@ -23,7 +27,9 @@
 	<td>
 	<strong><i><span class="multTotal">{{ number_format(isset($bill_amount) ? ($bill_quantity * $bill_amount) : 0.00, 2) }}</span></i></strong>
 	</td>
+	@if( ! isset($invoice) )
 	<td>
 	<a href="" name="remove" id="{{ $row_id }}" class="btn_remove fa fa-close fa-2x" data-toggle="tooltip" data-placement="top" title="Remove this entry"></a>
 	</td>
+	@endif
 </tr>

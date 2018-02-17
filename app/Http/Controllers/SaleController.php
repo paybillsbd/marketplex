@@ -249,7 +249,7 @@ class SaleController extends Controller
 
     public function downloadInvoice(Request $request, Sale $sale)
     {   
-        $data = [];
+        $data = [ 'sale' => $sale, 'messages' => Sale::messages() ];
         $pdf = PDF::loadView('invoices.invoice-sales-general', $data)->setPaper('a4', 'portrait')->setWarnings(false);
         return $request->query('download') ? $pdf->download('invoice-sales-general.pdf') : $pdf->stream();
     }

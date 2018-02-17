@@ -143,6 +143,11 @@ class Store extends Model
     public static function currencyIcon()
     {
         return env('STORE_CURRENCY_ICON', '₹');
+    }  
+
+    public static function currencyText()
+    {
+        return env('STORE_CURRENCY_TEXT', '$');
     }
 
     public function canDelete()
