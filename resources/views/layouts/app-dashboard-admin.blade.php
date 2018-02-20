@@ -87,6 +87,7 @@
             'csrfToken' => csrf_token(),
         ]) !!};
     </script>
+    @yield('header-scripts')
   </head>
   <body>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
@@ -123,18 +124,6 @@
     @include('includes.scripts.inzaana')
     @yield('footer-scripts')
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-
-    <!-- <script src="{{ asset('/vendor/inzaana/browser-events/browser-event-navigation.js') }}" type="text/javascript"></script> -->
-    <script type="text/javascript">
-          
-      // $(auth).ready(function () {
-
-      //     auth.logout = function() {
-      //       window.location.href = '/logout';
-      //     }
-
-      // });
-    </script>
   
   </body>
 </html>

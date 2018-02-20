@@ -8,7 +8,10 @@ var DataManager = {
 
       $.get(this.serviceUrl, this.payload, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
         if (jqXHR.status == 404)
-          return;
+        {
+            console.log(textStatus, errorThrown);
+            return;
+        }
         var msg = '';
         if (jqXHR.status === 0) {
             msg = 'Not connected.\n Verify Network.';
@@ -242,7 +245,7 @@ var FormRequestManager = function(formName) {
                   error: _this._onError 
             });
         },
-        ready: function(url, data, redirectUrl, create = true) {
+        ready: function(url, data, redirectUrl, create) {
 
           this._route = url;
           this._data = data;

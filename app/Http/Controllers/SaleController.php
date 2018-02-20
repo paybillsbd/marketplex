@@ -153,6 +153,16 @@ class SaleController extends Controller
         return view('sales-income')->withSale($sale);
     }
 
+    public function searchClientNames(Request $request)
+    {
+        $this->validate($request, [
+            'queries' => 'present|array',
+        ]);
+        $queries = $request->input('queries');
+        $clientNames = Sale::where('client_name', 'like', '%' . $queries['client_name'] . '%')->select('client_name')->get()->pluck('client_name')->all();
+        return $request->ajax() ? response()->json(empty($clientNames) || empty($queries['client_name']) ? [ 'No suggestions' ] : $clientNames) : $clientNames;
+    }
+
     public function search(Request $request)
     {
         $this->validate($request, [

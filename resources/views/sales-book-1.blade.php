@@ -45,46 +45,77 @@
       .ui-autocomplete-loading {
           background: white url('http://loading.io/loader/?use=eyJzaXplIjo4LCJzcGVlZCI6MSwiY2JrIjoiI2ZmZmZmZiIsImMxIjoiIzAwYjJmZiIsImMyIjoiMTIiLCJjMyI6IjciLCJjNCI6IjIwIiwiYzUiOiI1IiwiYzYiOiIzMCIsInR5cGUiOiJkZWZhdWx0In0=') right center no-repeat;
       }
+
+      #client-autocomplete {
+        z-index: 4;
+        border-color: black;
+        border-collapse: collapse;
+        border: 2px solid black;
+      }
       
     </style>
 @endsection
 
 @section('footer-scripts')
+
     <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="/vendor/request-clients/data-request-clients.js"></script>
 
-    <script type="text/javascript">
-      $(document).ready(function(){  
-
-        var tags = [ 'Bar', 'Far', 'Dar'];
-
-        $( "#client" ).autocomplete({
-            source: tags; //"{{ route('user::clients.index', [ 'api_token' => Auth::user()->api_token ]) }}",
-            minLength: 2,
-            select: function( event, ui ) {
-              alert( "Selected: " + ui.item.value + " aka " + ui.item.label );
-            }
-        });
-      });
-    </script>
-
     <script>
 
-      // cross browser string trimming
-      String.prototype.trimmed = function(){
-          return this.replace(
-              /^(\s|&nbsp;|<br\s*\/?>)+?|(\s|&nbsp;|<br\s*\/?>)+?$/ig, ' '
-          ).trim();
-      }
+      $(document).ready(function() {
 
-      $(document).ready(function() {      
-        
+          
         var i = $('tr').length + 2;  
         var d = new Date(Date.now());
 
-        $('#addBillingRow').click(function(){
+        // cross browser string trimming
+        String.prototype.trimmed = function(){
+            return this.replace(
+                /^(\s|&nbsp;|<br\s*\/?>)+?|(\s|&nbsp;|<br\s*\/?>)+?$/ig, ' '
+            ).trim();
+        }
+
+        var tags = [ 'Bar', 'Far', 'Dar'];
+
+        // $( "#client" ).autocomplete({
+        //     source: tags, //"{{ route('user::clients.index', [ 'api_token' => Auth::user()->api_token ]) }}",
+        //     minLength: 2,
+        //     select: function( event, ui ) {
+        //       alert( "Selected: " + ui.item.value + " aka " + ui.item.label );
+        //     }
+        // }); 
+
+        $('#client').keyup(function(event) {
+
+              var autocompleteElement = $('#client-autocomplete');
+              autocompleteElement.removeClass('hidden');
+              autocompleteElement.addClass('ui-autocomplete-loading');
+              autocompleteElement.css('zIndex', "5");
+              // alert(autocompleteElement.css('zIndex'));
+              // alert(autocompleteElement.attr('id'));
+
+              DataManager.serviceUrl = "{{ route('user::sales.search.clients', [ 'api_token' => Auth::user()->api_token ]) }}";
+              DataManager.payload = { queries: { client_name: $(this).val() } };
+              DataManager.onLoad = function(data) {
+
+                  autocompleteElement.empty();
+                  data.forEach(function(item, index) {
+
+                      autocompleteElement.append('<div class="row"><div class="col-md-10 autocomplete-item">' + item + '</div></div>');
+                      autocompleteElement.find('div[class="col-md-10 autocomplete-item"]').click(function() {
+
+                          $('#client').val($(this).text());
+                          autocompleteElement.addClass('hidden');
+                      });
+                  });
+              };
+              DataManager.request();
+        });
+
+        $('#addBillingRow').click(function() {
 
             ViewContentManager.append('sales-row-shipping-bill', {
                 row_id: i++,
@@ -168,6 +199,7 @@
               ViewContentManager.appendEmpty('empty-table-message', {
                 colspan: 6,
                 level: 'info',
+                api_token: "{{ Auth::user()->api_token }}",
                 message: tableElement.data('empty-message'),
               }, '#' + tableElement.attr('id'));
 
@@ -265,16 +297,15 @@
                   DataManager.request();
               });
 
-              wait(function() { return $("tr.product_bill").length == reqCount; },
-                function() {
+              wait(function() { return $("tr.product_bill").length == reqCount; }, function() {
                     $("#grandTotal").text(Decimal(grandTotal));
                     calculateDue();
-              });
+              }, 300);
          }
 
          // conditionCallback: a callback that returns a boolean logic which is a break condition
          // taskCallback: a callback that should be called when condition is met
-         function wait(conditionCallback, taskCallback, milliseconds = 300)
+         function wait(conditionCallback, taskCallback, milliseconds)
          {
               var timer = setTimeout(function()
               {
@@ -511,10 +542,13 @@
                       <label for="client"><strong>Business/Client/Company Name:</strong></label>
                       <div class="row">
                         <div class="col-md-10">
-                          <input  type="text" name="client" id="client" class="form-control" value="{{ isset($sale) ? $sale->client_name : '' }}" />
-                            <span class="help-block hidden">
-                                <strong></strong>
-                            </span>
+                          <input  type="text" name="client" id="client" class="form-control"
+                                  value="{{ isset($sale) ? $sale->client_name : '' }}" />
+                          <div id="client-autocomplete" class="hidden">
+                          </div>
+                          <span class="help-block hidden">
+                              <strong></strong>
+                          </span>
                         </div>
                         <div class="col-md-2">
                           <div class="clearfix">

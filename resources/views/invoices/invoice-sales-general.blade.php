@@ -26,7 +26,7 @@ table, th, td {
 	border-color: black;
 	text-align: center;
 	border-collapse: collapse;
-    border: 2px solid black;
+  border: 2px solid black;
 
 /*    font-family: 'Lohit Bengali', sans-serif;
     font-size: 14px;*/
