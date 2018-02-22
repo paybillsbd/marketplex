@@ -467,6 +467,7 @@
                     @include('includes.tables.sales-row-search-result') 
                   </tbody>
               </table>
+              {{ $sales->appends([ 'api_token' => Auth::user()->api_token ])->links() }}
 
             </div><!-- /.box-body -->
           </div><!-- /.box -->  

@@ -18,11 +18,15 @@
 		@endisset
 	</td>
 	<td>
+		@isset($invoice)
+		<i>{{ isset($bill_quantity) ? $bill_quantity : 0 }}</i>
+		@else
         <div class="form-group">
 		<input 	id="shipping_bills.{{ $row_id }}.bill_quantity" class="decimal form-control"
 				name="shipping_bills[{{ $row_id }}][bill_quantity]" min="0" value="{{ isset($bill_quantity) ? $bill_quantity : 0 }}"
 				type="number" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.which === 8" required />
 		</div>
+		@endisset
 	</td>
 	<td>
 	<strong><i><span class="multTotal">{{ number_format(isset($bill_amount) ? ($bill_quantity * $bill_amount) : 0.00, 2) }}</span></i></strong>

@@ -3,10 +3,12 @@
 namespace MarketPlex;
 
 use Illuminate\Database\Eloquent\Model;
+use MarketPlex\Scopes\AuthUserProductScope;
 use MarketPlex\SaleTransaction as Sale;
 use Carbon\Carbon;
 use Log;
 
+// Note: applied global scopes: AuthUserProductScope
 class SaleTransaction extends Model
 {
     //
@@ -26,6 +28,18 @@ class SaleTransaction extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new AuthUserProductScope);
+    }
 
     public function productbills()
     {
@@ -109,9 +123,9 @@ class SaleTransaction extends Model
     public function getBillAmount()
     {
         return $this->productbills->map(function ($bill, $key) {
-            return $bill->product->mrp * $bill->quantity;
+            return $bill->getTotalAmount();
         })->sum() + $this->shippingbills->map(function ($bill, $key) {
-            return $bill->amount * $bill->quantity;
+            return $bill->getTotalAmount();
         })->sum();
     }
 

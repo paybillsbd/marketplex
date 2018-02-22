@@ -36,6 +36,11 @@ class ProductBill extends Model
         return $sale->productbills()->save($p);
     }
 
+    public function getTotalAmount()
+    {
+        return ($this->product ? $this->product->mrp : 0.00) * $this->quantity;
+    }
+
     public static function saveManyBills(array $productBills, $sale)
     {
         $bills = collect([]);

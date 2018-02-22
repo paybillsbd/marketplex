@@ -30,6 +30,11 @@ class ShippingBill extends Model
      */
     protected $fillable = [ 'sale_transaction_id', 'purpose', 'quantity', 'amount' ];
 
+    public function getTotalAmount()
+    {
+        return $this->amount * $this->quantity;
+    }
+
     public static function saveManyBills(array $shippingBills, $sale)
     {
         $bills = collect([]);

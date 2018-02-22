@@ -26,7 +26,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return $this->viewSalesFiltered(Sale::all());
+        return $this->viewSalesFiltered(Sale::paginate(3));
     }
 
     private function viewSalesFiltered($sales)

@@ -10,7 +10,7 @@
 	<td>
 		@isset($invoice)
 		
-		<p>{{ isset($bill_quantity) ? $bill_quantity : 0 }}</p>
+		<i>{{ isset($bill_quantity) ? $bill_quantity : 0 }}</i>
 		
 		@else
         <div class="form-group">

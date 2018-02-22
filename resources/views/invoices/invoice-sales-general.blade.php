@@ -42,13 +42,18 @@ table, th, td {
 
 <h3 class="text-center"><label for="client"><strong>Business/Client/Company Name:</strong>{{ $sale->client_name }}</label></h3>
 
-<div class="row">
-  <div class="col-md-12">
-	<label for="bill_id">
-		<strong>Billing ID: </strong>{{ isset($sale) ? $sale->bill_id : 'Unknown' }}
-	</label>
-  </div>
-</div>
+<table>
+  <tr>
+    <td width="50%">Date & Time:</td>
+    <td width="50%">{{ isset($sale) ? $sale->created_at : 'Unknown' }}</td>
+  </tr>
+  <tr>
+    <td width="50%">Bill ID:</td>
+    <td width="50%">{{ isset($sale) ? $sale->bill_id : 'Unknown' }}</td>
+  </tr>
+<tbody>
+</tbody>
+</table>
 
 <h4><strong>Billing</strong></h4>
 
