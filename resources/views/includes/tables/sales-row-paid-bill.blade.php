@@ -33,7 +33,7 @@
 	</td>
 	<td>
 		@isset($invoice)
-		<i>{{ number_format( isset($paid_amount) ? $paid_amount : 0.00, 2) }}</i>
+		<strong><i>{{ number_format( isset($paid_amount) ? $paid_amount : 0.00, 2) }}</i></strong>
 		@else
 		<div class="form-group">
 		<input 	id="payments.{{ $row_id }}.paid_amount" name="payments[{{ $row_id }}][paid_amount]" class="decimal form-control"

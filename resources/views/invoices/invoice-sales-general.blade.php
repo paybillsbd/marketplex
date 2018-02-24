@@ -39,7 +39,12 @@ i {
 </style>
 </head>
 
-<h1 class="text-center">Sales Invoice</h1>
+<h4 style="text-align: center;">Cash Memo/ Customer Invoice</h4>
+<h1 style="text-align: center; color: DarkBlue;">{{ config('app.vendor') }}</h1>
+<div style="text-align: center; line-height: 1.5; color: #1E90FF;">{{ nl2br(env('VENDOR_ADDRESS')) }}</div>
+<div style="text-align: center; line-height: 1.5; color: #8B008B;">{{ env('VENDOR_DESCRIPTION') }}</div>
+<div style="text-align: center; line-height: 1.5; color: #8B008B;">{{ 'Contact: ' . env('VENDOR_CONTACT_NO') }}</div>
+<div style="text-align: center; line-height: 1.5; color: #8B008B;">{{ 'Email: ' . config('mail.admin.address') }}</div>
 
 <h3 class="text-center"><label for="client"><strong>Business/Client/Company Name:</strong>{{ ' ' . $sale->client_name }}</label></h3>
 
@@ -62,7 +67,7 @@ i {
 
 @if( isset($sale) )
 
-  @for ($i = 1; $i <= ($sale->productbills->count() < $per_page_max_record_count ? 1 : $sale->productbills->count() / $per_page_max_record_count); $i++ )
+  @for ($i = 1; $i <= $record_table_count['product_bill']; $i++ )
     <table  class="table table-bordered" id="product_bill_table" width="100%">
     <thead>
       <tr>
@@ -130,7 +135,7 @@ i {
 
 @if( isset($sale) )
   
-  @for ($i = 1; $i <= ($sale->shippingbills->count() < $per_page_max_record_count ? 1 : ceil($sale->shippingbills->count() / $per_page_max_record_count)); $i++ )
+  @for ($i = 1; $i <= $record_table_count['shipping_bill']; $i++ )
     <table class="table table-bordered" id="dynamic_field_shipping" width="100%">
     <thead>
       <tr>        
@@ -166,7 +171,7 @@ i {
       <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
       @endif
 
-    <div class="page-break"></div>
+    <!-- <div class="page-break"></div> -->
 
     @endif
 
@@ -207,7 +212,7 @@ i {
   <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
   @endif
 
-<div class="page-break"></div>
+<!-- <div class="page-break"></div> -->
 
 @endif
 
@@ -215,7 +220,7 @@ i {
 
 @if( isset($sale) )
   
-  @for ($i = 1; $i <= ($sale->billpayments->count() < $per_page_max_record_count ? 1 : $sale->billpayments->count() / $per_page_max_record_count); $i++ )
+  @for ($i = 1; $i <= $record_table_count['payment']; $i++ )
     <table  class="table table-bordered" id="dynamic_field_pay" width="100%">
     <thead>
       <tr>
@@ -249,7 +254,7 @@ i {
       <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
       @endif
 
-    <div class="page-break"></div>
+    <!-- <div class="page-break"></div> -->
 
     @endif
 
@@ -292,6 +297,16 @@ i {
   </tr>
 </tbody>
 </table>
+
+<div style="height: 50px; line-height: 3.5; vertical-align: bottom;">
+{{ 'In words (Total Bill): ' . $total_bill_in_words }}
+</div>
+
+<div style="height: 50px; line-height: 3.5; vertical-align: bottom;">
+{{ 'In words (Total Due): ' . $total_due_in_words }}
+</div>
+<p style="height: 50px; line-height: 3.5; vertical-align: bottom;">__________________________________</p>
+<div>Customer signature</div>
 
 @if ( $page_count == $total_page_count )
 

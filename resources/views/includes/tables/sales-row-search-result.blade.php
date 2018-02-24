@@ -28,7 +28,8 @@
                 ]) }}" class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
           </div>
           <div class="col-md-4"> 
-            <a  href="#" class="show-invoice btn btn-info btn-flat btn-xs"
+            <a  href="/api/v1/sales/{{ $sale->id }}/invoice?download=0&api_token={{ Auth::user()->api_token }}"
+                class="show-invoice btn btn-info btn-flat btn-xs"
                 data-sale="{{ $sale->id }}"
                 role="button">Invoice</a>
           </div>

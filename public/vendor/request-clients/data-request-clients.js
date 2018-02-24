@@ -60,6 +60,7 @@ var ViewContentManager = {
           else
           {
               $(selector).append(data);
+              $(selector + ' > tbody').find('#' + payload.row_id)[0].focus();
           }
       };
       DataManager.request();

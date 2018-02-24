@@ -19,17 +19,17 @@
         text-align: center;
         vertical-align: middle;
       }
-      .modal-dialog {
+/*      .modal-dialog {
           width: 560px;
           height:900px !important;
       }
       .modal-body {
         max-height: calc(100vh - 143px);
         overflow-y: auto;
-      }
+      }*/
       .modal-content {
           /* 80% of window height */
-          height: 60%;
+          height: 100%;
       }
     </style>
 
@@ -216,8 +216,8 @@
 
       var DataManager = {
               _onFail: function (jqXHR, textStatus, errorThrown) {
-              // if (jqXHR.status == 404)
-              //   return;
+              if (jqXHR.status == 404)
+                return;
               var msg = '';
               if (jqXHR.status === 0) {
                   msg = 'Not connected.\n Verify Network.';
@@ -244,11 +244,11 @@
 
               if (method.toString().toLowerCase() === 'post')
               {
-                  $.post( url, payload, onLoad, "json" ).fail(_onFail);
+                  $.post( url, payload, onLoad, "json" ).fail(this._onFail);
               }
               else if (method.toString().toLowerCase() === 'get')
               {
-                  $.get( url, payload, onLoad).fail(_onFail);
+                  $.get( url, payload, onLoad).fail(this._onFail);
               }
           }
       };
@@ -286,7 +286,7 @@
           {
               ViewContentManager.replace('sales-row-search-result', {
                 sales: JSON.stringify(json.sales)
-              }, '#search-result-table > tbody');   
+              }, '#search-result-table > tbody');
           }
       });
 
@@ -317,6 +317,7 @@
               $('#invoice-viewer').empty();
               var iframe = $('<iframe>');
               iframe.attr('src', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=0&api_token={{ Auth::user()->api_token }}");
+              iframe.attr('height', window.innerHeight * 0.75);
               $('#invoice-viewer').append(iframe);
               $('#invoice-print').attr('href', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=0&api_token={{ Auth::user()->api_token }}");
               $('#invoice-download').attr('href', "/api/v1/sales/" + $(this).data('sale') + "/invoice?download=1&api_token={{ Auth::user()->api_token }}");
@@ -326,7 +327,7 @@
 @endsection
 
 @section('modals')
-    <div class="modal fade" id="invoice_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="invoice_modal" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">

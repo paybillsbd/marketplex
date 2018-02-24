@@ -68,7 +68,7 @@
       $(document).ready(function() {
 
           
-        var i = $('tr').length + 2;  
+        var i = $('tr').length + 4;  
         var d = new Date(Date.now());
 
         // cross browser string trimming

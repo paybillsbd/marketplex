@@ -43,6 +43,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 	Route::post('/sales/search', [ 'uses' => 'SaleController@search', 'as' => 'sales.search' ]);
 	Route::get('/sales/search/clients', [ 'uses' => 'SaleController@searchClientNames', 'as' => 'sales.search.clients' ]);
     Route::get('/templates/{view}', [ 'uses' => 'SaleController@getTemplate', 'as' => 'sales.template' ]);  
+    Route::get('/paginations/{view}', [ 'uses' => 'SaleController@getPagination', 'as' => 'sales.pagination' ]);  
 	Route::get('/sales/{sale}/invoice', [ 'uses' => 'SaleController@downloadInvoice', 'as' => 'sales.invoice' ]);     
 
 	// Bill controller

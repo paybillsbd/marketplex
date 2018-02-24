@@ -16,6 +16,7 @@ use MarketPlex\Deposit;
 use MarketPlex\Expense;
 
 use PDF;
+use NumberToWords\NumberToWords;
 
 class SaleController extends Controller
 {
@@ -181,7 +182,7 @@ class SaleController extends Controller
                 return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
                     : $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
             }
-            $sales = Sale::search($queries)->get();
+            $sales = Sale::search($queries)->get(); //->paginate(3)
             // dd($sales);
             return $request->ajax() ? response()->json([ 'sales' => $sales, 'code' => 200 ])
                 : $this->viewSalesFiltered($sales);
@@ -258,16 +259,39 @@ class SaleController extends Controller
         return '<p>Invalid Request</p>';
     }
 
+    public function getPagination(Request $request, $view)
+    {
+        if ($request->ajax())
+        {
+            return response()->view('includes.paginations.' . $view, $request->all())->header('Content-Type', 'html');
+        }
+        return '<p>Invalid Request</p>';
+    }
+
     public function downloadInvoice(Request $request, Sale $sale)
     {
+        // create the number to words "manager" class
+        $numberToWords = new NumberToWords();
+        // build a new currency transformer using the RFC 3066 language identifier
+        // $currencyTransformer = $numberToWords->getCurrencyTransformer('en');
+        // build a new number transformer using the RFC 3066 language identifier
+        $numberTransformer = $numberToWords->getNumberTransformer('en');
+
         $recordsCount = $sale->getInvoiceRecordsCount();
-        $maxRecordCountPerPage = 7;
+        $maxRecordCountPerPage = 15;
         $data = [
             'sale' => $sale,
             'total_page_count' => $recordsCount < $maxRecordCountPerPage ? 1 : ceil($recordsCount / $maxRecordCountPerPage),
             'page_count' => 1,
             'per_page_max_record_count' => $maxRecordCountPerPage,
             'page_count_enabled' => false,
+            'total_bill_in_words' => strtoupper($numberTransformer->toWords(isset($sale) ? $sale->getBillAmount() : 0) . ' ' . \MarketPlex\Store::currencyText() . ' only'),
+            'total_due_in_words' => strtoupper($numberTransformer->toWords(isset($sale) ? $sale->getTotalDueAmount() : 0) . ' ' . \MarketPlex\Store::currencyText() . ' only'),
+            'record_table_count' => [
+                'product_bill'  => ($sale->productbills->count() < $maxRecordCountPerPage ? 1 : ceil($sale->productbills->count() / $maxRecordCountPerPage)),
+                'shipping_bill'  => ($sale->shippingbills->count() < $maxRecordCountPerPage ? 1 : ceil($sale->shippingbills->count() / $maxRecordCountPerPage)),
+                'payment'  => ($sale->billpayments->count() < $maxRecordCountPerPage ? 1 : ceil($sale->billpayments->count() / $maxRecordCountPerPage)),
+            ],
             'messages' => Sale::messages()
         ];
         $pdf = PDF::loadView('invoices.invoice-sales-general', $data)->setPaper('a4', 'portrait')->setWarnings(false);
