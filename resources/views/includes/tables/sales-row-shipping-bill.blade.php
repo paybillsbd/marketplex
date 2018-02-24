@@ -2,9 +2,13 @@
 	<td>
 	{{ $datetime }} <input name="shipping_bills[{{ $row_id }}][shipping_bill_id]" type="hidden" value="{{ isset($shipping_bill_id) ? $shipping_bill_id : -1 }}" /></td>
 	<td>
+		@isset($invoice)
+		<p>{{ isset($shipping_purpose) ? $shipping_purpose : '' }}</p>
+		@else
         <div class="form-group">
 		<input id="shipping_bills.{{ $row_id }}.shipping_bill_id" type="text" name="shipping_bills[{{ $row_id }}][shipping_purpose]" class="form-control" value="{{ isset($shipping_purpose) ? $shipping_purpose : '' }}" required />
 		</div>
+		@endisset
 	</td>
 	<td>
 		@isset($invoice)

@@ -31,7 +31,8 @@ table, th, td {
 /*    font-family: 'Lohit Bengali', sans-serif;
     font-size: 14px;*/
 }
-.decimal {
+
+i {
 	text-align: right;
 }
 
@@ -40,16 +41,16 @@ table, th, td {
 
 <h1 class="text-center">Sales Invoice</h1>
 
-<h3 class="text-center"><label for="client"><strong>Business/Client/Company Name:</strong>{{ $sale->client_name }}</label></h3>
+<h3 class="text-center"><label for="client"><strong>Business/Client/Company Name:</strong>{{ ' ' . $sale->client_name }}</label></h3>
 
-<table>
+<table width="100%">
   <tr>
-    <td width="50%">Date & Time:</td>
-    <td width="50%">{{ isset($sale) ? $sale->created_at : 'Unknown' }}</td>
+    <td width="20%" style="text-align: right;">Date & Time:</td>
+    <td width="80%" style="text-align: left;">{{ isset($sale) ? $sale->created_at : 'Unknown' }}</td>
   </tr>
   <tr>
-    <td width="50%">Bill ID:</td>
-    <td width="50%">{{ isset($sale) ? $sale->bill_id : 'Unknown' }}</td>
+    <td width="20%" style="text-align: right;">Bill ID:</td>
+    <td width="80%" style="text-align: left;">{{ isset($sale) ? $sale->bill_id : 'Unknown' }}</td>
   </tr>
 <tbody>
 </tbody>
@@ -58,68 +59,91 @@ table, th, td {
 <h4><strong>Billing</strong></h4>
 
 <h5><strong>Product Billing:</strong></h5>
-<div class="row">
-<div class="col-md-12">
-<table  class="table table-bordered" id="product_bill_table">
+
+@if( isset($sale) )
+
+  @for ($i = 1; $i <= ($sale->productbills->count() < $per_page_max_record_count ? 1 : $sale->productbills->count() / $per_page_max_record_count); $i++ )
+    <table  class="table table-bordered" id="product_bill_table" width="100%">
+    <thead>
+      <tr>
+      <th width="10%">Date</th>
+      <th width="25%">Title</th>
+      <th width="20%">Store</th>
+      <th width="10%">Quantity</th>
+      <th width="35%">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+          @forelse( $sale->productbills->forPage($i, $per_page_max_record_count) as $bill )
+
+            @include('includes.tables.sales-row-product-bill', [
+            	  'invoice' => true,
+                'row_id' => 1,
+                'product_bill_id' => $bill->id,
+                'product_id' => $bill->product_id,
+                'datetime' => Carbon\Carbon::parse($bill->created_at)->format('m/d/Y h:m'),
+                'product_title' => $bill->product ? $bill->product->title : 'Unknown',
+                'store_name' => $bill->product ? $bill->product->store->name : 'Unknown',
+                'bill_price' => $bill->product ? $bill->product->mrp : 0.00,
+                'bill_quantity' => $bill->quantity,
+                'product_available_quantity' => $bill->product ? $bill->product->available_quantity : 0
+            ])
+          @empty
+            @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+                <div class="alert alert-warning">No records added yet</div>
+            @endcomponent
+          @endforelse
+    </tbody>
+    </table>
+
+    @if ( $sale->productbills->forPage($i, $per_page_max_record_count)->count() == $per_page_max_record_count )
+
+      @if ( $page_count_enabled )
+      <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
+      @endif
+
+    <div class="page-break"></div>
+
+    @endif
+
+  @endfor
+@else
+<table  class="table table-bordered" id="product_bill_table" width="100%">
 <thead>
   <tr>
   <th width="10%">Date</th>
-  <th width="20%">Title</th>
+  <th width="25%">Title</th>
   <th width="20%">Store</th>
   <th width="10%">Quantity</th>
   <th width="35%">Total</th>
   </tr>
 </thead>
 <tbody>
-    @if( isset($sale) )
-      @forelse( $sale->productbills as $bill )
-        @include('includes.tables.sales-row-product-bill', [
-        	'invoice' => true,
-            'row_id' => 1,
-            'product_bill_id' => $bill->id,
-            'product_id' => $bill->product_id,
-            'datetime' => Carbon\Carbon::parse($bill->created_at)->format('m/d/Y h:m'),
-            'product_title' => $bill->product->title,
-            'store_name' => $bill->product->store->name,
-            'bill_price' => $bill->product->mrp,
-            'bill_quantity' => $bill->quantity,
-            'product_available_quantity' => $bill->product->available_quantity
-        ])
-      @empty
-        @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
-            <div class="alert alert-warning">No records added yet</div>
-        @endcomponent
-      @endforelse
-    @else
-        @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
-            <div class="alert alert-warning">No records added yet</div>
-        @endcomponent
-    @endif
+    @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])
+        <div class="alert alert-warning">No records added yet</div>
+    @endcomponent
 </tbody>
 </table>
-</div>
-</div>
-
-<div class="text-center"><b>Page 1 of 5</b></div>
-
-<div class="page-break"></div>
+@endif
 
 <h5><strong>Shipping Billing:</strong></h5>
-<div class="row">
-  	<div class="col-md-12">
-    <table  class="table table-bordered" id="dynamic_field_shipping">
+
+@if( isset($sale) )
+  
+  @for ($i = 1; $i <= ($sale->shippingbills->count() < $per_page_max_record_count ? 1 : ceil($sale->shippingbills->count() / $per_page_max_record_count)); $i++ )
+    <table class="table table-bordered" id="dynamic_field_shipping" width="100%">
     <thead>
       <tr>        
       <th width="10%">Date</th>
-      <th width="20%">Purpose</th>
+      <th width="25%">Purpose</th>
       <th width="20%">Amount</th>
       <th width="10%">Quantity</th>
       <th width="35%">Total</th>
       </tr>
     </thead>
     <tbody>
-        @if( isset($sale) )
-          @forelse( $sale->shippingbills as $bill )
+          @forelse( $sale->shippingbills->forPage($i, $per_page_max_record_count) as $bill )
+
             @include('includes.tables.sales-row-shipping-bill', [
                 'invoice' => true,
                 'row_id' => 1,
@@ -133,49 +157,76 @@ table, th, td {
                 <div class="alert alert-warning">No records added yet</div>
             @endcomponent
           @endforelse
-        @else
-            @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
-                <div class="alert alert-warning">No records added yet</div>
-            @endcomponent
-        @endif
     </tbody>
+    </table>
+
+    @if ( $sale->shippingbills->forPage($i, $per_page_max_record_count)->count() == $per_page_max_record_count )
+
+      @if ( $page_count_enabled )
+      <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
+      @endif
+
+    <div class="page-break"></div>
+
+    @endif
+
+  @endfor
+@else
+  <table class="table table-bordered" id="dynamic_field_shipping" width="100%">
+  <thead>
+    <tr>        
+    <th width="10%">Date</th>
+    <th width="25%">Purpose</th>
+    <th width="20%">Amount</th>
+    <th width="10%">Quantity</th>
+    <th width="35%">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+      @component('includes.tables.empty-table-message', [ 'colspan' => 5, 'level' => 'info', 'message' => $messages['empty_table']['product_shipping'] ])
+          <div class="alert alert-warning">Nothing shipped</div>
+      @endcomponent
+  </tbody>
   </table>
-  </div>
-</div>
+@endif
 
-<div class="row">
-  	<div class="col-md-12">
-	<table class="table table-bordered">
-	<tbody>
-	  <tr>
-	    <td width="60%"><strong><i>Bill Amount:</i></strong></td>
-	    <td width="40%"><strong><i>
-	    <span id="grandTotal">{{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : number_format(0.00, 2)) }}</span>
-	    {{ ' ' . MarketPlex\Store::currencyText() }}</i></strong></td>
-	  </tr>
-	</tbody>
-	</table>
-  </div>
-</div>
+<table class="table table-bordered" width="100%">
+<tbody>
+  <tr>
+    <td width="65%" style="text-align: right;"><strong><i>Bill Amount:</i></strong></td>
+    <td width="35%" style="text-align: right;"><strong><i>
+    <span id="grandTotal">{{ (isset($sale) ? $sale->getBillAmountDecimalFormat() : number_format(0.00, 2)) }}</span>
+    {{ ' ' . MarketPlex\Store::currencyText() }}</i></strong></td>
+  </tr>
+</tbody>
+</table>
 
-<div class="text-center"><b>Page 2 of 5</b></div>
+@if ( ($sale->productbills->count() + $sale->shippingbills->count() == $per_page_max_record_count) )
+
+  @if ( $page_count_enabled )
+  <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
+  @endif
 
 <div class="page-break"></div>
 
+@endif
+
 <h5><strong>Payment:</strong></h5>
-<div class="row">
-  	<div class="col-md-12">
-    <table  class="table table-bordered" id="dynamic_field_pay">
+
+@if( isset($sale) )
+  
+  @for ($i = 1; $i <= ($sale->billpayments->count() < $per_page_max_record_count ? 1 : $sale->billpayments->count() / $per_page_max_record_count); $i++ )
+    <table  class="table table-bordered" id="dynamic_field_pay" width="100%">
     <thead>
       <tr>
       <th width="10%">Date</th>       
-      <th width="50%">Method</th>
+      <th width="55%">Method</th>
       <th width="35%">Paid Amount</th>
       </tr>
     </thead>
     <tbody>
-        @if( isset($sale) )
-          @forelse( $sale->billpayments as $payment )
+          @forelse( $sale->billpayments->forPage($i, $per_page_max_record_count) as $payment )
+
             @include('includes.tables.sales-row-paid-bill', [
                 'invoice' => true,
                 'row_id' => 1,
@@ -188,36 +239,64 @@ table, th, td {
                 <div class="alert alert-warning">No records added yet</div>
             @endcomponent
           @endforelse
-        @else
-            @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
-                <div class="alert alert-warning">No records added yet</div>
-            @endcomponent
-        @endif
     </tbody>
     </table>
-  </div>
-</div>
+
+    @if ( $sale->billpayments->forPage($i, $per_page_max_record_count)->count() == $per_page_max_record_count
+          || ($sale->getInvoiceRecordsCount() == $per_page_max_record_count) )
+
+      @if ( $page_count_enabled )
+      <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
+      @endif
+
+    <div class="page-break"></div>
+
+    @endif
+
+  @endfor
+@else
+  <table  class="table table-bordered" id="dynamic_field_pay" width="100%">
+  <thead>
+    <tr>
+    <th width="10%">Date</th>       
+    <th width="55%">Method</th>
+    <th width="35%">Paid Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+      @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['bill_payment'] ])
+          <div class="alert alert-warning">Nothing paid</div>
+      @endcomponent
+  </tbody>
+  </table>
+@endif
 
 <h5><strong>Dues:</strong></h5>
-<table class="table table-bordered">
+<table class="table table-bordered" width="100%">
 <tbody>
   <tr>
-    <td width="60%"><strong><i>Current Due:</i></strong></td>
-    <td width="40%"><strong>
+    <td width="60%" style="text-align: right;"><strong><i>Current Due:</i></strong></td>
+    <td width="35%" style="text-align: right;"><strong>
     <i id="current_due" class="decimal">{{ isset($sale) ? $sale->getCurrentDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
     {{' ' . MarketPlex\Store::currencyText() }}</strong></td>
   </tr>
   <tr>
-    <td width="60%"><strong><i>Previous Due:</i></strong></td>
-    <td width="40%"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
+    <td width="60%" style="text-align: right;"><strong><i>Previous Due:</i></strong></td>
+    <td width="35%" style="text-align: right;"><strong><i id="prev_due" class="decimal">{{ isset($sale) ? $sale->getPreviousDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
     {{' ' . MarketPlex\Store::currencyText() }}</i></strong></td>
   </tr>
   <tr>
-    <td width="60%"><strong><i>Total Due ( {{ isset($sale) ? $sale->client_name : 'This Client' }}):</i></strong></td>
-    <td width="40%"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
+    <td width="60%" style="text-align: right;"><strong><i>Total Due ( {{ isset($sale) ? $sale->client_name : 'This Client' }}):</i></strong></td>
+    <td width="35%" style="text-align: right;"><strong><i id="total_due" class="decimal">{{ isset($sale) ? $sale->getTotalDueAmountDecimalFormat() : number_format(0.00, 2) }}</i>
     {{' ' . MarketPlex\Store::currencyText() }}</strong></td>
   </tr>
 </tbody>
 </table>
 
-<div class="text-center"><b>Page 3 of 5</b></div>
+@if ( $page_count == $total_page_count )
+
+  @if ( $page_count_enabled )
+  <div style="text-align: center;"><b>Page {{ $page_count++ }} of {{ $total_page_count }}</b></div>
+  @endif
+
+@endif

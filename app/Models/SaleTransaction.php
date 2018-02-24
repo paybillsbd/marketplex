@@ -66,6 +66,14 @@ class SaleTransaction extends Model
         return $this->hasMany('MarketPlex\Expense');
     }
 
+
+    public function getInvoiceRecordsCount()
+    {
+        return $this->productbills->count()
+            + $this->shippingbills->count()
+            + $this->billpayments->count();
+    }
+
     public function nextRowIndex()
     {
         return $this->productbills->count()
