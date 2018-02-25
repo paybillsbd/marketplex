@@ -49,8 +49,18 @@ class StoreController extends Controller
 
     private function viewUserStore(array $data)
     {
+        $storeAvailableCount = Store::getAvailebleCount();
+        $storeAvailableWarning = 'You have created maximum allowed stores';
+        if (Store::isUnlimited())
+            $storeAvailableWarning = 'You are allowed to create unlimited stores.';
+        else if ($storeAvailableCount > 0)
+            $storeAvailableWarning = 'You can create ' . $storeAvailableCount . ' more store(s).';
+
         return view('add-store', $data)->withUser(Auth::user()->id)
                                 ->withStores(Auth::user()->stores)
+                                ->withSubmitable(Store::isAuthUserAllowedToCreate())
+                                ->withSingleStore( !Store::isStoreOwnsSubdomain() )
+                                ->withStoreCountWarning( $storeAvailableWarning )
                                 ->withAreaCodes(collect(ContactProfileManager::areaCodes()));
     }
 
@@ -60,9 +70,18 @@ class StoreController extends Controller
         return $this->viewUserStore($defaultData);
     }
 
-    public function redirectUrl($site)
+    public function redirectUrl($site, $ssl = true)
     {
-        return StoreRedirect::to('http://' . $site);
+        return StoreRedirect::to('http'. ($ssl ? 's' : '') .'://' . $site);
+    }
+
+    public function showProducts(StoreRequest $request, Store $store)
+    {
+        if($request->ajax())
+        {
+            return response()->json($store->products);
+        }
+        dd($store->products);
     }
 
     private function validator(array $data, array $rules)
@@ -72,7 +91,7 @@ class StoreController extends Controller
 
     public function delete(Store $store)
     {
-        if(!$store->isAllowedMasterDelete() && $store->isBelowStoreCountPolicy())
+        if($store->isStoreDeleteAllowed() && !$store->canDelete())
         {
             flash()->error('Sorry! You must have at least one shop to continue. Please contact your ' . $this->_vendor_name . ' administrator for any query.');
             return redirect()->back();

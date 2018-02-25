@@ -24,8 +24,7 @@ class RedirectIfAuthenticated
 
             // $mailer = new ActionMailer();
             // $mailer->report($request);
-
-            broadcast(new ClientAction(ProtocolKeeper::getData($request)));
+            // broadcast(new ClientAction(ProtocolKeeper::getData($request)));
             
             $authUser = Auth::user();
             if($authUser->isAdmin() || $authUser->isDeveloper() || $authUser->isGuest())

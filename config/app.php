@@ -202,7 +202,13 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         
         // Cart
-        Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class
+        Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
+        
+        // Collective\Html
+        Collective\Html\HtmlServiceProvider::class,
+
+        // dompdf
+        Barryvdh\DomPDF\ServiceProvider::class,
     ],
 
     /*
@@ -254,6 +260,10 @@ return [
         
         // Cart
         'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
+        // Collective HTML
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        'PDF' => \Barryvdh\DomPDF\Facade::class,
 
     ],
 

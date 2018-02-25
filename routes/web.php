@@ -19,11 +19,27 @@ Route::get('/phpinfo', function() {
 Route::get('/event', function() {
     event(new \MarketPlex\Events\ClientAction([ 'id' => 4, 'name' => 'MyEvent' ]));
 });
-Route::get('/app', function() {
-    return 'Its me';
+
+Route::get('/select', function() {
+    return view('demo.select2');
+});
+
+Route::get('/autocomplete', function() {
+    return view('demo.autocomplete');
 });
 
 
+/* Development */
+
+// store-front controller
+
+Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
+
+Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
+
+Route::get('/about', function() {
+    return view('store-about');
+});
 
 Route::group([ 'prefix' => 'cart' ], function () {
 // cart test    
@@ -48,27 +64,11 @@ Route::group([ 'prefix' => 'cart' ], function () {
     // Go to check out page
     Route::get('/checkout/', ['uses' => 'CartController@checkoutCart', 'as'=> 'cart.checkout']);
     
-// end cart test
+    // end cart test
 
-// Corfirm Order
+    // Corfirm Cart
     Route::post('/cart/confirm/', ['uses' => 'CartController@confirmCart', 'as'=> 'cart.confirm']);
 // end order  
-});
-
-
-/* Development */
-
-Route::get('/', [ 'uses' => 'StoreFrontController@showStoreFront', 'as' => 'store-front' ]);
-
-Route::get('/categories/{category}', [ 'uses' => 'StoreFrontController@filterCategory', 'as' => 'store-front.categories.filter' ]);
-
-// store-front controller
-
-
-
-
-Route::get('/about', function() {
-    return view('store-about');
 });
 
 Auth::routes();
@@ -103,7 +103,7 @@ Route::group([ 'as' => 'user::' ], function() {
     Route::group(['prefix' => 'stores'], function () {
 
         Route::get('/', [ 'uses' => 'StoreController@index', 'as' => 'stores' ]);           
-        Route::get('/redirect/site/{site}', [ 'uses' => 'StoreController@redirectUrl', 'as' => 'stores.redirect' ]);           
+        Route::get('/redirect/site/{site}/ssl/{ssl?}', [ 'uses' => 'StoreController@redirectUrl', 'as' => 'stores.redirect' ]);           
         Route::get('/create/name/{name}/site/{site}/business/{business}', [ 'uses' => 'StoreController@createOnSignUp', 'as' => 'stores.create-on-signup' ]);           
         Route::post('/create', [ 'uses' => 'StoreController@create', 'as' => 'stores.create' ]);           
         Route::post('/{store}', [ 'uses' => 'StoreController@postUpdate', 'as' => 'stores.update' ]);           

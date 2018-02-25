@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
     <link rel="stylesheet" href="/vendor/styles.css">
+
     <style>
     #view-source {
       position: fixed;
@@ -49,10 +50,44 @@
     .margin-choose-file-button{
       margin: 1em;
     }
+
+    /*Small screen*/
+    @media screen and (max-width: 750px){
+        
+        body{
+             width: fit-content;
+        }
+        
+    }
+
+    /*Medium screen*/
+    @media screen and (min-width: 992px) {
+       /*.card{*/
+       /*     background: red;*/
+       /*  }*/
+
+    }
+
+    /*Large screen*/
+    @media screen and (min-width: 1200px) {
+         /*.card{*/
+         /*   background: red;*/
+         /*}      */
+
+    }
+    
     </style>
 
     @include('includes.styles.inzaana')
     @yield('header-style')
+
+    <!-- Scripts -->
+    <script>
+        window.Laravel = {!! json_encode([
+            'csrfToken' => csrf_token(),
+        ]) !!};
+    </script>
+    @yield('header-scripts')
   </head>
   <body>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
@@ -85,23 +120,10 @@
     @yield('modals')
     @include('icons.graphs-svg-demo')
     <!-- <a href="https://github.com/google/material-design-lite/blob/mdl-1.x/templates/dashboard/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white">View Source</a> -->
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     @include('includes.scripts.inzaana')
-
     @yield('footer-scripts')
-
-    <!-- <script src="{{ asset('/vendor/inzaana/browser-events/browser-event-navigation.js') }}" type="text/javascript"></script> -->
-    <script type="text/javascript">
-          
-      // $(auth).ready(function () {
-
-      //     auth.logout = function() {
-      //       window.location.href = '/logout';
-      //     }
-
-      // });
-    </script>
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   
   </body>
 </html>

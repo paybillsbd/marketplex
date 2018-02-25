@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 use MarketPlex\Helpers\ImageManager;
 
+use MarketPlex\ProductBill;
+
 class Product extends Model
 {
     // use SoftDeletes;
@@ -52,7 +54,7 @@ class Product extends Model
         'special_specs' => 'json'
     ];
 
-    const MAX_AVAILABLE_QUANTITY = 15;
+    const MAX_AVAILABLE_QUANTITY = 100;
     const MIN_AVAILABLE_QUANTITY = 1;
 
     const IMAGE_DISPLAY_TYPES = [
@@ -70,6 +72,11 @@ class Product extends Model
     public function store()
     {
         return $this->belongsTo('MarketPlex\Store');
+    }
+
+    public function productbill()
+    {
+        return $this->hasOne(ProductBill::class);
     }
 
     /**
@@ -235,6 +242,11 @@ class Product extends Model
     public static function defaultImage()
     {
         return (ProductMedia::IMAGES_PATH_PUBLIC . ProductMedia::DEFAULT_IMAGE);
+    }
+
+    public static function isFeatureSpecAllowed()
+    {
+        return env('PRODUCT_FEATURE_SPEC_ALLOWED', false) === true;
     }
 
     public static function imageDisplayOrientation($index)

@@ -31,11 +31,8 @@ class StoreFrontController extends Controller
         {
             $user = $guestUser;
         }
-        // return $user;
-        // Developer debug access
         if(!Auth::guest() && (Auth::user()->isDeveloper() || Auth::user()->isGuest()))
             $user = Auth::user();
-// return $user->hasNoProduct() ? 'Yes' : 'No';
         if(!$user || $user->hasNoProduct())
             return view('store-comingsoon');
 
@@ -49,11 +46,13 @@ class StoreFrontController extends Controller
         $viewData = [
             'active_category' => $category ? $category->id : -1,
         ];
-        $cart = Cart::count();
+        
+        $cart = Cart::count();          
+        $totalcart = Cart::content();
+        
         return view('store-front-1', $viewData)->withPaginatedProducts($marketProducts->paginate(6))
                                                 ->withCategories(Category::all()->pluck('name', 'id'))
-                                                ->with('cart',$cart);
-                                                
+                                                ->with(compact('cart', 'totalcart'));                                                
                                                
     }
 

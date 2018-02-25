@@ -1,3 +1,4 @@
+@isset($errors)
 @if(count($errors) > 0)
 
     <div class="alert alert-danger">
@@ -13,6 +14,7 @@
     </div>
     
 @endif
+@endisset
 
 <div class="flash-message wow fadeIn" data-wow-delay="0.2s">
   @foreach (['danger', 'warning', 'success', 'info'] as $msg)

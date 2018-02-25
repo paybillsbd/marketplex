@@ -1,6 +1,6 @@
 @extends('layouts.app-store-front')
-@section('title', 'Cart Item')
-@section('title-module-name', 'Store')
+@section('title', 'Cart Items')
+@section('title-module-name', 'Cart Items')
 
 @section('header-styles')
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -9,6 +9,10 @@
 @section('footer-scripts')
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="/vendor/inzaana/js/product/product.js" type="text/javascript"></script>
+@endsection
+
+@section('modals')
+    <div id="modal_container">{{--Modal load here--}}</div>
 @endsection
 
 @section('content')
@@ -26,55 +30,22 @@
         <div class="row wow fadeIn" data-wow-delay="0.4s">
         <!--From Cart Array-->
         @foreach($totalcart as $cartproduct)
-        <!--From Product Model-->
-        @foreach($products as $product)
-        @if($product->id == $cartproduct->id)
-        <!-- Modal -->
-        <div class="modal fade" id="ModalLong{{ $product->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLong" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">Product Details - Quick View</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-3  padT10">
-                      <img class="img-responsive imgborder" data-toggle="magnify" src="{{ $product->banner() }}" />
-                  </div>
-                  <div class="col-md-9" style="height:500px;overflow-y:auto">
-                    <h3 class="padmar0 headtext1">{{ $product->title }}</h3>
-                    <p>Category: {{ $product->categoryName() }}</p>
-                    <h4>{!! MarketPlex\Store::currencyIcon() !!}{{ $product->mrp }}</h4>
-                    <p class="sku">{{ $product->discount }}% discount!</p>
-                      
-                      @if(false)
-                        @include('includes.approval-label', [ 'status' => $product->status, 'labelText' => $product->getStatus() ])
-                      @endif
-                      
-                    <h5><strong>Product Info</strong></h5>
-                    <p class="slidePara1">{!! $product->description or '<i>No description is found to this product</i>' !!}</p>
-                    @include('includes.product-spec-viewer')
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- End Modal -->
         <div class="col-lg-4">
-            <div class="thumbnail cartimg">
-                <a href="#" data-toggle="modal" data-target="#ModalLong{{ $cartproduct->id }}">
-                <img src="{{ $cartproduct->options->image }}" alt="..." class="img-reponsive">
+          <div class="card  wow fadeIn"  data-wow-delay="0.2s" >
+            <!--Card image-->
+            <div class="view overlay hm-white-slight" >
+                <img src="{{ $cartproduct->options->image }}" class="img-responsive card-img" alt="" />
+                <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [ 'product' => MarketPlex\Product::find($cartproduct->id), 'api_token' => \MarketPlex\Helpers\ImageManager::PUBLIC_TOKEN ]) }}">
+                    <div class="mask"></div>
                 </a>
-              <div class="caption text-center">
-                <h3>{{ $cartproduct->name }}</h3>
-                <h5>Cart Quantity: {{ $cartproduct->qty }}</h5>
+            </div>
+            <!--/.Card image-->
+            <!--Card content-->
+            <div class="card-block">
+                <div class="caption text-center">
+                <h4 class="card-title">{{ $cartproduct->name }}</h4>
+                <!--Text--> 
+                <p class="card-text">Cart Quantity: {{ $cartproduct->qty }}</p>
                 <p>Available Quantity: {{ $cartproduct->options->available_quantity }}</p>
                 <p>Price: <span>{{ MarketPlex\Store::currencyIcon() }}</span>{{ $cartproduct->price }}</p>
                 <a href="{{ route('cart.remove', ['id' => $cartproduct->rowId] ) }}" ><button  class="btn btn-warning btn-sm fa fa-minus fa-2x"></button></a>
@@ -82,11 +53,11 @@
                 <br>
                 <br>
                 <a href="{{ route('cart.removethis', ['id' => $cartproduct->rowId]) }}"><button  class="btn btn-danger">Remove Item</button></a>
-              </div>
+                </div>
             </div>
+            <!--/.Card content-->
+          </div>
         </div>
-        @endif
-        @endforeach
         @endforeach
            @if($totalprice > 0)
             <div class="text-center col-md-12">

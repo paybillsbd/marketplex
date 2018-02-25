@@ -27,7 +27,12 @@ class CreateProducts extends Migration
             // $table->json('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
             
             // NOTE: Temoporary field for specs it will be replaced with $table->json() if postgresql is available to server
-            $table->longText('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
+
+
+            if ( Product::isFeatureSpecAllowed() )
+            {
+                $table->longText('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
+            }
             
             $table->bigInteger('available_quantity')->default(0);
             $table->integer('return_time_limit')->default(0);

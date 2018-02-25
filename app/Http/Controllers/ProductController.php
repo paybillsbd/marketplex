@@ -368,7 +368,10 @@ class ProductController extends Controller
 
         $product->title = $data['title'];
         $product->is_public = $data['is_public'];
-        $product->special_specs = collect($data['spec'])->toJson();
+        if (Product::isFeatureSpecAllowed())
+        {
+            $product->special_specs = collect($data['spec'])->toJson();
+        }
         $product->available_quantity = $data['available_quantity'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
         // $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
@@ -594,7 +597,10 @@ class ProductController extends Controller
         $product->title = $marketProduct->title;
         $product->discount = $data['discount'];
         $product->mrp = $product->discountedPrice();
-        $product->special_specs = collect($data['spec'])->toJson();
+        if (Product::isFeatureSpecAllowed())
+        {
+            $product->special_specs = collect($data['spec'])->toJson();
+        }
         $product->available_quantity = $data['available_quantity'];
         $product->return_time_limit = $data['return_time_limit'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
@@ -685,30 +691,29 @@ class ProductController extends Controller
         }
     }
 
-    // 1_51_Home_container_section-2_img-2_b995a302bc6ffe2d463d69f016a78042.jpeg
-    // sources:
-    // http://stackoverflow.com/questions/30191330/laravel-5-how-to-access-image-uploaded-in-storage-within-view
-    // http://image.intervention.io/api/response
+    public function showPrice(ProductRequest $request, Product $product)
+    {
+        if($request->ajax())
+        {
+            return response()->json([
+                'product_id' => $product->id,
+                'title' => $product->title,
+                'store_name' => $product->store->name,
+                'price' => $product->mrp,
+                'available_quantity' => $product->available_quantity
+            ]);
+        }
+        dd($product);
+    }
+    
     public function image($file_name)
     {
-        $imageFilePath = ProductMedia::getStoragePath('IMAGE') . $file_name;
-        if (!File::exists($imageFilePath))
-        {
-            $imageFilePath = Product::defaultImage();
-        }
-        $manager = new ImageManager();
-        return $manager->make( $imageFilePath )->resize(320, 240)->response();
+        return $this->imageResized($file_name, 320, 240);
     }
 
     public function thumbnail($file_name)
     {
-        $imageFilePath = ProductMedia::getStoragePath('IMAGE') . $file_name;
-        if (!File::exists($imageFilePath))
-        {
-            $imageFilePath = Product::defaultImage();
-        }
-        $manager = new ImageManager();
-        return $manager->make( $imageFilePath )->resize(90, 80)->response();
+        return $this->imageResized($file_name, 90,80);
     }
     
     public function quickView($product_id)
@@ -719,5 +724,30 @@ class ProductController extends Controller
 
         return response()->view('includes.product-preview-modal', $view_data)
             ->header('Content-Type', 'html');
+    }
+
+    // 1_51_Home_container_section-2_img-2_b995a302bc6ffe2d463d69f016a78042.jpeg
+    // sources:
+    // http://stackoverflow.com/questions/30191330/laravel-5-how-to-access-image-uploaded-in-storage-within-view
+    // http://image.intervention.io/api/response
+    private function imageResized($file_name, $width, $height)
+    {
+        $imageFilePath = ProductMedia::getStoragePath('IMAGE') . $file_name;
+        if (!File::exists($imageFilePath))
+        {
+            Log::info('[' . config('app.vendor') . '][' . $imageFilePath . ']');
+            $imageFilePath = public_path(Product::defaultImage());
+            Log::info('[' . config('app.vendor') . '][' . $imageFilePath . ']');
+        }
+        $manager = new ImageManager();
+        try
+        {
+            return $manager->make( $imageFilePath )->resize($width, $height)->response();
+        }
+        catch(Intervention\Image\Exception\NotReadableException $iex)
+        {
+            Log::critical('[' . config('app.vendor') . '][' . $iex->getMessage() . ']');
+            return $manager->make( public_path(Product::defaultImage()) )->resize($width, $height)->response();
+        }
     }
 }
