@@ -27,7 +27,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return $this->viewSalesFiltered(Sale::paginate(3));
+        return $this->viewSalesFiltered(Sale::latest()->paginate(3));
     }
 
     private function viewSalesFiltered($sales)
@@ -180,7 +180,7 @@ class SaleController extends Controller
             if (Sale::nothingSearched($queries))
             {
                 return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
-                    : $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
+                    : $this->viewSalesFiltered(Sale::latest())->withErrors([ 'queries' => 'No queries found!' ]);
             }
             $sales = Sale::search($queries)->get(); //->paginate(3)
             // dd($sales);
@@ -188,7 +188,7 @@ class SaleController extends Controller
                 : $this->viewSalesFiltered($sales);
         }
         return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
-            : $this->viewSalesFiltered(Sale::all())->withErrors([ 'queries' => 'No queries found!' ]);
+            : $this->viewSalesFiltered(Sale::latest())->withErrors([ 'queries' => 'No queries found!' ]);
     }
 
     /**

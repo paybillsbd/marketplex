@@ -17,6 +17,9 @@ var DataManager = {
             msg = 'Not connected.\n Verify Network.';
         } else if (jqXHR.status == 404) {
             msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 403) {
+            msg = textStatus + '. [403]';
+            //$('body').html(jqXHR.responseText);
         } else if (jqXHR.status == 401) {
             msg = errorThrown + '. [' + jqXHR.status + ']';
         } else if (jqXHR.status == 500) {
@@ -40,7 +43,7 @@ var ViewContentManager = {
 
   _setUp: function(view_name, payload) {
 
-      DataManager.serviceUrl = '/api/v1/templates/' + view_name + '?api_token={{ Auth::user()->api_token }}';
+      DataManager.serviceUrl = '/api/v1/templates/' + view_name;
       DataManager.payload = payload;
 
   },

@@ -90,7 +90,7 @@ class CategoryController extends Controller
         }
         else
         {            
-            flash('Your category (' . $category->name . ') is already removed or not in your list. Please contact your administrator to know category removal policy');
+            flash('Your expected category is already removed or not in your list. Please contact your administrator to know category removal policy');
         }
         return redirect()->route('user::categories');
     }

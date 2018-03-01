@@ -421,15 +421,7 @@
 
                 <div class="box-footer text-right"> <!-- Submit button -->
                   <div class="row">
-                    <div class="col-md-6"> </div>
-                    <div class="col-md-2">
-                          <a  href="" id="sales_today" name="sales_today" 
-                              class="btn btn-info btn-flat btn-sm" role="button">Today's Sales</a>
-                    </div>
-                    <div class="col-md-2"> 
-                          <a  href="{{ route('user::sales.create', [ 'api_token' => Auth::user()->api_token ]) }}"
-                              class="btn btn-info btn-flat btn-sm" role="button">New Sale</a>
-                    </div>
+                    <div class="col-md-10"> </div>
                     <div class="col-md-2">
                       <button class="btn btn-info btn-flat btn-sm" id="search_sales" name="search_sales" type="submit">Search Sales</button>
                     </div>                    
@@ -441,40 +433,71 @@
           </div>
     </div>
 </div>
-
-  <!--Search Results-->
+    
+    <!--Interests-->
     <div class="row">
 
-          <div class="col-xs-12">
+    <div class="col-xs-12">
 
-            <div class="box">
-              <div class="box-header">
-                <h3 class="box-title">Sales search results</h3>
-              </div><!-- /.box-header -->
-              <div class="box-body table-responsive no-padding">
+    <div class="box">
+      <div class="box-header">
+      <h3 class="box-title">You might be interested to see:</h3>
+      </div><!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
 
-              <table id="search-result-table" class="table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Bill ID</th>
-                      <th>Client/Company</th>
-                      <th>Total Bill</th>
-                      <th>Due</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @include('includes.tables.sales-row-search-result') 
-                  </tbody>
-              </table>
-              {{ $sales->appends([ 'api_token' => Auth::user()->api_token ])->links() }}
 
-            </div><!-- /.box-body -->
-          </div><!-- /.box -->  
-        </div>
+    <div class="row">
+    <div class="col-xs-4">
+          <a  href="" id="sales_today" name="sales_today" 
+              class="btn btn-info btn-flat btn-sm" role="button">Today's Sales</a>
+    </div>
+    </div>
 
+    </div><!-- /.box-body -->
+    </div><!-- /.box -->  
+    </div>
+    </div>
+
+    <!--Search Results-->
+    <div class="row">
+
+        <div class="col-xs-12">
+
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Sales search results</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+
+            <div class="row">
+            <div class="col-xs-4"> 
+                  <a  href="{{ route('user::sales.create', [ 'api_token' => Auth::user()->api_token ]) }}"
+                      class="btn btn-info btn-flat btn-sm" role="button">New Sale</a>
+            </div>
+            </div>
+
+            <table id="search-result-table" class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Bill ID</th>
+                    <th>Client/Company</th>
+                    <th>Total Bill</th>
+                    <th>Due</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @include('includes.tables.sales-row-search-result') 
+                </tbody>
+            </table>
+            {{ $sales->appends([ 'api_token' => Auth::user()->api_token ])->links() }}
+
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->  
       </div>
+
+    </div>
   
   
 </div>

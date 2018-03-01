@@ -78,16 +78,6 @@
             ).trim();
         }
 
-        var tags = [ 'Bar', 'Far', 'Dar'];
-
-        // $( "#client" ).autocomplete({
-        //     source: tags, //"{{ route('user::clients.index', [ 'api_token' => Auth::user()->api_token ]) }}",
-        //     minLength: 2,
-        //     select: function( event, ui ) {
-        //       alert( "Selected: " + ui.item.value + " aka " + ui.item.label );
-        //     }
-        // }); 
-
         $('#client').keyup(function(event) {
 
               var autocompleteElement = $('#client-autocomplete');
@@ -120,7 +110,9 @@
             ViewContentManager.append('sales-row-shipping-bill', {
                 row_id: i++,
                 datetime: d.toLocaleDateString(),
-                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_shipping');
+                api_token: "{{ Auth::user()->api_token }}"
+                
+            }, '#dynamic_field_shipping');
         });   
 
         $('#addPayRow').click(function(){
@@ -128,7 +120,8 @@
             ViewContentManager.append('sales-row-paid-bill', {
                 row_id: i++,
                 datetime: d.toLocaleDateString(),
-                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_pay');
+                api_token: "{{ Auth::user()->api_token }}"
+            }, '#dynamic_field_pay');
         });  
 
         $('#add_expense_btn').click(function(){  
@@ -136,7 +129,8 @@
             ViewContentManager.append('sales-row-expense', {
                 row_id: i++,
                 datetime: d.toLocaleDateString(),
-                api_token: "{{ Auth::user()->api_token }}" }, '#dynamic_field_expenses');
+                api_token: "{{ Auth::user()->api_token }}"
+            }, '#dynamic_field_expenses');
         });
         
         $('#addBankRow').click(function(){  
@@ -175,6 +169,8 @@
                   multInputs();
                   return;
               }
+
+		      console.log('product data loaded');
 
               ViewContentManager.append('sales-row-product-bill', {
                 row_id: i++,
