@@ -3,7 +3,7 @@
 @section('title-module-name', 'Stores')
 
 @section('header-style')
-  <link rel="stylesheet" href="/jquery-validation/css/screen.css">
+  <!-- <link rel="stylesheet" href="/jquery-validation/css/screen.css"> -->
   <style type="text/css">
 
   #edit-profile-form label.error {
@@ -157,10 +157,10 @@
                 <div class="box-body table-responsive no-padding">
                   <table id="parent" class="table table-hover">
                     <tr>
-                      <th class="text-center">Store Name</th>
+                      <th class="text-center" width="20%">Store Name</th>
 
-                      <th class="text-center">Address</th>
-                      <th class="text-center">Action</th>
+                      <th class="text-center" width="60%">Address</th>
+                      <th class="text-center" width="20%">Action</th>
                     </tr>
                     @if(isset($stores))
                       @foreach($stores as $store)
@@ -181,17 +181,30 @@
                         <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
 
                         <td class="text-center" id="child">
-                          <form id="store-edit-form">                            
+                          
+                          <div class="clearfix">
+                          <div class="row">
+                          <form id="store-edit-form">
+                            <div class="col-md-4"> 
                             <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" formnovalidate="formnovalidate"
                                     id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
+                            </div>
                           </form>
+                          <div class="col-md-4">
+                          <a  href="{{ route('user::store.sales', [ 'store' => $store, 'api_token' => Auth::user()->api_token ]) }}"
+                              class="btn btn-info btn-flat btn-xs" role="button">Sales</a>
+                          </div>
                           @if ($store->isStoreDeleteAllowed())
                           <form id="store-delete-form" class="form-horizontal">
                             {!! csrf_field() !!}
+                            <div class="col-md-4"> 
                             <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" formnovalidate="formnovalidate" 
                                     id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
+                            </div>
                           </form>
                           @endif
+                          </div>
+                          </div>
                         </td>
 
                       </tr>

@@ -1,6 +1,9 @@
 @extends('layouts.app-dashboard-admin')
 @section('title', 'Sales')
-@section('title-module-name', 'Sales')
+@section('title-module-name')
+<a href="{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}">Sales</a> {{ ' > New' }}
+@endsection
+
 
 @section('header-styles')
     <!-- Styles -->

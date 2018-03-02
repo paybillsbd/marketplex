@@ -66,7 +66,6 @@ class SaleTransaction extends Model
         return $this->hasMany('MarketPlex\Expense');
     }
 
-
     public function getInvoiceRecordsCount()
     {
         return $this->productbills->count()
@@ -211,12 +210,42 @@ class SaleTransaction extends Model
 
     public function scopeSearch($query, array $searchInputs)
     {
+        $queryB = clone $query;
+        $queryT = clone $query;
+        $qc = $searchInputs['client_name'] ? $query->where('client_name', 'like', '%' . $searchInputs['client_name'] . '%') : null;
+        $qb = $searchInputs['billing_id'] ? $queryB->Where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%') : null;
         $from = Carbon::parse($searchInputs['from_date'])->format('Y-m-d');
         $to = Carbon::parse($searchInputs['to_date'])->format('Y-m-d');
-        $ofClient = $query->where('client_name', 'like', '%' . $searchInputs['client_name'] . '%');
-        $ofBill = $query->where('bill_id', 'like', '%' . $searchInputs['billing_id'] . '%');
-        $ofDate = $query->whereBetween('created_at', [ $from, $to ]);
-        return $ofClient->orderBy('created_at', 'desc');
+        $qt = empty($searchInputs['client_name']) && empty($searchInputs['billing_id']) ? $queryT->WhereBetween('created_at', [ $from, $to ]) : null;
+
+        if ($qc && $qb && $qt)
+        {
+            return $qc->union($qb)->union($qt);
+        }
+        else if ($qc && $qb)
+        {
+            return $qc->union($qb);
+        }
+        else if ($qb && $qt)
+        {
+            return $qb->union($qt);
+        }
+        else if ($qc && $qt)
+        {
+            return $qc->union($qt);
+        }
+        else if ($qc)
+        {
+            return $qc;
+        }
+        else if ($qb)
+        {
+            return $qb;
+        }
+        else if ($qt)
+        {
+            return $qt;
+        }
     }    
 
     public static function generateBillId()

@@ -1,6 +1,9 @@
 @extends('layouts.app-dashboard-admin')
-@section('title', 'Income/ Expense Calendar')
-@section('title-module-name', 'Income/ Expense Calendar')
+@section('title', 'Income/ Expense')
+@section('title-module-name')
+<a href="{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}">Sales</a> {{ ' > Income/ Expense' }}
+@endsection
+
 
 @section('header-styles')
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

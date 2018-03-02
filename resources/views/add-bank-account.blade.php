@@ -1,6 +1,9 @@
 @extends('layouts.app-dashboard-admin')
 @section('title', 'Bank Account')
-@section('title-module-name', 'Create Bank Account')
+@section('title-module-name')
+<a href="{{ route('user::sales.index', [ 'api_token' => Auth::user()->api_token ]) }}">Sales</a>
+<a href="{{ route('user::sales.create', [ 'api_token' => Auth::user()->api_token ]) }}">{{ ' > New' }}</a>{{ ' > Create Bank Account' }}
+@endsection
 
 @section('header-styles')
     <!-- Styles -->

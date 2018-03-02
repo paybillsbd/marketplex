@@ -15,6 +15,7 @@ use Redirect as StoreRedirect;
 
 use MarketPlex\Store;
 use MarketPlex\User;
+use MarketPlex\SaleTransaction as Sale;
 use MarketPlex\Mailers\AppMailer;
 use MarketPlex\Helpers\ContactProfileManager;
 
@@ -301,5 +302,16 @@ class StoreController extends Controller
         } 
         $stores = empty($suggestions) ? $storeNames : $suggestions;
         return response()->json([ 'store' => collect($stores)->take(5) ]);
+    }
+
+    public function showSales(Store $store)
+    {
+        $sales = Sale::latest()->with('productbills.product.store')
+                                ->join('product_bills', 'sale_transactions.id', '=', 'product_bills.sale_transaction_id')
+                                ->join('products', 'products.id', '=', 'product_bills.product_id')
+                                ->join('stores', 'stores.id', '=', 'products.store_id')
+                                ->select('sale_transactions.*', 'products.store_id')->where('store_id', $store->id)->distinct()->paginate();
+        return view('store-sales')->withStore($store)
+                                  ->withSales($sales);
     }
 }

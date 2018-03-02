@@ -17,6 +17,7 @@ use MarketPlex\Expense;
 
 use PDF;
 use NumberToWords\NumberToWords;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SaleController extends Controller
 {
@@ -27,7 +28,8 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return $this->viewSalesFiltered(Sale::latest()->paginate(3));
+        return $this->viewSalesFiltered(Sale::latest()->paginate(3))
+                    ->withPaginatorAppends([ 'api_token' => Auth::user()->api_token ]);
     }
 
     private function viewSalesFiltered($sales)
@@ -182,10 +184,12 @@ class SaleController extends Controller
                 return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
                     : $this->viewSalesFiltered(Sale::latest())->withErrors([ 'queries' => 'No queries found!' ]);
             }
-            $sales = Sale::search($queries)->get(); //->paginate(3)
-            // dd($sales);
-            return $request->ajax() ? response()->json([ 'sales' => $sales, 'code' => 200 ])
-                : $this->viewSalesFiltered($sales);
+            $sales = Sale::search($queries)->get();
+            return $request->ajax() ? response()->json([
+                'sales' => $sales,
+                'queries' => $queries,
+                'code' => 200
+            ]) : $this->viewSalesFiltered($sales);
         }
         return $request->ajax() ? response()->json([ 'message' => 'No queries found!', 'code' => 400 ], 400)
             : $this->viewSalesFiltered(Sale::latest())->withErrors([ 'queries' => 'No queries found!' ]);
@@ -254,7 +258,14 @@ class SaleController extends Controller
     {
         if ($request->ajax())
         {
-            return response()->view('includes.tables.' . $view, $request->all())->header('Content-Type', 'html');
+            $inputs = $request->except('sales');
+            if ($request->has('sales'))
+            {
+                $sales = json_decode($request->input('sales'));
+                $sales = collect($sales)->map(function ($item, $key) { return Sale::find($item->id); });
+                $inputs = array_add($inputs, 'sales', $sales);
+            }
+            return response()->view('includes.tables.' . $view, $inputs)->header('Content-Type', 'html');
         }
         return '<p>Invalid Request</p>';
     }
@@ -263,7 +274,27 @@ class SaleController extends Controller
     {
         if ($request->ajax())
         {
-            return response()->view('includes.paginations.' . $view, $request->all())->header('Content-Type', 'html');
+            $inputs = $request->except('sales');
+            if ($request->has('sales'))
+            {                
+                $sales = collect(json_decode($request->input('sales')));
+                // Log::info($sales->toJson());
+                $sales = $sales->map(function ($item, $key) { return Sale::find($item->id); });
+                $perPage = 3;
+                $currentPage = LengthAwarePaginator::resolveCurrentPage();
+                $currentPageSearchResults = $sales->slice(($currentPage - 1) * $perPage, $perPage)->all();
+                $entries = new LengthAwarePaginator($currentPageSearchResults, count($sales), $perPage,  $currentPage, [
+                    'path' => LengthAwarePaginator::resolveCurrentPath(),
+                    'query' => [ 'queries' => json_decode($request->input('queries')) ]
+                ]);
+                // Log::info($entries->toJson());
+                $entries->setPath('sales/search');
+                return response()->view('vendor.pagination.' . $view, [
+                    'entries' => $entries,
+                    'paginator_appends' => [ 'api_token' => Auth::user()->api_token ]
+                ])->header('Content-Type', 'html');
+            }
+            return response()->view('vendor.pagination.' . $view, $inputs)->header('Content-Type', 'html');
         }
         return '<p>Invalid Request</p>';
     }

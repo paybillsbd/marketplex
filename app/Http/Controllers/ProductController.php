@@ -205,7 +205,7 @@ class ProductController extends Controller
             // NOTE: ilike -> seaches case insensitive
             $productQuery = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%');
             $productsBySearch = $productQuery->get();
-            Log::info(collect($productsBySearch)->toJson());
+            // Log::info(collect($productsBySearch)->toJson());
             
             $productsBySearchPaginated = $productQuery->paginate(2);
             $productsBySearch = $productsBySearch->reject(function ($product) {

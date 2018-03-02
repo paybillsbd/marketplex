@@ -1,6 +1,6 @@
 @extends('layouts.app-dashboard-admin')
-@section('title', 'Sales Search')
-@section('title-module-name', 'Sales Search')
+@section('title', 'Sales')
+@section('title-module-name', 'Sales')
 
 @section('header-styles')
 
@@ -284,9 +284,15 @@
 
           if (json.sales !== undefined)
           {
-              ViewContentManager.replace('sales-row-search-result', {
-                sales: JSON.stringify(json.sales)
-              }, '#search-result-table > tbody');
+              var payload = { sales: JSON.stringify(json.sales) };
+              ViewContentManager.replace('sales-row-search-result', payload, '#search-result-table > tbody');
+              $('#pagination-container').empty();
+              // payload = { sales: JSON.stringify(json.sales), queries: JSON.stringify(json.queries) };
+              // DataManager.request('get', '/api/v1/paginations/sale-transaction-links?api_token={{ Auth::user()->api_token }}', payload, function(data) {
+
+              //     // console.log(data);
+              //     $('#pagination-container').html(data);
+              // });
           }
       });
 
@@ -443,7 +449,7 @@
       <div class="box-header">
       <h3 class="box-title">You might be interested to see:</h3>
       </div><!-- /.box-header -->
-    <div class="box-body table-responsive no-padding">
+    <div class="box-body">
 
 
     <div class="row">
@@ -491,7 +497,7 @@
                   @include('includes.tables.sales-row-search-result') 
                 </tbody>
             </table>
-            {{ $sales->appends([ 'api_token' => Auth::user()->api_token ])->links() }}
+            <div id="pagination-container">{{ $sales->appends($paginator_appends)->links() }}</div>
 
           </div><!-- /.box-body -->
         </div><!-- /.box -->  

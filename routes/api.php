@@ -28,6 +28,7 @@ Route::get('/serialize', function() {
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], function () {
 
     Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
+	Route::get('/stores/{store}/sales', [ 'uses' => 'StoreController@showSales', 'as' => 'store.sales' ]);     
 
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {
