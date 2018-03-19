@@ -13,6 +13,7 @@
             <th data-sort="price" data-order="ASC" id="sort_by_click">
                 <a href="#">Price</a>
             </th>
+            <th>Store</th>
             <th>Image</th>
             <th>Available Quantity</th>
             <th>Action</th>
@@ -31,6 +32,7 @@
                         <td id="child"><a href="">{{ $product->mrp }}</a></td>
                         <td id="child"><a href="">{{ $product->discount }} %</a></td>
                         <td id="child"><a href="">&#2547 {{ $product->marketProduct()->price }}</a></td>
+                        <td id="child"><a href="">{{ $product->store->name }}</a></td>
                         <td id="child">
                             <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [ 'product' => $product, 'api_token' => MarketPlex\Helpers\ImageManager::PUBLIC_TOKEN ]) }}">
                                 <img src="{{ $product->thumbnail() }}" height="60px" width="90px"/>

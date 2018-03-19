@@ -84,8 +84,10 @@ class ProductController extends Controller
     private function validateProduct(ProductRequest $request, Product $product = null)
     {
         $image_file_rule = ProductMedia::getMediaRule('IMAGE');
-
-        $title_rule = $product ? 'bail|required|unique:products,title,' . $product->id . ',id,deleted_at,NULL|max:200' : 'bail|required|unique:products,title,NULL,id,deleted_at,NULL|max:200';
+        $store_id = Store::whereNameAsUrl($request->input('store_name'))->first()->id;
+        $title_rule = $product ?
+        'bail|required|unique:products,title,' . $product->id . ',id,deleted_at,NULL,store_id,' . $store_id . '|max:200'
+        : 'bail|required|unique:products,title,NULL,id,deleted_at,NULL,store_id,' . $store_id . '|max:200';
         $messages = [
             'size' => 'The uploaded image must be less than :size.',
         ];

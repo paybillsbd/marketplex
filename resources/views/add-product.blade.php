@@ -283,6 +283,15 @@
         var showModal = ($('div.has-error').length > 0 || $('div.is-edit').length > 0);
         $('#addProduct').modal({ 'show' : showModal });
 
+        if ($('div.has-error').length > 0)
+        {
+            $('#store_name').val('{{ old("store_name") }}');
+        }
+        if ($('div.is-edit').length > 0)
+        {
+            $('#store_name').val('{{ $product && $product->store ? $product->store->name_as_url : old("store_name") }}');
+        }
+
         $('#addProduct').on('hidden.bs.modal', function () {
             $('#product-create-form').find('input[type="text"]').val('');
             $('#product-create-form').find('input[name="available_quantity"]').val('{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}');
