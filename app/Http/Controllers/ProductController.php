@@ -53,16 +53,16 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $productsCount = 0;
-        $products = Auth::user()->products;
         //dd($products);
         $categories = Category::all();
+        $productsQuery = Auth::user()->products();
+        $productsVisiblilityQuery = (env('PRODUCT_SHOW_TRASHED', false) === true ? $productsQuery->withTrashed() : $productsQuery)->latest();
         $tab = !session()->has('selected_tab') ? self::PRODUCT_ENTRY_TABS[0] : session('selected_tab');
         $viewData = [
             'productsCount' => session()->has('productsBySearch') ? session('productsBySearch')->count() : 0,
             'productsBySearch' => session()->has('productsBySearch') ? session('productsBySearch') : [],
             'search_terms' => session()->has('search_terms') ? session('search_terms') : '',
-            'products' => Auth::user()->products()->orderBy('title', 'ASC')->paginate(15),
+            'products' => $productsVisiblilityQuery->paginate(15),
             'product' => session()->has('product') ? session('product') : null,
             'categories' => Category::all(),
         ];
@@ -208,10 +208,12 @@ class ProductController extends Controller
             $productQuery = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%');
             $productsBySearch = $productQuery->get();
             // Log::info(collect($productsBySearch)->toJson());
+
+            $isTrashedProductViewEnabled = env('PRODUCT_SHOW_TRASHED', false) === true;
             
             $productsBySearchPaginated = $productQuery->paginate(2);
-            $productsBySearch = $productsBySearch->reject(function ($product) {
-                return $product->trashed() || $product->is_public === false;
+            $productsBySearch = $productsBySearch->reject(function ($product) use ($isTrashedProductViewEnabled) {
+                return  (!$isTrashedProductViewEnabled && $product->trashed()) || $product->is_public === false;
             });
             $productsCount = $productsBySearch->count();
             $productsBySearchPaginated->setPath('products/search');
@@ -272,7 +274,8 @@ class ProductController extends Controller
         return $product_title;
     }
 
-    public function productSearchSingle($search_item){
+    public function productSearchSingle($search_item)
+    {
         $products = Product::SearchByTitle($search_item)->paginate(10);
 
         return response()->view('includes.product-table',compact('products'))
@@ -705,7 +708,7 @@ class ProductController extends Controller
                 'available_quantity' => $product->available_quantity
             ]);
         }
-        dd($product);
+        // dd($product);
     }
     
     public function image($file_name)
@@ -721,7 +724,7 @@ class ProductController extends Controller
     public function quickView($product_id)
     {
         $view_data = [
-            'product' => Product::find($product_id),
+            'product' => env('PRODUCT_SHOW_TRASHED', false) === true ? Product::withTrashed()->find($product_id) : Product::find($product_id),
         ];
 
         return response()->view('includes.product-preview-modal', $view_data)

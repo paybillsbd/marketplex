@@ -13,7 +13,7 @@ use MarketPlex\ProductBill;
 
 class Product extends Model
 {
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'products';
 
@@ -236,7 +236,9 @@ class Product extends Model
     {
         // ilike works only in postgresql
         // return $query->where('title', $title)->orWhere('title', 'ilike', '%' . $title . '%');
-        return $query->where('title', $title)->orWhere('title', 'like', '%' . $title . '%');
+        
+        $isTrashedProductViewEnabled = env('PRODUCT_SHOW_TRASHED', false) === true;
+        return ($isTrashedProductViewEnabled ? $query->withTrashed() : $query )->where('title', $title)->orWhere('title', 'like', '%' . $title . '%');
     }
 
     public static function defaultImage()

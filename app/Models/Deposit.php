@@ -23,6 +23,13 @@ class Deposit extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+    
+    /**
+     * All of the relationships to be touched.
+     *
+     * @var array
+     */
+    protected $touches = ['sale_transaction'];
 
     public function sale()
     {

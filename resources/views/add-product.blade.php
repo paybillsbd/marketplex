@@ -48,6 +48,9 @@
         .ui-autocomplete-loading {
             background: white url('http://loading.io/loader/?use=eyJzaXplIjo4LCJzcGVlZCI6MSwiY2JrIjoiI2ZmZmZmZiIsImMxIjoiIzAwYjJmZiIsImMyIjoiMTIiLCJjMyI6IjciLCJjNCI6IjIwIiwiYzUiOiI1IiwiYzYiOiIzMCIsInR5cGUiOiJkZWZhdWx0In0=') right center no-repeat;
         }
+        .deleted-product {
+            text-decoration: line-through;
+        }
     </style>
     <!--end of date picker css-->
 @endsection
