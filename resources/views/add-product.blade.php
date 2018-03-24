@@ -50,6 +50,7 @@
         }
         .deleted-product {
             text-decoration: line-through;
+            background-color: rgba(64,0,200,0.1);
         }
     </style>
     <!--end of date picker css-->
@@ -57,8 +58,6 @@
 
 @section('modals')
     @include('includes.modals.modal-product-add')
-
-    @each('includes.product-delete-confirm-modal', $products, 'product')
 
     <div id="modal_container">{{--Modal load here--}}</div>
     <div id="alert_modal_container">{{--Alert Modal load here--}}</div>
@@ -106,7 +105,7 @@
             <div id="load_table_dom">
                 @include('includes.product-table')
             </div><!-- /.box-body -->
-    </div><!-- /.box -->
+        </div><!-- /.box -->
 </div>
 </div>
 

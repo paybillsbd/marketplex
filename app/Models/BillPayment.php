@@ -28,7 +28,7 @@ class BillPayment extends Model
      *
      * @var array
      */
-    protected $touches = ['sale_transaction'];
+    protected $touches = ['sale'];
 
     public function sale()
     {

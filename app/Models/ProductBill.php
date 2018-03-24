@@ -23,7 +23,12 @@ class ProductBill extends Model
      *
      * @var array
      */
-    protected $touches = ['sale_transaction'];
+    protected $touches = ['sale'];
+
+    public function sale()
+    {
+        return $this->belongsTo('MarketPlex\SaleTransaction');
+    }
 
     public function product()
     {
@@ -62,7 +67,8 @@ class ProductBill extends Model
 
             $added = $p->quantity < $value['product_quantity'];
             $removed = $p->quantity > $value['product_quantity'];
-            $product = Product::find($p->product_id);
+            // $product = Product::find($p->product_id);
+            $product = $p->product;
             if ($product)
             {
                 if ($added)
@@ -92,7 +98,8 @@ class ProductBill extends Model
                                    ->saveMany($removingProductCollection
                                                 ->map(function ($billedProduct, $key)
             {
-                $p = Product::find($billedProduct->product_id);
+                // $p = Product::find($billedProduct->product_id);
+                $p = $billedProduct->product;
                 if ($p)
                 {
                     $p->available_quantity += $billedProduct->quantity;

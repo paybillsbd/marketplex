@@ -13,16 +13,14 @@
             <th data-sort="price" data-order="ASC" id="sort_by_click">
                 <a href="#">Price</a>
             </th>
-            <th>Store</th>
+            <th class="{{ isset($is_hidden) && is_array($is_hidden) && $is_hidden['store'] ? 'hidden' : '' }}">Store</th>
             <th>Image</th>
             <th>Available Quantity</th>
             <th>Action</th>
         </tr>
 
-        @if(isset($products))
-
+        @isset($products)
             @foreach( $products as $product )
-
                 @if ($product->marketProduct())
                 <tr id="product_{{ $product->id }}" class="{{ $product->trashed() ? 'deleted-product' : '' }}">
                     <!-- <td id="child"><a href="">001</a> </td> -->
@@ -34,7 +32,9 @@
                     <td id="child"><a href="">{{ $product->mrp }}</a></td>
                     <td id="child"><a href="">{{ $product->discount }} %</a></td>
                     <td id="child"><a href="">&#2547 {{ $product->marketProduct()->price }}</a></td>
-                    <td id="child"><a href="">{{ $product->store->name }}</a></td>
+                    <td id="child" class="{{ isset($is_hidden) && is_array($is_hidden) && $is_hidden['store'] ? 'hidden' : '' }}">
+                        <a href="">{{ $product->store ? $product->store->name : 'Store unknown' }}</a>
+                    </td>
                     <td id="child">
                         <a class="view_detail" data-product_url="{{ route('user::products.quick.view', [ 'product' => $product, 'api_token' => MarketPlex\Helpers\ImageManager::PUBLIC_TOKEN ]) }}">
                             <img src="{{ $product->thumbnail() }}" height="60px" width="90px"/>
@@ -42,17 +42,14 @@
                     </td>
                     <td id="child"><a href="">{{ $product->available_quantity }}</a></td> <!-- Available quantity-->
                     <td class="text-center" id="child">
-                        <form id="product-modification-form" class="form-horizontal{{ $product->trashed() ? ' hidden' : '' }}" method="POST" >
-                            {!! csrf_field() !!}
-
+                        <div class="form-horizontal{{ $product->trashed() ? ' hidden' : '' }}" >
                             @include('includes.single-product-actions', compact('product'))
-                        </form>
+                        </div>
                     </td>
                 </tr>
                 @endif
-
         @endforeach
-    @endif
+    @endisset
     </table>
     <div class="col-sm-12 noPadMar text-center parentPagDiv">
     {{ $products->links() }}

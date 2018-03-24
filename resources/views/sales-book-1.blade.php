@@ -466,7 +466,7 @@
             </button>
             <h4 class="modal-title">Show all dues of <i id="client_name">{{ isset($sale) ? $sale->client_name : '' }}</i></h4>
           </div>
-          <table id="search-result-table" class="table">
+          <table class="table">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -619,11 +619,11 @@
                                 'product_bill_id' => $bill->id,
                                 'product_id' => $bill->product_id,
                                 'datetime' => Carbon\Carbon::parse($bill->created_at)->format('m/d/Y h:m'),
-                                'product_title' => $bill->product->title,
-                                'store_name' => $bill->product->store->name,
-                                'bill_price' => $bill->product->mrp,
+                                'product_title' => $bill->product ? $bill->product->title : 'Unknown',
+                                'store_name' => $bill->product && $bill->product->store ? $bill->product->store->name : 'Unknown store',
+                                'bill_price' => $bill->product ? $bill->product->mrp : 0.00,
                                 'bill_quantity' => $bill->quantity,
-                                'product_available_quantity' => $bill->product->available_quantity
+                                'product_available_quantity' => $bill->product ? $bill->product->available_quantity : 0
                             ])
                           @empty
                             @component('includes.tables.empty-table-message', [ 'colspan' => 6, 'level' => 'info', 'message' => $messages['empty_table']['sale_product'] ])

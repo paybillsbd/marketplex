@@ -34,6 +34,18 @@
 
 </script>
  -->
+<script>
+
+$('.remove-store').click(function(e) {
+  e.preventDefault();
+
+  $('#confirmation_modal').modal({ show: true });
+  $("#modal-confirm-action-btn").attr("formaction", '/stores/' + $(this).data('store') + '/delete/');
+  $("#warning-message").text("Store products belongs to this store will be removed too. No sales will be removed.");
+});
+
+</script>
+
 @endsection
 
 @section('content')
@@ -79,7 +91,7 @@
 
                         <div class="row col-sm-12 col-md-12 col-lg-12">
                             <!-- <div class="row col-sm-1 col-md-1 col-lg-1" style="text-align: right">code</div> -->
-                            <div class="form-group col-sm-2 col-md-2 col-lg-2">
+                            <div class="form-group col-sm-3">
                                 <div>
                                     <select name="code" text="code" class="form-control">
                                       @foreach($area_codes as $key => $area_code)
@@ -87,10 +99,10 @@
                                       @endforeach
                                     </select>
                                 </div>
-
                             </div>
-                            <div class="col-sm-7 col-md-7 col-lg-7 form-group{{ $errors->has('phone_number') ? ' has-error' : '' }}">
-                                <input type="text" class="form-control" value="{{ $phone_number[1] or '' }}" id="phone_number" name="phone_number" placeholder="Phone number...">
+                            <div class="col-sm-9 col-md-9 col-lg-9 form-group{{ $errors->has('phone_number') ? ' has-error' : '' }}">
+                                <input  type="text" class="form-control" value="{{ $phone_number[1] or '' }}"
+                                        id="phone_number" name="phone_number" placeholder="Phone number...">
 
                                 @if ($errors->has('phone_number'))
                                     <span class="help-block">
@@ -154,7 +166,8 @@
                     </div>
                   </div>
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
+                <div class="box-body no-padding">
+                  @isset($stores_paginated)
                   <table id="parent" class="table table-hover">
                     <tr>
                       <th class="text-center" width="20%">Store Name</th>
@@ -162,59 +175,75 @@
                       <th class="text-center" width="60%">Address</th>
                       <th class="text-center" width="20%">Action</th>
                     </tr>
-                    @if(isset($stores))
-                      @foreach($stores as $store)
-                      <tr>
-                        <td class="text-center" id="child">
-                          @include('includes.store-redirect-link', 
-                              $single_store ?
-                                [
-                                  'route' => 'store-front',
-                                  'single' => $single_store,
-                                  'title' => $store->name
-                                ] : [
-                                      'url' => $store->getTidyUrl(),
-                                      'title' => $store->name 
-                                    ])
-                        </td>
+                    @foreach($stores_paginated as $store)
+                    <tr>
+                      <td class="text-center" id="child">
+                        @include('includes.store-redirect-link', 
+                            $single_store ?
+                              [
+                                'route' => 'store-front',
+                                'single' => $single_store,
+                                'title' => $store->name
+                              ] : [
+                                    'url' => $store->getTidyUrl(),
+                                    'title' => $store->name 
+                                  ])
+                      </td>
 
-                        <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
-
-                        <td class="text-center" id="child">
-                          
-                          <div class="clearfix">
-                          <div class="row">
-                          <form id="store-edit-form">
-                            <div class="col-md-4"> 
-                            <input formmethod="GET" formaction="{{ route('user::stores.edit', [$store]) }}" formnovalidate="formnovalidate"
-                                    id="store-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                            </div>
-                          </form>
-                          <div class="col-md-4">
+                      <td class="text-center" id="child">{{ MarketPlex\Helpers\ContactProfileManager::tidyAddress($store->address) }}</td>
+                      <td class="text-center" id="child">
+                        <div class="row">
+                          <div class="col-md-3">
+                          <a  href="{{ route('user::stores.edit', [$store]) }}"
+                              data-toggle="tooltip" data-placement="top" title="Edit {{ $store->name }}">
+                            <span aria-hidden="true">
+                            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">mode_edit</i></span>
+                          </a>
+                          </div>
+                          <div class="col-md-3">
                           <a  href="{{ route('user::store.sales', [ 'store' => $store, 'api_token' => Auth::user()->api_token ]) }}"
-                              class="btn btn-info btn-flat btn-xs" role="button">Sales</a>
+                              data-toggle="tooltip" data-placement="top" title="Sales from {{ $store->name }}">
+                            <span aria-hidden="true">
+                            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">monetization_on</i></span>
+                          </a>
+                          </div>
+                          <div class="col-md-3">
+                          <a  href="{{ route('user::store.products', [ 'store' => $store, 'api_token' => Auth::user()->api_token ]) }}"
+                              data-toggle="tooltip" data-placement="top" title="Products of {{ $store->name }}">
+                            <span aria-hidden="true">
+                            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">widgets</i></span>
+                          </a>
                           </div>
                           @if ($store->isStoreDeleteAllowed())
-                          <form id="store-delete-form" class="form-horizontal">
-                            {!! csrf_field() !!}
-                            <div class="col-md-4"> 
-                            <input formmethod="POST" formaction="{{ route('user::stores.delete', [$store]) }}" formnovalidate="formnovalidate" 
-                                    id="store-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
-                            </div>
-                          </form>
+                          <div class="col-md-3"> 
+                          </input>
+                          <a  class="remove-store" href="#" data-store="{{ $store->id }}"
+                              data-toggle="tooltip" data-placement="top" title="Remove {{ $store->name }}">
+                            <span aria-hidden="true">
+                            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i></span>
+                          </a>
+                          </div>
                           @endif
-                          </div>
-                          </div>
-                        </td>
+                        </div>
+                        </div>
+                      </td>
 
-                      </tr>
-                      @endforeach
-                    @endif
+                    </tr>
+                  @endforeach
                   </table>
+                  <div class="col-sm-12 noPadMar text-center parentPagDiv">
+                  {{ $stores_paginated->links() }}
+                  </div>
+                  @endisset
                 </div><!-- /.box-body -->
               </div><!-- /.box -->
             </div>
           </div>
     <!--end of recently added product-->
 
+@endsection
+
+@section('modals')
+  @component('includes.modals.modal-confirm-action')
+  @endcomponent
 @endsection

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use MarketPlex\Traits\DataIntegrityScope;
 use MarketPlex\Traits\TextInputParser;
+use MarketPlex\SaleTransaction;
 
 use Log;
 
@@ -23,13 +24,6 @@ class ShippingBill extends Model
      */
     protected $dates = ['deleted_at'];
     
-    /**
-     * All of the relationships to be touched.
-     *
-     * @var array
-     */
-    protected $touches = ['sale_transaction'];
-    
     //
     /**
      * The attributes that are mass assignable.
@@ -37,6 +31,18 @@ class ShippingBill extends Model
      * @var array
      */
     protected $fillable = [ 'sale_transaction_id', 'purpose', 'quantity', 'amount' ];
+    
+    /**
+     * All of the relationships to be touched.
+     *
+     * @var array
+     */
+    protected $touches = ['sale'];
+
+    public function sale()
+    {
+        return $this->belongsTo(SaleTransaction::class);
+    }
 
     public function getTotalAmount()
     {

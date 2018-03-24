@@ -86,7 +86,7 @@ Route::group([ 'as' => 'user::' ], function() {
 	    Route::post('/create', [ 'uses' => 'ProductController@create', 'as' => 'products.create' ]);
 	    Route::get('/search', [ 'uses' => 'ProductController@search', 'as' => 'products.search' ]);
 	    Route::post('/{product}/sell-yours', [ 'uses' => 'ProductController@copy', 'as' => 'products.sell-yours' ]);
-	    Route::post('/{product}/edit', [ 'uses' => 'ProductController@edit', 'as' => 'products.edit' ]);
+	    Route::get('/{product}/edit', [ 'uses' => 'ProductController@edit', 'as' => 'products.edit' ]);
 	    Route::post('/{product}/update', [ 'uses' => 'ProductController@update', 'as' => 'products.update' ]);
 	    Route::post('/{product}/delete', [ 'uses' => 'ProductController@delete', 'as' => 'products.delete' ]);
 	    Route::post('/{product_bulk_id}/product-bulk-delete', [ 'uses' => 'ProductController@bulkDelete', 'as' => 'products.bulk.delete' ]);
@@ -119,7 +119,7 @@ Route::group([ 'as' => 'user::' ], function() {
     Route::post('/categories/create', [ 'uses' => 'CategoryController@create', 'as' => 'categories.create' ]);
     Route::get('/categories/{category_id}/edit', [ 'uses' => 'CategoryController@edit', 'as' => 'categories.edit' ]);
     Route::post('/categories/{category_id}', [ 'uses' => 'CategoryController@postEdit', 'as' => 'categories.update' ]);
-    Route::post('/categories/delete/{category_id}', [ 'uses' => 'CategoryController@delete', 'as' => 'categories.delete' ]);
+    Route::post('/categories/{category_id}/delete', [ 'uses' => 'CategoryController@delete', 'as' => 'categories.delete' ]);
     Route::get('/categories/approvals', [ 'uses' => 'CategoryController@approvals', 'as' => 'categories.approvals' ]);
     Route::post('/categories/approvals/confirm/{id}', [ 'uses' => 'CategoryController@confirmApproval', 'as' => 'categories.approvals.confirm' ]);
 });

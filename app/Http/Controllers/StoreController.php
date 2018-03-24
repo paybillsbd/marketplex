@@ -59,6 +59,7 @@ class StoreController extends Controller
 
         return view('add-store', $data)->withUser(Auth::user()->id)
                                 ->withStores(Auth::user()->stores)
+                                ->withStoresPaginated(Auth::user()->stores()->paginate(5))
                                 ->withSubmitable(Store::isAuthUserAllowedToCreate())
                                 ->withSingleStore( !Store::isStoreOwnsSubdomain() )
                                 ->withStoreCountWarning( $storeAvailableWarning )
@@ -82,7 +83,21 @@ class StoreController extends Controller
         {
             return response()->json($store->products);
         }
-        dd($store->products);
+        // dd($store->products);
+        return view('store-products')->withStore($store)
+                                     ->withProducts($store->products()->paginate(15));
+    }
+
+    // unused
+    public function showSoldProducts(Store $store)
+    {
+        $sales = Sale::latest()->with('productbills.product.store')
+                                ->join('product_bills', 'sale_transactions.id', '=', 'product_bills.sale_transaction_id')
+                                ->join('products', 'products.id', '=', 'product_bills.product_id')
+                                ->join('stores', 'stores.id', '=', 'products.store_id')
+                                ->select('products.*')->where('store_id', $store->id)->distinct()->paginate();
+        return view('store-sold-products')->withStore($store)
+                                     ->withSales($sales);
     }
 
     private function validator(array $data, array $rules)
@@ -108,7 +123,7 @@ class StoreController extends Controller
         $user = User::find($store->user_id);
         $phone_number = ContactProfileManager::decodePhoneNumber($store->phone_number ? $store->phone_number : $user->phone_number);
         $address = ContactProfileManager::decodeAddress($store->address ? $store->address : $user->address);
-        Log::info($address);
+        // Log::info($address);
         return $this->viewUserStore(compact('store', 'phone_number', 'address'));
     }
 

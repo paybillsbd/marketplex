@@ -2,6 +2,29 @@
 @section('title', 'Category')
 @section('title-module-name', 'Category')
 
+@section('modals')
+
+  @component('includes.modals.modal-confirm-action')
+  @endcomponent
+
+@endsection
+
+@section('footer-scripts')
+
+<script>
+
+$('.remove-category').click(function(e) {
+  e.preventDefault();
+
+  $('#confirmation_modal').modal({ show: true });
+  $("#modal-confirm-action-btn").attr("formaction", '/categories/' + $(this).data('category') + '/delete/');
+  $("#warning-message").text("Your category is going to be removed.");
+});
+
+</script>
+
+@endsection
+
 @section('content')
 <div class="box box-info">
     <div class="box-header with-border">
@@ -59,7 +82,7 @@
                     </div>
                   </div>
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
+                <div class="box-body no-padding">
                   <table id="parent" class="table table-hover">
                     <tr>
                       <!-- <th class="text-center hidden">ID</th> -->
@@ -73,13 +96,25 @@
                       <td class="text-center" id="child"><a href="">{{ $category->name or 'Chocolate'}}</a></td>
                       <td class="text-center" id="child"><a href="">{{ $category->description or 'This is a description'}}</a></td>
                       <td class="text-center" id="child">
-                        <form id="category-edit-form" class="form-horizontal">
-                          <input formmethod="GET" formaction="{{ route('user::categories.edit', [$category->id]) }}" id="category-edit-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Edit"></input>
-                        </form>
-                        <form id="category-delete-form" class="form-horizontal">
-                          {!! csrf_field() !!}
-                          <input formmethod="POST" formaction="{{ route('user::categories.delete', [$category->id]) }}" id="category-delete-btn" class="btn btn-info btn-flat btn-xs" type="submit" value="Delete"></input>
-                        </form>
+
+                        <div class="row">
+                          <div class="col-md-3">
+                          <a  href="{{ route('user::categories.edit', [$category->id]) }}"
+                              data-toggle="tooltip" data-placement="top" title="Edit {{ $category->name }}">
+                            <span aria-hidden="true">
+                              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">mode_edit</i></span>
+                          </a>
+                          </div>
+                          <div class="col-md-3"> 
+                          </input>
+                          <a  class="remove-category" href="#" data-category="{{ $category->id }}"
+                              data-toggle="tooltip" data-placement="top" title="Remove {{ $category->name }}">
+                            <span aria-hidden="true">
+                              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i></span>
+                          </a>
+                          </div>
+                        </div>
+                        
                       </td>
                     </tr>
                     @endforeach

@@ -287,29 +287,10 @@
               var payload = { sales: JSON.stringify(json.sales) };
               ViewContentManager.replace('sales-row-search-result', payload, '#search-result-table > tbody');
               $('#pagination-container').empty();
-              // payload = { sales: JSON.stringify(json.sales), queries: JSON.stringify(json.queries) };
-              // DataManager.request('get', '/api/v1/paginations/sale-transaction-links?api_token={{ Auth::user()->api_token }}', payload, function(data) {
-
-              //     // console.log(data);
-              //     $('#pagination-container').html(data);
-              // });
           }
       });
 
       $(document).ready(function() {
-          
-          // #### instead using basic HTML5 input datetime-local
-          // var date_input_from=$('input[name="from_date"]'); //our date input has the name "date"
-          // var date_input_to=$('input[name="to_date"]'); //our date input has the name "date"
-          // var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-          // var options={
-          //   format: 'dd/mm/yyyy',
-          //   container: container,
-          //   todayHighlight: true,
-          //   autoclose: true,
-          // };
-          // date_input_from.datepicker(options);
-          // date_input_to.datepicker(options);
 
           $('#sales_today').click(function(e) {
               e.preventDefault();

@@ -21,17 +21,23 @@
     <div class="clearfix">
 		  <p class="text-left">
         <div class="row">
-          <div class="col-md-3"> 
+          <div class="col-md-3">                
             <a  href="{{ route('user::sales.edit', [ 
                     'sale' => is_string($sales) ? $sale->id : $sale,
                     'api_token' => Auth::user()->api_token
-                ]) }}" class="btn btn-info btn-flat btn-xs" role="button">Edit</a>
+                ]) }}" role="button"
+                data-toggle="tooltip" data-placement="top" title="Edit sale (last modified: {{ $sale->updated_at }} )">
+              <span aria-hidden="true">
+              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">mode_edit</i></span>
+            </a>
           </div>
-          <div class="col-md-4"> 
+          <div class="col-md-4">              
             <a  href="/api/v1/sales/{{ $sale->id }}/invoice?download=0&api_token={{ Auth::user()->api_token }}"
-                class="show-invoice btn btn-info btn-flat btn-xs"
-                data-sale="{{ $sale->id }}"
-                role="button">Invoice</a>
+                role="button" class="show-invoice" data-sale="{{ $sale->id }}"
+                data-toggle="tooltip" data-placement="top" title="Invoice of this sale">
+              <span aria-hidden="true">
+              <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">receipt</i></span>
+            </a>
           </div>
         </div>
       </p>
