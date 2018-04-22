@@ -335,4 +335,28 @@ class Product extends Model
         }
         return 'Unknown';
     }
+
+    public static function isColumnHidden($columnName)
+    {
+        $columns = [
+            'name' => false,
+            'category' => false,
+            'mrp' => true,
+            'discount' => true,
+            'price' => false,
+            'image' => true,
+            'store' => true,
+            'available_quantity' => false,
+            'action' => false,
+        ];
+        if (is_null($columnName))
+            return $columns;
+        return array_has($columns, $columnName) && $columns[$columnName];        
+    }
+
+    public static function setColumnHidden($columnName)
+    {
+        $columns = self::isColumnHidden(null);
+        return array_set($columns, $columnName, false);
+    }
 }

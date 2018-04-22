@@ -16,7 +16,7 @@
         <div class="box-body table-responsive no-padding">
             <div id="delete_all"></div>
             <div id="load_table_dom">
-                @include('includes.product-table', [ 'is_hidden' => [ 'store' => true ] ])
+                @include('includes.product-table', [ 'is_hidden' => MarketPlex\Product::isColumnHidden(null) ])
             </div><!-- /.box-body -->
         </div><!-- /.box -->
 </div>
