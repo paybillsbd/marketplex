@@ -1,4 +1,4 @@
-<!--add product modal-->
+add product modal-->
 <div id="addProduct" class="modal fade laravel-bootstrap-modal-form" role="dialog">
 
     <div id="has_error" class="hidden{{ count($errors) > 0 ? ' has-error' : '' }}"></div>
@@ -158,14 +158,13 @@
                                     <div class="col-sm-2">
                                         <div class="input-group spinner">
                                             <input type="text" name="available_quantity" class="form-control"
-                                                   value="{{ isset($product) ? $product->available_quantity : MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                   min="{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
-                                                   max="{{ MarketPlex\Product::MAX_AVAILABLE_QUANTITY }}">
+                                                   value="{{ isset($product) ? $product->getAvailableQuantity() : MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}"
+                                                   min="{{ MarketPlex\Product::MIN_AVAILABLE_QUANTITY }}">
 
-                                            <div class="input-group-btn-vertical">
+                                           <!--  <div class="input-group-btn-vertical">
                                                 <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
                                                 <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
-                                            </div>
+                                            </div> -->
                                         </div>
                                         @if ($errors->has('available_quantity'))
                                             <span class="help-block">
@@ -509,4 +508,4 @@
     </div>
 
 </div>
-<!--end add product modal-->
+<!--end add product modal

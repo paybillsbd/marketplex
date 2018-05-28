@@ -16,7 +16,7 @@ class ProtocolKeeper
 			'FULL_URL' => $request->fullUrl(),
 			'PATH' => $request->path(),
 			'SEGMENTS' => $request->segments(),
-			'FINGERPRINT' => $request->fingerprint(),
+			'FINGERPRINT' => $request->route() ? $request->fingerprint() : 'Unknown',
 			'METHOD' => $request->method(),
 			'FILES' => $request->allFiles(),
 			'SERVER_ADDR' => $request->server( array_key_exists('SERVER_ADDR', $_SERVER) ? 'SERVER_ADDR' : 'LOCAL_ADDR' ),

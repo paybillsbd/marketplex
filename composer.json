@@ -9,6 +9,7 @@
         "barryvdh/laravel-dompdf": "^0.8.2",
         "darrylkuhn/dialect": "^1.0",
         "gloudemans/shoppingcart": "^2.4",
+        "guzzlehttp/guzzle": "^6.3",
         "intervention/image": "^2.3",
         "intervention/imagecache": "^2.3",
         "kwn/number-to-words": "^1.5",
@@ -29,6 +30,9 @@
         "classmap": [
             "database",
             "app/Models"
+        ],
+        "files": [
+            "app/Helpers/app_helpers.php"
         ],
         "psr-4": {
             "MarketPlex\\": "app/"

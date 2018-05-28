@@ -3,6 +3,7 @@
 namespace MarketPlex\Http\Controllers;
 
 use Auth;
+use Log;
 use Illuminate\Http\Request;
 use MarketPlex\User;
 use MarketPlex\Product;
@@ -19,6 +20,8 @@ class StoreFrontController extends Controller
     //
     public function showStoreFront(Request $request)
     {
+        kill($request);
+
         if(env('STORE_CLOSE', true) === true)
             return view('store-comingsoon');
         else if(Product::count() == 0)

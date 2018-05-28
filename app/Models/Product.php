@@ -79,6 +79,11 @@ class Product extends Model
         return $this->hasOne(ProductBill::class);
     }
 
+    public function shipments()
+    {
+        return $this->hasMany('MarketPlex\ProductShipment');
+    }
+
     /**
      * Get all of the products' product medias.
      */
@@ -278,12 +283,20 @@ class Product extends Model
 
     public function marketPrice()
     {
-        return  ($this->marketProduct()) ? $this->marketProduct()->price : 0.0;
+        return $this->marketProduct() ? $this->marketProduct()->price : 0.0;
     }
 
     public function marketManufacturer()
     {
         return  ($this->marketProduct()) ? $this->marketProduct()->manufacturer_name : 'Unknown';
+    }
+
+    public function getAvailableQuantity()
+    {
+        $quantity = $this->shipments->sum(function($shipment) {
+            return ($shipment->direction == 'CHECKED_IN' ? 1 : -1) * $shipment->unit_count;
+        });
+        return $quantity < 0 ? 0 : $quantity;
     }
 
 	public function sendApprovals()
@@ -358,5 +371,15 @@ class Product extends Model
     {
         $columns = self::isColumnHidden(null);
         return array_set($columns, $columnName, false);
+    }    
+
+    public static function messages()
+    {
+        return [
+            'empty_table' => [
+                'product_shipment' => 'No product shipments done yet ...',
+            ],
+            'help' => []
+        ];
     }
 }

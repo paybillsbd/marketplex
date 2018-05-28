@@ -478,7 +478,7 @@
                   @include('includes.tables.sales-row-search-result') 
                 </tbody>
             </table>
-            <div id="pagination-container">{{ $sales->appends($paginator_appends)->links() }}</div>
+            <div class="col-sm-12 noPadMar text-center parentPagDiv">{{ $sales->appends($paginator_appends)->links() }}</div>
 
           </div><!-- /.box-body -->
         </div><!-- /.box -->  

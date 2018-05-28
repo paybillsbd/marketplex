@@ -17,6 +17,7 @@ use MarketPlex\Http\Requests;
 use MarketPlex\Http\Controllers\Controller;
 
 use MarketPlex\Product;
+use MarketPlex\ProductShipment;
 use MarketPlex\Store;
 use MarketPlex\MarketProduct;
 use MarketPlex\ProductMedia;
@@ -166,7 +167,7 @@ class ProductController extends Controller
             'is_public' => $request->has('is_public') ? true : false,
             'discount' => 0,
             'spec' => $specs,
-            'available_quantity' => $request->input('available_quantity'),
+            // 'available_quantity' => $request->input('available_quantity'),
             'return_time_limit' => 1,
             'uploaded_files' => $uploadedFiles,
             'embed_url' => $request->input('embed_video_url'),
@@ -204,7 +205,7 @@ class ProductController extends Controller
             // NOTE: like -> searches case sensitive
             // $productsBySearch = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%')->get();
             
-            // NOTE: ilike -> seaches case insensitive
+            // NOTE: ilike -> searches case insensitive
             $productQuery = Product::where('title', $search_terms)->orWhere('title', 'like', '%' . $search_terms . '%');
             $productsBySearch = $productQuery->get();
             // Log::info(collect($productsBySearch)->toJson());
@@ -348,7 +349,7 @@ class ProductController extends Controller
             'is_public' => $request->has('is_public') ? true : false,
             'discount' => 0,
             'spec' => $specs,
-            'available_quantity' => $request->input('available_quantity'),
+            // 'available_quantity' => $request->input('available_quantity'),
             'return_time_limit' => 1,
             'uploaded_files' => $uploadedFiles,
             'embed_url' => $request->input('embed_video_url'),
@@ -377,7 +378,7 @@ class ProductController extends Controller
         {
             $product->special_specs = collect($data['spec'])->toJson();
         }
-        $product->available_quantity = $data['available_quantity'];
+        // $product->available_quantity = $data['available_quantity'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
         // $product->type = collect($data)->has('product_type') ? $data['product_type'] : '';
 
@@ -606,7 +607,7 @@ class ProductController extends Controller
         {
             $product->special_specs = collect($data['spec'])->toJson();
         }
-        $product->available_quantity = $data['available_quantity'];
+        // $product->available_quantity = $data['available_quantity'];
         $product->return_time_limit = $data['return_time_limit'];
         $product->description = collect($data)->has('description') ? $data['description'] : '';
         // $product->type = collect($data)->has('product_type') ? $data['product_type'] : 'DOWNLOADABLE';
@@ -754,5 +755,125 @@ class ProductController extends Controller
             Log::critical('[' . config('app.vendor') . '][' . $iex->getMessage() . ']');
             return $manager->make( public_path(Product::defaultImage()) )->resize($width, $height)->response();
         }
+    }
+
+    public function showProductShipments(Product $product = null)
+    {
+        if ($product && ! $product->store)
+        {
+            return redirect()->back()->withErrors([ 'errors' => ['The requested product does not belong to any store/ inventory.'] ]);
+        }
+        return view('stores.product-shipment-history')->withProduct($product)
+                                                        ->withStoreName($product ? $product->store->name : 'Unknown Store' );
+    }
+
+    public function createProductShipment(ProductRequest $request, Product $product = null)
+    {
+        if($request->ajax())
+        {
+            $this->validate($request, [
+                'product_id' => 'present',
+                'shipment_direction' => 'required|in:CHECKED_IN,CHECKED_OUT',
+                'unit_type' => 'present|in:quantity,weight',
+                'product_shipment_date' => 'present|date',
+                'product_title' => 'required',
+                'supplier_title' => 'required',
+                'product_price' => 'required|min:1.00',
+                'store_unit' => 'required|min:1'.($request->input('unit_type') === 'weight' ? '.00' : ''),
+                'stored_unit_total' => 'required|min:1'
+            ]);
+            if (! $product)
+            {
+                $productId = $request->input('product_id');
+                if (is_null($productId))              
+                {
+                    $product = new Product;
+                    $product->title = $request->input('product_title');
+                    $product->user()->associate(Auth::user());
+                    $product->store()->associate($store);
+
+                    if ($product->save())
+                    {
+                        $marketProduct = new MarketProduct;
+                        $marketProduct->title = $product->title;
+                        $marketProduct->price = $request->input('product_price');
+                        $marketProduct->manufacturer_name = $request->input('supplier_title');
+                        $marketProduct->category()->associate(null);
+                        $marketProduct->product()->associate($product);
+                        $marketProduct->save();
+                    }
+                }
+                else
+                {
+                    $product = Product::find($productId);
+                }
+            }
+            
+            $isCheckedIn = $request->input('shipment_direction') === 'CHECKED_IN';
+
+            $marketProduct = $product->marketProduct();
+            if ($marketProduct)
+            {
+                if ($request->input('product_title') != $product->title)
+                {
+                    $product->title = $request->input('product_title');
+                }
+                if ($request->input('supplier_title') != $marketProduct->manufacturer_name)
+                {
+                    $marketProduct->manufacturer_name = $request->input('supplier_title');
+                }
+                if ($request->input('supplier_title') != $marketProduct->price)
+                {
+                    $marketProduct->price = $request->input('product_price');
+                }
+                if (!$marketProduct->save() || !$product->save())
+                {
+                    Log::error('[' . config('app.vendor') . '][Market product did not save]');
+                }
+            }
+            $itemCount = $request->input('stored_unit_total');
+            if (! $isCheckedIn && $product->available_quantity < $itemCount)
+            {
+                return response()->json(['errors' => ['stored_unit_total' => 'You cannot check out more than available items of this product'] ], 422);
+            }
+
+            $s = new ProductShipment;
+            $s->title = $request->input('product_title');
+            $s->supplier = $request->input('supplier_title');
+            $s->created_at = $request->input('product_shipment_date');
+            $s->price = $request->input('product_price');
+            $s->stored_unit_total = $itemCount;
+            $s->store_unit = $request->input('store_unit');
+            $s->status = $isCheckedIn ? 'STORE_ADDED' : 'STORE_REMOVED';
+            $s->direction = $isCheckedIn ? 'CHECKED_IN' : 'CHECKED_OUT';
+            $s->tag = 'shipment:'.$request->input('product_shipment_date');
+            $s->product()->associate($product);
+
+            $message = $product->shipments()->save($s)
+                            ? ('Your product successfully '. ($isCheckedIn ? 'checked in' : 'checked out')) : null;
+            $data = [ 'message' => $message ];
+            if (is_null($message))
+            {
+                $data['errors'] = ['shipment' => 'Product shipment failed'];
+            }
+            return response()->json($data, is_null($message) ? 422 : 200);
+        }
+        return abort(503);
+    }
+
+    public function removeProductShipment(ProductShipment $shipment)
+    {
+        if ($shipment && $shipment->delete())
+            return redirect()->back();
+        return redirect()->back()->withErrors(['Something went wrong while manging your shipment...']);
+    }
+
+    public function getProductShipments(Product $product = null)
+    {
+        return response()->view('stores.product-shipments-table', [
+                'shipments' => $product && $product->has('shipments') ? $product->shipments()->paginate(10) : [],
+                'paginator_appends' => [ 'api_token' => Auth::user()->api_token ],
+                'messages' => Product::messages()
+            ])->header('Content-Type', 'html');
     }
 }

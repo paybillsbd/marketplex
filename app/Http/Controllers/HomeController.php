@@ -3,6 +3,7 @@
 namespace MarketPlex\Http\Controllers;
 
 use Auth;
+use Log;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -22,8 +23,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        kill($request);
         return view('home');
     }
 

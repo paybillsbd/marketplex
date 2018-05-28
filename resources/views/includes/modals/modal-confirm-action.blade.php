@@ -16,6 +16,9 @@
       <div class="modal-footer">
         <form>
         {!! csrf_field() !!}
+        @isset($hidden_method)
+        {{ Form::hidden('_method', $hidden_method) }}
+        @endisset
         <input formmethod="POST" formaction="{{ $ok_action or '' }}" formnovalidate="formnovalidate" 
                 id="modal-confirm-action-btn" class="btn btn-success" type="submit" value="OK" />
         <button type="button" id="btn-confirm" class="btn btn-warning" data-dismiss="modal">Cancel</button>

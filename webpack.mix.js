@@ -15,6 +15,6 @@ mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
    .extract(['vue', 'axios', 'jquery' ]);
 
-mix.react('resources/assets/js/app.jsx', 'public/js');
+// mix.react('resources/assets/js/app.jsx', 'public/js');
 
-mix.browserSync('127.0.0.1:8000');
+// mix.browserSync('127.0.0.1:8000');

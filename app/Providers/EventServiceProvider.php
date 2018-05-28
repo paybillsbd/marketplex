@@ -16,6 +16,17 @@ class EventServiceProvider extends ServiceProvider
         'MarketPlex\Events\ClientAction' => [
             'MarketPlex\Listeners\ClientActionListener',
         ],
+        'MarketPlex\Events\ProductCheckedIn' => [],
+        'MarketPlex\Events\ProductCheckedOut' => [],
+    ];
+
+    /**
+     * The subscriber classes to register.
+     *
+     * @var array
+     */
+    protected $subscribe = [
+        'MarketPlex\Listeners\ProductEventSubscriber',
     ];
 
     /**

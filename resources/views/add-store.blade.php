@@ -201,13 +201,6 @@ $('.remove-store').click(function(e) {
                           </a>
                           </div>
                           <div class="col-md-3">
-                          <a  href="{{ route('user::store.sales', [ 'store' => $store, 'api_token' => Auth::user()->api_token ]) }}"
-                              data-toggle="tooltip" data-placement="top" title="Sales from {{ $store->name }}">
-                            <span aria-hidden="true">
-                            <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">monetization_on</i></span>
-                          </a>
-                          </div>
-                          <div class="col-md-3">
                           <a  href="{{ route('user::store.products', [ 'store' => $store, 'api_token' => Auth::user()->api_token ]) }}"
                               data-toggle="tooltip" data-placement="top" title="Products of {{ $store->name }}">
                             <span aria-hidden="true">

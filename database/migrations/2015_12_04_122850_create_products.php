@@ -23,6 +23,7 @@ class CreateProducts extends Migration
             $table->string('title', 200)->comment('Stored product title - can be RENAMED by store owner');
             $table->float('mrp', 10, 2)->default(0.0);
             $table->float('discount', 10, 2)->default(0.0);
+            $table->enum('store_unit_type', [ 'QUANTITY', 'WEIGHT' ])->default('WEIGHT');
             
             // $table->json('special_specs')->nullable()->comment('JSON serialization of product specifications defined by store product specifications.');
             

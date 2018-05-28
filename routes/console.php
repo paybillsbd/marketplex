@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Broadcasting\BroadcastException;
 use MarketPlex\Security\ProtocolKeeper;
 
@@ -33,3 +34,9 @@ Artisan::command('event:send', function () {
 
     $this->comment(Inspiring::quote());
 })->describe('throws an event');
+
+Artisan::command('project:complete', function () {
+    $this->comment(Inspiring::quote());
+    kill(HttpRequest::capture());
+    $this->comment('Thanks for sharing your efforts ... :)');
+})->describe('Project completion guidelines');

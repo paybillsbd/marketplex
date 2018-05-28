@@ -15,4 +15,12 @@
     <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i></span>
   </a>
   </div>
+  <div class="col-md-3">
+  <a  href="{{ route('user::products.shipments', [
+                            'product' => $product, 'api_token' => Auth::user()->api_token ]) }}"
+      data-toggle="tooltip" data-placement="top" title="Add product shipments from/ to {{ $product->store->name }}">
+    <span aria-hidden="true">
+    <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">local_shipping</i></span>
+  </a>
+  </div>
 </div>

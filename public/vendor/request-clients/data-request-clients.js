@@ -3,10 +3,11 @@
 var DataManager = {
   serviceUrl: '',
   payload: {},
+  dataType: 'json',
   onLoad: function(data) {},
   request: function() {
 
-      $.get(this.serviceUrl, this.payload, this.onLoad).fail(function(jqXHR, textStatus, errorThrown) {
+      $.get(this.serviceUrl, this.payload, this.onLoad, this.dataType).fail(function(jqXHR, textStatus, errorThrown) {
         if (jqXHR.status == 404)
         {
             console.log(textStatus, errorThrown);
@@ -227,9 +228,11 @@ var FormRequestManager = function(formName) {
         },
         _onSubmit: function(event) {
                       
+            event = event || "Anonymous";
+            // console.log(event);
             event.preventDefault();
             var _this = window.form;
-            // alert(this.id);
+            // console.log(this.id);
             // alert(JSON.stringify($(_this.id + " :input" ).serializeArray()));
             $.ajax({
                   type: _this._method,
@@ -249,17 +252,37 @@ var FormRequestManager = function(formName) {
                   error: _this._onError 
             });
         },
-        ready: function(url, data, redirectUrl, create) {
+        _setUp: function(url, data, redirectUrl, create) {
 
           this._route = url;
           this._data = data;
           this._redirectUrl = redirectUrl;
           this._shouldRedirect = redirectUrl !== null;
           this._method = create ? 'post' : 'put';
+        },
+        ready: function(url, data, redirectUrl, create) {
+
+          // this._setUp(url, data, redirectUrl, create);
+          // var _this = this;
+
+          // $(this.id).ready(function() {
+          //     // console.log(_this.id);
+          //     $(_this.id).submit(_this._onSubmit);
+          // });
+          this.readyForAction(url, data, redirectUrl, create, null, 'submit');
+        },
+        // @param target HTMLElement target must be a valid HTML element if action is 'click'
+        // @param action (e.g. allowed 'submit', 'click')
+        readyForAction: function(url, data, redirectUrl, create, target, action) {
+
+          this._setUp(url, data, redirectUrl, create);
           var _this = this;
 
           $(this.id).ready(function() {
-              $(_this.id).submit(_this._onSubmit);
+              // console.log(_this.id);
+              const element = action == 'click' ? target : $(_this.id);
+              // @see https://ctrlq.org/code/20181-call-javascript-function-by-name
+              element[action](_this._onSubmit);
           });
         }
     }

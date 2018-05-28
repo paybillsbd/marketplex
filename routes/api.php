@@ -28,8 +28,7 @@ Route::get('/serialize', function() {
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], function () {
 
     Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
-	Route::get('/stores/{store}/sales', [ 'uses' => 'StoreController@showSales', 'as' => 'store.sales' ]);     
-	Route::get('/stores/{store}/products', [ 'uses' => 'StoreController@showProducts', 'as' => 'store.products' ]);     
+	Route::get('/stores/{store}/sales', [ 'uses' => 'StoreController@showSales', 'as' => 'store.sales' ]);         
 
 	// Product controller
 	Route::group([ 'prefix' => 'products' ], function () {
@@ -37,7 +36,15 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api', 'as' => 'user::'], f
 		Route::get('/medias/image/{file_name}', [ 'uses' => 'ProductController@image', 'as' => 'products.medias.image' ]);
 		Route::get('/medias/thumbnail/{file_name}', [ 'uses' => 'ProductController@thumbnail', 'as' => 'products.image.thumbnail' ]);
 	    Route::get('/{product}/quick-view', [ 'uses' => 'ProductController@quickView', 'as' => 'products.quick.view' ]);
-    	Route::get('/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);     
+    	Route::get('/{product}/price', [ 'uses' => 'ProductController@showPrice', 'as' => 'product.price' ]);
+		Route::get('/{product?}/shipments',
+			[ 'uses' => 'ProductController@showProductShipments', 'as' => 'products.shipments' ]);
+		Route::get('/{product?}/shipments/table',
+			[ 'uses' => 'ProductController@getProductShipments', 'as' => 'products.shipments.table' ]);   
+		Route::post('/{product?}/shipments/create',
+			[ 'uses' => 'ProductController@createProductShipment', 'as' => 'products.shipments.store' ]);   
+		Route::delete('/shipments/{shipment}',
+			[ 'uses' => 'ProductController@removeProductShipment', 'as' => 'products.shipments.remove' ]);    
 	});
 
 	// Sale Controller
